@@ -37,7 +37,7 @@ import org.koin.core.scope.Scope
 @Composable
 fun CredentialsComposable(
     scope: Scope,
-    onTokenSaved: () -> Unit,
+    onTokenSaved: (token: String, endpoint: String) -> Unit,
     onChangeEndpoint: () -> Unit,
 ) {
     val viewModel: LoginViewModel = remember { scope.get() }
@@ -47,9 +47,17 @@ fun CredentialsComposable(
     viewModel.eventsFlow.CollectWithLifecycle { event ->
         isLoadingVisible = false
         when (event) {
-            is LoginEvent.NavigateNext -> onTokenSaved()
-            is LoginEvent.NavigatePrevious -> onChangeEndpoint()
-            is LoginEvent.ShowError -> errorVs = event.viewState
+            is LoginEvent.NavigateNext -> {
+                onTokenSaved(event.token.orEmpty(), event.endpoint)
+            }
+
+            is LoginEvent.NavigatePrevious -> {
+                onChangeEndpoint()
+            }
+
+            is LoginEvent.ShowError -> {
+                errorVs = event.viewState
+            }
         }
     }
 

@@ -67,9 +67,16 @@ private fun HostComposable(result: MainEvent.CheckResult?) {
         null -> return
         MainEvent.CheckResult.EmptyEndpoint,
         MainEvent.CheckResult.EmptyCreds,
-        -> LoginFlow
+        -> {
+            LoginFlow
+        }
 
-        MainEvent.CheckResult.OpenMain -> MainFlow
+        is MainEvent.CheckResult.OpenMain -> {
+            MainFlow(
+                token = result.token,
+                baseUrl = result.endpoint,
+            )
+        }
     }
 
     val hostNavController = rememberNavController()
@@ -86,13 +93,17 @@ private fun HostComposable(result: MainEvent.CheckResult?) {
         registerLoginFlow(
             endpointIsEmpty = result == MainEvent.CheckResult.EmptyEndpoint,
             navController = hostNavController,
-            onTokenSaved = {
+            onTokenSaved = { token, endpoint ->
                 hostNavController.popBackStack(
                     route = LoginFlow,
                     inclusive = true,
                     saveState = false,
                 )
-                hostNavController.navigate(MainFlow)
+                MainFlow(
+                    token = token,
+                    baseUrl = endpoint,
+                )
+                    .let(hostNavController::navigate)
             },
         )
         registerMainFlow()

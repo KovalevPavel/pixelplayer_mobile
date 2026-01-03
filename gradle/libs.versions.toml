@@ -19,6 +19,7 @@ navigation = "2.9.1"
 koin = "4.1.1"
 datastore = "1.2.0"
 ktor = "3.3.3"
+coil = "3.3.0"
 
 benchmarkBaselineProfileGradlePlugin = "1.4.1"
 
@@ -49,6 +50,10 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 # Storage
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# Images
+coil-core = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 # Network
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

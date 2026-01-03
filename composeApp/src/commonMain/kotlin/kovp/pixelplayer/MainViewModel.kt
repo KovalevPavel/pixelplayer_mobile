@@ -33,7 +33,13 @@ class MainViewModel(
                 val token = credentialsRepository.getToken()
 
                 val event = when {
-                    token?.isNotEmpty() == true -> MainEvent.CheckResult.OpenMain
+                    token?.isNotEmpty() == true -> {
+                        MainEvent.CheckResult.OpenMain(
+                            token = token,
+                            endpoint = endpoint.orEmpty(),
+                        )
+                    }
+
                     endpoint?.isNotEmpty() == true -> MainEvent.CheckResult.EmptyCreds
                     else -> MainEvent.CheckResult.EmptyEndpoint
                 }

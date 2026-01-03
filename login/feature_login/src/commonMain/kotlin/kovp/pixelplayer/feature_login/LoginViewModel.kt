@@ -30,7 +30,11 @@ class LoginViewModel(
             body = {
                 if (loginRepo.checkEndpoint(endpoint)) {
                     credentialsRepo.saveEndpoint(endpoint)
-                    LoginEvent.NavigateNext.let(::emitEvent)
+                    LoginEvent.NavigateNext(
+                        token = null,
+                        endpoint = endpoint,
+                    )
+                        .let(::emitEvent)
                     return@launch
                 }
 
@@ -54,7 +58,11 @@ class LoginViewModel(
                 val token = loginRepo.login(login = login, password = password)
                 if (token.isNotEmpty()) {
                     credentialsRepo.saveToken(token)
-                    LoginEvent.NavigateNext.let(::emitEvent)
+                    LoginEvent.NavigateNext(
+                        token = token,
+                        endpoint = credentialsRepo.getEndpoint().orEmpty(),
+                    )
+                        .let(::emitEvent)
                     return@launch
                 }
 

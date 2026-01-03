@@ -48,10 +48,11 @@ class ComposePlugin : ComposePlugin() {
                         }
                     }
 
-
                     listOf(
                         project.libs.androidx.lifecycle.viewmodelCompose,
                         project.libs.androidx.lifecycle.runtimeCompose,
+                        project.libs.coil.core,
+                        project.libs.coil.network,
                     )
                         .forEach { implementation(it.get()) }
                 }

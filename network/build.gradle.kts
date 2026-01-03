@@ -4,11 +4,19 @@ plugins {
 
 kotlin {
     sourceSets {
+        androidMain.dependencies {
+            api(libs.ktor.client.okhttp)
+        }
+
         commonMain.dependencies {
             api(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.serialization)
+        }
+
+        iosMain.dependencies {
+            api(libs.ktor.client.darwin)
         }
     }
 }

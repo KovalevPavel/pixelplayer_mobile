@@ -21,7 +21,7 @@ object LoginFlow
 fun NavGraphBuilder.registerLoginFlow(
     endpointIsEmpty: Boolean,
     navController: NavHostController,
-    onTokenSaved: () -> Unit,
+    onTokenSaved: (token: String, endpoint: String) -> Unit,
 ) {
     val startDestination = if (endpointIsEmpty) {
         LoginScreen.Endpoint
@@ -44,8 +44,8 @@ fun NavGraphBuilder.registerLoginFlow(
 
             CredentialsComposable(
                 scope = scope,
-                onTokenSaved = {
-                    onTokenSaved()
+                onTokenSaved = { token, endpoint ->
+                    onTokenSaved(token, endpoint)
                     scope.close()
                 },
                 onChangeEndpoint = {
