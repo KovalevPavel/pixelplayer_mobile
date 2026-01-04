@@ -11,6 +11,7 @@ kotlin {
             implementation(project(":network"))
             implementation(project(":api_artists"))
             implementation(project(":api_albums"))
+            implementation(project(":api_tracks"))
         }
     }
 }

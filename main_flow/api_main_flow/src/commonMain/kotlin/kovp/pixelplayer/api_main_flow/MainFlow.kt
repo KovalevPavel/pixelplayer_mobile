@@ -20,9 +20,9 @@ import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
 import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
+import kovp.pixelplayer.api_tracks.TracksComposableWrapper
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.feature_main_flow.MainFlowScreen
-import kovp.pixelplayer.feature_main_flow.ui.TracksComposable
 import org.koin.compose.getKoin
 
 @Serializable
@@ -81,7 +81,7 @@ fun NavGraphBuilder.registerMainFlow() {
                     }
 
                     MainFlowScreen.Tracks -> {
-                        TracksComposable()
+                        TracksComposableWrapper()
                     }
                 }
             }
