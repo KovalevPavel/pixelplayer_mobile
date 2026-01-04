@@ -25,9 +25,9 @@ class ArtistsRepositoryImpl(
 @Serializable
 private class ArtistDto(
     @SerialName("id")
-    val id: String?,
+    val id: String? = null,
     @SerialName("name")
-    val name: String?,
+    val name: String? = null,
     @SerialName("avatar_url")
-    val avatar: String?,
+    val avatar: String? = null,
 )

@@ -31,7 +31,7 @@ internal fun AlbumsList(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        items(items = state.artists, key = VerticalCardVs::id) { item ->
+        items(items = state.albums, key = VerticalCardVs::id) { item ->
             VerticalCard(
                 viewState = item,
                 onClick = {
@@ -55,7 +55,7 @@ private fun AlbumsListPreview(
 private class ArtistsListProvider : PreviewParameterProvider<AlbumsState.List> {
     override val values: Sequence<AlbumsState.List> = List(2) { i ->
         AlbumsState.List(
-            artists = List((i + 1) * 3) {
+            albums = List((i + 1) * 3) {
                 VerticalCardVs(
                     id = it.toString(),
                     title = "Album $it ".repeat(it + 1),

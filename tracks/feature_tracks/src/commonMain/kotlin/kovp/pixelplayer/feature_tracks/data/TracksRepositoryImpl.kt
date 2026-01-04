@@ -27,13 +27,13 @@ class TracksRepositoryImpl(
 @Serializable
 private class TrackDto(
     @SerialName("id")
-    val id: String?,
+    val id: String? = null,
     @SerialName("title")
-    val title: String?,
+    val title: String? = null,
     @SerialName("album")
-    val album: String?,
+    val album: String? = null,
     @SerialName("artist")
-    val artist: String?,
+    val artist: String? = null,
     @SerialName("cover")
-    val cover: String?,
+    val cover: String? = null,
 )

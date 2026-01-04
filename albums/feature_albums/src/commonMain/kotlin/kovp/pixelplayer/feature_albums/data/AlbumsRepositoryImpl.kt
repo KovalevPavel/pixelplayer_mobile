@@ -26,11 +26,11 @@ class AlbumsRepositoryImpl(
 @Serializable
 private class AlbumDto(
     @SerialName("id")
-    val id: String?,
+    val id: String? = null,
     @SerialName("title")
-    val title: String?,
+    val title: String? = null,
     @SerialName("cover")
-    val cover: String?,
+    val cover: String? = null,
     @SerialName("year")
-    val year: String?,
+    val year: String? = null,
 )

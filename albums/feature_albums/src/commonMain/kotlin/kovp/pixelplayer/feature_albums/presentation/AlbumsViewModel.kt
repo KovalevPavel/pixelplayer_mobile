@@ -21,13 +21,15 @@ internal class AlbumsViewModel(
 
     fun handleAction(action: AlbumsAction) {
         when (action) {
+            is AlbumsAction.OnErrorActionClick,
+            is AlbumsAction.FetchAlbums,
+            -> fetchAlbumsList()
+
             is AlbumsAction.OnAlbumClick -> {}
-            is AlbumsAction.OnErrorActionClick -> fetchArtistsList()
-            is AlbumsAction.FetchAlbums -> fetchArtistsList()
         }
     }
 
-    private fun fetchArtistsList() {
+    private fun fetchAlbumsList() {
         launch(
             body = {
                 state = AlbumsState.Loading

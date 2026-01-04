@@ -7,7 +7,7 @@ internal sealed interface AlbumsState {
     data object Loading : AlbumsState
 
     data class List(
-        val artists: ImmutableList<VerticalCardVs>,
+        val albums: ImmutableList<VerticalCardVs>,
     ) : AlbumsState
 
     data class Error(
