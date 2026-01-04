@@ -1,4 +1,4 @@
-package kovp.pixelplayer.feature_albums.ui
+package kovp.pixelplayer.core_ui.components.vertical_card
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -17,15 +17,14 @@ import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.AppTypography
 import kovp.pixelplayer.core_ui.components.image.PixelImage
-import kovp.pixelplayer.feature_albums.presentation.AlbumVs
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import kotlin.math.pow
 
 @Composable
-internal fun ArtistCard(
-    vs: AlbumVs,
+fun VerticalCard(
+    viewState: VerticalCardVs,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -41,7 +40,7 @@ internal fun ArtistCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f),
-                url = vs.cover,
+                url = viewState.imageUrl,
             )
 
             Column(
@@ -52,7 +51,7 @@ internal fun ArtistCard(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = vs.title,
+                    text = viewState.title,
                     style = AppTypography.titleMedium,
                     minLines = 2,
                     maxLines = 2,
@@ -61,7 +60,7 @@ internal fun ArtistCard(
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = vs.year,
+                    text = viewState.description,
                     style = AppTypography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -73,24 +72,24 @@ internal fun ArtistCard(
 
 @Preview(widthDp = 200)
 @Composable
-private fun ArtistCardPreview(
-    @PreviewParameter(ArtistProvider::class) vs: AlbumVs,
+private fun VerticalCardPreview(
+    @PreviewParameter(ArtistProvider::class) vs: VerticalCardVs,
 ) {
     AppTheme {
-        ArtistCard(
-            vs = vs,
+        VerticalCard(
+            viewState = vs,
             onClick = {},
         )
     }
 }
 
-private class ArtistProvider : PreviewParameterProvider<AlbumVs> {
-    override val values: Sequence<AlbumVs> = List(4) {
-        AlbumVs(
+private class ArtistProvider : PreviewParameterProvider<VerticalCardVs> {
+    override val values: Sequence<VerticalCardVs> = List(4) {
+        VerticalCardVs(
             id = "",
             title = "Artist name ".repeat(it + 1).trim(),
-            cover = "",
-            year = "Albums: ${20.0.pow(it).toInt()}",
+            imageUrl = "",
+            description = "Albums: ${20.0.pow(it).toInt()}",
         )
     }
         .asSequence()

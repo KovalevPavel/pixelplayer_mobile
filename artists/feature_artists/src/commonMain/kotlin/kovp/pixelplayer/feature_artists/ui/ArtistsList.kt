@@ -12,7 +12,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.feature_artists.presentation.ArtistVs
+import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCard
+import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.feature_artists.presentation.ArtistsAction
 import kovp.pixelplayer.feature_artists.presentation.ArtistsState
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
@@ -30,9 +31,9 @@ internal fun ArtistsList(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        items(items = state.artists, key = ArtistVs::id) { item ->
-            ArtistCard(
-                vs = item,
+        items(items = state.artists, key = VerticalCardVs::id) { item ->
+            VerticalCard(
+                viewState = item,
                 onClick = {
                     handleAction(ArtistsAction.OnArtistClick(artistId = item.id))
                 },
@@ -55,10 +56,10 @@ private class ArtistsListProvider : PreviewParameterProvider<ArtistsState.List> 
     override val values: Sequence<ArtistsState.List> = List(2) { i ->
         ArtistsState.List(
             artists = List((i + 1) * 3) {
-                ArtistVs(
+                VerticalCardVs(
                     id = it.toString(),
-                    name = "Artist $it ".repeat(it + 1),
-                    avatar = "",
+                    title = "Artist $it ".repeat(it + 1),
+                    imageUrl = "",
                     description = "Albums: $it".repeat(10 * (it)),
                 )
             }

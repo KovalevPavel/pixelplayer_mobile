@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_artists.ArtistsRepository
 
@@ -32,7 +33,12 @@ internal class ArtistsViewModel(
                 state = ArtistsState.Loading
                 state = repository.getAllArtists()
                     .map {
-                        ArtistVs(id = it.id, name = it.name, avatar = it.avatar, description = "")
+                        VerticalCardVs(
+                            id = it.id,
+                            title = it.name,
+                            imageUrl = it.avatar,
+                            description = "",
+                        )
                     }
                     .toImmutableList()
                     .let(ArtistsState::List)

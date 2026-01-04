@@ -27,7 +27,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_main_flow.LocalMainScope
-import kovp.pixelplayer.feature_artists.presentation.ArtistVs
 import kovp.pixelplayer.feature_artists.presentation.ArtistsViewModel
 import kovp.pixelplayer.feature_artists.di.ArtistsScope
 import kovp.pixelplayer.feature_artists.di.artistsModule

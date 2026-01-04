@@ -12,7 +12,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.feature_albums.presentation.AlbumVs
+import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCard
+import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.feature_albums.presentation.AlbumsAction
 import kovp.pixelplayer.feature_albums.presentation.AlbumsState
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
@@ -30,9 +31,9 @@ internal fun AlbumsList(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        items(items = state.artists, key = AlbumVs::id) { item ->
-            ArtistCard(
-                vs = item,
+        items(items = state.artists, key = VerticalCardVs::id) { item ->
+            VerticalCard(
+                viewState = item,
                 onClick = {
                     handleAction(AlbumsAction.OnAlbumClick(albumId = item.id))
                 },
@@ -55,11 +56,11 @@ private class ArtistsListProvider : PreviewParameterProvider<AlbumsState.List> {
     override val values: Sequence<AlbumsState.List> = List(2) { i ->
         AlbumsState.List(
             artists = List((i + 1) * 3) {
-                AlbumVs(
+                VerticalCardVs(
                     id = it.toString(),
                     title = "Album $it ".repeat(it + 1),
-                    cover = "",
-                    year = "2007",
+                    imageUrl = "",
+                    description = "2007",
                 )
             }
                 .toImmutableList()
