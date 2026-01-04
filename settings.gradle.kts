@@ -67,5 +67,12 @@ withDirectory("credentials") {
 withDirectory("main_flow") {
     addModule("api_main_flow")
     addModule("domain_main_flow")
+    addModule("core_main_flow")
     addModule("feature_main_flow")
+}
+
+withDirectory("artists") {
+    addModule("api_artists")
+    addModule("domain_artists")
+    addModule("feature_artists")
 }

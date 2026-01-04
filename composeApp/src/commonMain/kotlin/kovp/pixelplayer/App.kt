@@ -44,7 +44,10 @@ fun App(
     ) {
         AppTheme {
             val viewModel = koinViewModel<MainViewModel>()
-            var checkResult: MainEvent.CheckResult? by rememberSaveable {
+            var checkResult: MainEvent.CheckResult? by rememberSaveable(
+                viewModel,
+                stateSaver = CheckResultStateSaver(),
+            ) {
                 mutableStateOf(null)
             }
 

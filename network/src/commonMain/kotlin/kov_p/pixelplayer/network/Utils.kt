@@ -1,42 +1,32 @@
 package kov_p.pixelplayer.network
 
-@OptIn(InternalCoreNetworkAPI::class)
-suspend inline fun <reified T : Any> ClientWrapper.get(
-    url: String,
-    path: String = "",
-    params: Map<String, String> = emptyMap(),
+import io.ktor.client.call.body
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+@PublishedApi
+internal suspend inline fun <reified T : Any> mapResponse(
+    response: HttpResponse,
 ): T {
-    return this.getInternal(
-        type = T::class,
-        url = url,
-        path = path,
-        params = params,
-    )
+    return when (response.status.value) {
+        in 200..299 -> {
+            response.body<T>()
+        }
+
+        else -> {
+            val jsonString = response.bodyAsText()
+            val error = Json.decodeFromString<ErrorWrapper>(jsonString)
+            error(error.message.orEmpty())
+        }
+    }
 }
 
-@OptIn(InternalCoreNetworkAPI::class)
-suspend inline fun <reified T : Any> ClientWrapper.post(
-    url: String,
-    path: String = "",
-    params: Map<String, String> = emptyMap(),
-): T {
-    return this.postInternal(
-        type = T::class,
-        url = url,
-        path = path,
-        params = params,
-    )
-}
-
-@OptIn(InternalCoreNetworkAPI::class)
-suspend inline fun <reified T : Any> ClientWrapper.get(
-    path: String = "",
-    params: Map<String, String> = emptyMap(),
-): T {
-    return this.getInternal(
-        type = T::class,
-        url = null,
-        path = path,
-        params = params,
-    )
-}
+@PublishedApi
+@Serializable
+internal class ErrorWrapper(
+    @SerialName("error")
+    val message: String?,
+)
