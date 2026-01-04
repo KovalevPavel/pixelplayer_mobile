@@ -10,6 +10,7 @@ kotlin {
             implementation(project(":feature_main_flow"))
             implementation(project(":network"))
             implementation(project(":api_artists"))
+            implementation(project(":api_albums"))
         }
     }
 }

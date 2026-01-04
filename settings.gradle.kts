@@ -76,3 +76,9 @@ withDirectory("artists") {
     addModule("domain_artists")
     addModule("feature_artists")
 }
+
+withDirectory("albums") {
+    addModule("api_albums")
+    addModule("domain_albums")
+    addModule("feature_albums")
+}

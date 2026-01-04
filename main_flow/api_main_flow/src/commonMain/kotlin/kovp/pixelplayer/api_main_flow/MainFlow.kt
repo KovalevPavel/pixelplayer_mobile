@@ -16,12 +16,12 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
+import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
 import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.feature_main_flow.MainFlowScreen
-import kovp.pixelplayer.feature_main_flow.ui.AlbumsComposable
 import kovp.pixelplayer.feature_main_flow.ui.TracksComposable
 import org.koin.compose.getKoin
 
@@ -77,7 +77,7 @@ fun NavGraphBuilder.registerMainFlow() {
                     }
 
                     MainFlowScreen.Albums -> {
-                        AlbumsComposable()
+                        AlbumsComposableWrapper()
                     }
 
                     MainFlowScreen.Tracks -> {
