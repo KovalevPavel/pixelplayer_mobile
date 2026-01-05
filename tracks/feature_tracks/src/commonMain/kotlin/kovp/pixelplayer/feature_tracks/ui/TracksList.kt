@@ -3,17 +3,16 @@ package kovp.pixelplayer.feature_tracks.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCard
-import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
+import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
+import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
@@ -24,15 +23,13 @@ internal fun TracksList(
     state: TracksState.List,
     handleAction: (TracksAction) -> Unit,
 ) {
-    LazyVerticalGrid(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        columns = GridCells.Fixed(2),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
     ) {
-        items(items = state.tracks, key = VerticalCardVs::id) { item ->
-            VerticalCard(
+        items(items = state.tracks, key = HorizontalCardVs::id) { item ->
+            HorizontalCard(
                 viewState = item,
                 onClick = {},
             )
@@ -53,8 +50,8 @@ private fun TracksListPreview(
 private class TracksListStateProvider : PreviewParameterProvider<TracksState.List> {
     override val values: Sequence<TracksState.List> = List(2) { i ->
         TracksState.List(
-            tracks = List((i + 1) * 3) {
-                VerticalCardVs(
+            tracks = List((i + 1) * 4) {
+                HorizontalCardVs(
                     id = it.toString(),
                     title = "Track $it ".repeat(it + 1),
                     imageUrl = "",
