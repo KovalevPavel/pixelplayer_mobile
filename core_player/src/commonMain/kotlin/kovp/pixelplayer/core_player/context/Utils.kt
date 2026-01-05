@@ -1,6 +1,5 @@
-package kovp.pixelplayer.di
+package kovp.pixelplayer.core_player.context
 
-import kovp.pixelplayer.AppContext
 import org.koin.core.KoinApplication
 
 expect fun KoinApplication.bindContext(ctx: AppContext)

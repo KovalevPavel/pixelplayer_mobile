@@ -22,6 +22,8 @@ import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
 import kovp.pixelplayer.api_tracks.TracksComposableWrapper
 import kovp.pixelplayer.core_main_flow.LocalMainScope
+import kovp.pixelplayer.core_player.context.AppContext
+import kovp.pixelplayer.core_player.di.playerModule
 import kovp.pixelplayer.feature_main_flow.MainFlowScreen
 import org.koin.compose.getKoin
 
@@ -31,7 +33,7 @@ data class MainFlow(
     val baseUrl: String,
 )
 
-fun NavGraphBuilder.registerMainFlow() {
+fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
     composable<MainFlow> { entry ->
         val route = entry.toRoute<MainFlow>()
         val koin = getKoin()
@@ -40,6 +42,7 @@ fun NavGraphBuilder.registerMainFlow() {
             koin.loadModules(
                 listOf(
                     mainFlowModule(token = route.token, baseUrl = route.baseUrl),
+                    playerModule(ctx = ctx, token = route.token, baseUrl = route.baseUrl),
                 ),
             )
             koin.getOrCreateScope<MainFlowScope>(MainFlowScope.toString())

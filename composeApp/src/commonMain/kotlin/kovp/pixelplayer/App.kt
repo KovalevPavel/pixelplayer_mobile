@@ -17,9 +17,10 @@ import kovp.pixelplayer.api_main_flow.MainFlow
 import kovp.pixelplayer.api_main_flow.registerMainFlow
 import kovp.pixelplayer.core_credentials.credentialsModule
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_player.context.AppContext
+import kovp.pixelplayer.core_player.context.bindContext
 import kovp.pixelplayer.core_storage.di.storageModule
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
-import kovp.pixelplayer.di.bindContext
 import kovp.pixelplayer.di.mainModule
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
@@ -59,13 +60,13 @@ fun App(
                 }
             }
 
-            HostComposable(result = checkResult)
+            HostComposable(result = checkResult, context = ctx)
         }
     }
 }
 
 @Composable
-private fun HostComposable(result: MainEvent.CheckResult?) {
+private fun HostComposable(result: MainEvent.CheckResult?, context: AppContext) {
     val startDestination = when (result) {
         null -> return
         MainEvent.CheckResult.EmptyEndpoint,
@@ -109,6 +110,6 @@ private fun HostComposable(result: MainEvent.CheckResult?) {
                     .let(hostNavController::navigate)
             },
         )
-        registerMainFlow()
+        registerMainFlow(ctx = context)
     }
 }

@@ -9,6 +9,7 @@ kotlin {
             implementation(project(":domain_albums"))
             implementation(project(":core_main_flow"))
             implementation(project(":network"))
+            implementation(project(":core_player"))
         }
     }
 }

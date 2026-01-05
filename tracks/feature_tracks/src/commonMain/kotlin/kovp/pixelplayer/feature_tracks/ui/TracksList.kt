@@ -6,23 +6,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_player.PlayerViewModel
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
+import org.koin.compose.getKoin
 
 @Composable
 internal fun TracksList(
     state: TracksState.List,
     handleAction: (TracksAction) -> Unit,
 ) {
+    val koin = getKoin()
+    val playerVm: PlayerViewModel = remember { koin.get() }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -31,7 +37,7 @@ internal fun TracksList(
         items(items = state.tracks, key = HorizontalCardVs::id) { item ->
             HorizontalCard(
                 viewState = item,
-                onClick = {},
+                onClick = { playerVm.play(item.id) },
             )
         }
     }

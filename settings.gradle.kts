@@ -47,6 +47,7 @@ include(":composeApp")
 include(":core_design")
 include(":core_ui")
 include(":network")
+include(":core_player")
 
 withDirectory("login") {
     addModule("api_login")

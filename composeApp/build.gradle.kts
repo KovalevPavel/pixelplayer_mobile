@@ -51,6 +51,7 @@ kotlin {
             implementation(project(":core_ui"))
             implementation(project(":api_login"))
             implementation(project(":api_main_flow"))
+            implementation(project(":core_player"))
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
