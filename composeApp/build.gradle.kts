@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.navigation)
 
+            implementation(project(":core"))
             implementation(project(":core_design"))
             implementation(project(":core_storage"))
             implementation(project(":api_credentials"))

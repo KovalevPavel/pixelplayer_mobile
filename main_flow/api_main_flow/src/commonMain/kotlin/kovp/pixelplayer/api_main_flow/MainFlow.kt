@@ -22,7 +22,7 @@ import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
 import kovp.pixelplayer.api_tracks.TracksComposableWrapper
 import kovp.pixelplayer.core_main_flow.LocalMainScope
-import kovp.pixelplayer.core_player.context.AppContext
+import kovp.pixelplayer.core.context.AppContext
 import kovp.pixelplayer.core_player.di.playerModule
 import kovp.pixelplayer.feature_main_flow.MainFlowScreen
 import org.koin.compose.getKoin

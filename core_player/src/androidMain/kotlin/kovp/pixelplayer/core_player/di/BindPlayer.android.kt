@@ -8,8 +8,8 @@ import kovp.pixelplayer.core_player.AndroidAudioController
 import kovp.pixelplayer.core_player.AndroidPlayer
 import kovp.pixelplayer.core_player.PlaybackService
 import kovp.pixelplayer.core_player.TokenProvider
-import kovp.pixelplayer.core_player.context.AndroidAppContext
-import kovp.pixelplayer.core_player.context.AppContext
+import kovp.pixelplayer.core.context.AndroidAppContext
+import kovp.pixelplayer.core.context.AppContext
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 

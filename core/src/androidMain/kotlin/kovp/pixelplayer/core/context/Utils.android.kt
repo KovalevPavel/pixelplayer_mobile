@@ -1,4 +1,4 @@
-package kovp.pixelplayer.core_player.context
+package kovp.pixelplayer.core.context
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication

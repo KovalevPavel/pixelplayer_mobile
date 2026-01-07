@@ -1,6 +1,6 @@
 package kovp.pixelplayer.core_player.di
 
-import kovp.pixelplayer.core_player.context.AppContext
+import kovp.pixelplayer.core.context.AppContext
 import org.koin.core.module.Module
 
 internal actual fun Module.bindPlayer(

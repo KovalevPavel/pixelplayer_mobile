@@ -11,6 +11,9 @@ import utils.libs
 @Suppress("unused")
 class LibraryPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        val hasLibrary = project.pluginManager.hasPlugin(
+            project.libs.plugins.pixelplayer.library.get().pluginId,
+        )
         project.pluginManager.apply {
             project.libs.plugins.androidLibrary.get().pluginId.let(::apply)
             project.libs.plugins.kotlinx.serialization.get().pluginId.let(::apply)
@@ -32,6 +35,10 @@ class LibraryPlugin : Plugin<Project> {
                         project.libs.koin.compose.viewmodel,
                     )
                         .forEach { implementation(it) }
+
+                    if (project.name != "core" && hasLibrary) {
+                        implementation(project(":core"))
+                    }
                 }
         }
     }

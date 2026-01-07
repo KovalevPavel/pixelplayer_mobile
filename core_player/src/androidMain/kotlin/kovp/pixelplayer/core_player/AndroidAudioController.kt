@@ -3,7 +3,7 @@ package kovp.pixelplayer.core_player
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import kovp.pixelplayer.core_player.context.AndroidAppContext
+import kovp.pixelplayer.core.context.AndroidAppContext
 
 internal class AndroidAudioController(
     private val context: AndroidAppContext,

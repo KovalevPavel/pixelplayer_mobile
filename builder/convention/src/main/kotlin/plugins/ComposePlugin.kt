@@ -13,6 +13,10 @@ import utils.libs
 class ComposePlugin : ComposePlugin() {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     override fun apply(project: Project) {
+        val hasCompose = project.pluginManager.hasPlugin(
+            project.libs.plugins.pixelplayer.compose.get().pluginId
+        )
+
         val composeDeps = Dependencies(project)
         project.pluginManager.apply {
             listOf(
@@ -40,7 +44,7 @@ class ComposePlugin : ComposePlugin() {
                     implementation(composeDeps.components.resources)
                     implementation(composeDeps.components.uiToolingPreview)
 
-                    if (project.name != "core_design") {
+                    if (project.name != "core_design" && hasCompose) {
                         implementation(project(":core_design"))
 
                         if (project.name != "core_ui") {
