@@ -1,7 +1,12 @@
 package kovp.pixelplayer.core_player
 
+import kotlinx.coroutines.flow.StateFlow
+
 interface Player {
-    fun play(uri: String)
+    val currentPlaying: StateFlow<String?>
+    val currentTimeLineFlow: StateFlow<AudioTimeline?>
+
+    fun play(id: String)
     fun pause()
     fun stop()
     fun next()
