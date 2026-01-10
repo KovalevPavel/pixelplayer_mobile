@@ -1,8 +1,6 @@
 package kovp.pixelplayer.api_main_flow
 
-import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,9 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -22,7 +18,6 @@ import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
@@ -83,18 +78,11 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
 
         PlayerScaffold(
             viewState = playerState,
-        ) { paddingValues, bottomSheetState ->
-            val scope = rememberCoroutineScope()
+        ) { pointerModifier ->
             HorizontalPager(
-                modifier = Modifier.padding(paddingValues).fillMaxSize()
-                    .pointerInput(Unit) {
-                        awaitEachGesture {
-                            awaitPointerEvent()
-                            scope.launch {
-                                bottomSheetState.partialExpand()
-                            }
-                        }
-                    },
+                modifier = Modifier
+                    .then(pointerModifier)
+                    .fillMaxSize(),
                 state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
                 key = { MainFlowScreen.entries[it] },
             ) {

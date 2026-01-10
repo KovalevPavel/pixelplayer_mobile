@@ -48,10 +48,12 @@ fun PlayerComposable(
             onSeek = {}
         )
 
-        Controls(
-            isPlaying = viewState.isPlaying,
-            onPlayerAction = onPlayerAction,
-        )
+        if (isExpanded) {
+            Controls(
+                isPlaying = viewState.isPlaying,
+                onPlayerAction = onPlayerAction,
+            )
+        }
     }
 }
 
