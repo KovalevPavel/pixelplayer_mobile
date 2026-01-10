@@ -21,11 +21,11 @@ import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_player.PlayerViewModel
-import kovp.pixelplayer.core_player.data.TrackMetaData
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.core_ui.components.player.PlayerVs
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
+import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
@@ -34,6 +34,7 @@ import org.koin.compose.getKoin
 @Composable
 internal fun TracksList(
     state: TracksState.List,
+    handleAction: (TracksAction) -> Unit,
 ) {
     val koin = getKoin()
     val playerVm: PlayerViewModel = remember { koin.get() }
@@ -42,20 +43,14 @@ internal fun TracksList(
     TrackListData(
         tracks = state.tracks,
         currentPlaying = playerVs.trackId,
+        isPlaying = (playerVs as? PlayerVs.Data)?.isPlaying == true,
         onClick = { id, payload ->
-            // TODO: tune this statement
-            when {
-                (playerVs as? PlayerVs.Data)?.trackId != id -> {
-                    playerVm.play(
-                        id = id,
-                        metaData = payload as? TrackMetaData,
-                    )
-                }
-
-                else -> {
-                    playerVm.pause()
-                }
-            }
+            handleAction(
+                TracksAction.OnTrackClick(
+                    trackId = id,
+                    metadata = payload as? PlayerVs.TrackMetaData,
+                ),
+            )
         },
     )
 }
@@ -64,6 +59,7 @@ internal fun TracksList(
 private fun TrackListData(
     tracks: ImmutableList<HorizontalCardVs>,
     currentPlaying: String?,
+    isPlaying: Boolean,
     onClick: (id: String, payload: Any?) -> Unit,
 ) {
     LazyColumn(
@@ -77,7 +73,7 @@ private fun TrackListData(
                 onClick = { onClick(item.id, item.payload) },
                 trailingIcon = {
                     if (item.id == currentPlaying) {
-                        PlayingIcon()
+                        PlayingIcon(isPlaying = isPlaying)
                     } else {
                         Icon(
                             modifier = Modifier.size(24.dp),
@@ -101,6 +97,7 @@ private fun TracksListPreview(
         TrackListData(
             tracks = state.tracks,
             currentPlaying = "1",
+            isPlaying = true,
             onClick = { _, _ -> },
         )
     }

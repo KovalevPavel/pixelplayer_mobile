@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.components.player.PlayerAction
 import kovp.pixelplayer.core_ui.components.player.PlayerComposable
 import kovp.pixelplayer.core_ui.components.player.PlayerVs
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
@@ -41,6 +42,7 @@ private const val PLAYER_COLLAPSE_DELAY_MS = 3000L
 fun PlayerScaffold(
     modifier: Modifier = Modifier,
     viewState: PlayerVs,
+    onAction: (PlayerAction) -> Unit,
     content: @Composable (Modifier) -> Unit,
 ) {
     var isExpanded: Boolean by remember { mutableStateOf(true) }
@@ -58,7 +60,9 @@ fun PlayerScaffold(
         }
     }
 
-    LaunchedEffect(isExpanded) {
+    var tapCoords by remember { mutableStateOf<Float?>(null) }
+
+    LaunchedEffect(isExpanded, tapCoords) {
         if (!isExpanded) {
             return@LaunchedEffect
         }
@@ -90,11 +94,24 @@ fun PlayerScaffold(
                         bottomStart = bottomRadius,
                     ),
                 )
-                .clickable { isExpanded = !isExpanded }
+                .then(
+                    if (isExpanded) {
+                        Modifier.pointerInput(Unit) {
+                            // record every gesture to prevent collapsing player view
+                            // while user interacts with it
+                            awaitEachGesture {
+                                val event = awaitPointerEvent()
+                                tapCoords = event.changes.lastOrNull()?.position?.x
+                            }
+                        }
+                    } else {
+                        Modifier.clickable { isExpanded = !isExpanded }
+                    }
+                )
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             viewState = viewState,
             isExpanded = isExpanded,
-            onPlayerAction = {},
+            onPlayerAction = onAction,
         )
     }
 }
@@ -105,7 +122,10 @@ private fun PlayerPreview(
     @PreviewParameter(PlayerVsProvider::class) viewState: PlayerVs,
 ) {
     AppTheme {
-        PlayerScaffold(viewState = viewState) {
+        PlayerScaffold(
+            viewState = viewState,
+            onAction = {},
+        ) {
             val list = List(20) { i -> "element $i" }
 
             LazyColumn(
@@ -126,22 +146,28 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = false,
-            trackTitle = "Track title",
-            album = "Album",
+            metaData = PlayerVs.TrackMetaData(
+                trackTitle = "Track title",
+                album = "Album",
+            ),
             timeLine = PlayerVs.AudioTimeline(
                 currentPositionMs = 4,
                 durationMs = 10,
             ),
+            hasNext = false,
         ),
         PlayerVs.Data(
             trackId = "",
             isPlaying = true,
-            trackTitle = "Track title ".repeat(10).trim(),
-            album = "Album ".repeat(10).trim(),
+            metaData = PlayerVs.TrackMetaData(
+                trackTitle = "Track title ".repeat(10).trim(),
+                album = "Album ".repeat(10).trim(),
+            ),
             timeLine = PlayerVs.AudioTimeline(
                 currentPositionMs = 4,
                 durationMs = 10,
             ),
+            hasNext = true,
         ),
     )
 }

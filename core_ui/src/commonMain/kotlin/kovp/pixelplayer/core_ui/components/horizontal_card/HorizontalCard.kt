@@ -139,7 +139,12 @@ private fun HorizontalCardPlayingPreview() {
         HorizontalCard(
             modifier = Modifier.fillMaxWidth(),
             viewState = vs,
-            trailingIcon = { PlayingIcon(modifier = Modifier.matchParentSize()) },
+            trailingIcon = {
+                PlayingIcon(
+                    modifier = Modifier.matchParentSize(),
+                    isPlaying = true,
+                )
+            },
             onClick = {},
         )
     }

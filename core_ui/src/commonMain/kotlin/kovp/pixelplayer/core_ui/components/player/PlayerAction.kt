@@ -1,8 +1,7 @@
 package kovp.pixelplayer.core_ui.components.player
 
 sealed interface PlayerAction {
-    data object Play : PlayerAction
-    data object Stop : PlayerAction
+    data object Resume : PlayerAction
     data object Pause : PlayerAction
     data object Next : PlayerAction
     data object Previous : PlayerAction

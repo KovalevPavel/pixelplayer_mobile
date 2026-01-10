@@ -2,7 +2,7 @@ package kovp.pixelplayer.core_player
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kovp.pixelplayer.core_player.data.TrackMetaData
+import kovp.pixelplayer.core_ui.components.player.PlayerAction
 import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 class PlayerViewModel internal constructor(
@@ -10,22 +10,28 @@ class PlayerViewModel internal constructor(
 ) : ViewModel() {
     val playerVs: StateFlow<PlayerVs> = player.playerVs
 
-    private var lastCached: String? = null
-    private var cachedPos: Long? = null
+    fun handlePlayerAction(action: PlayerAction) {
+        when (action) {
+            is PlayerAction.Resume -> {
+                player.resume()
+            }
 
-    fun play(
-        id: String,
-        metaData: TrackMetaData?,
-    ) {
-        if (lastCached == id && cachedPos != null) {
-            player.seekTo(cachedPos ?: 0)
+            is PlayerAction.Pause -> {
+                player.pause()
+            }
+
+            is PlayerAction.Next -> {
+                player.next()
+            }
+
+
+            is PlayerAction.Previous -> {
+                player.previous()
+            }
+
+            is PlayerAction.Seek -> {
+                player.seekTo(action.fraction)
+            }
         }
-        lastCached = null
-        cachedPos = null
-        player.play(id = id, metadata = metaData)
-    }
-
-    fun pause() {
-        player.pause()
     }
 }

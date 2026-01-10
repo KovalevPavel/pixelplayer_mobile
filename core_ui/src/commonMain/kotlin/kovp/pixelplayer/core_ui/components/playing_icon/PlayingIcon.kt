@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,15 +22,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
 @Composable
 fun PlayingIcon(
     modifier: Modifier = Modifier,
     count: Int = PlayingIconDefaults.BARS_COUNT,
     color: Color = PlayingIconDefaults.color,
+    isPlaying: Boolean,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.size(24.dp).padding(2.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -37,6 +41,7 @@ fun PlayingIcon(
             Bar(
                 delay = PlayingIconDefaults.getDelay(it),
                 color = color,
+                isPlaying = isPlaying,
             )
         }
     }
@@ -46,10 +51,16 @@ fun PlayingIcon(
 private fun RowScope.Bar(
     delay: Int,
     color: Color,
+    isPlaying: Boolean,
 ) {
     var flag by remember { mutableStateOf(false) }
     val value by animateFloatAsState(
-        targetValue = if (flag) 1f else 0f,
+        targetValue = run {
+            when {
+                isPlaying -> if (flag) 1f else 0f
+                else -> .1f
+            }
+        },
         animationSpec = tween(
             delayMillis = delay,
         ),
@@ -73,10 +84,17 @@ private fun RowScope.Bar(
 
 @Preview
 @Composable
-private fun PlayingIconPreview() {
+private fun PlayingIconPreview(
+    @PreviewParameter(IsPlayingProvider::class) isPlaying: Boolean,
+) {
     AppTheme {
-        PlayingIcon(
-            modifier = Modifier.size(24.dp)
-        )
+        PlayingIcon(isPlaying = isPlaying)
     }
+}
+
+private class IsPlayingProvider : PreviewParameterProvider<Boolean> {
+    override val values: Sequence<Boolean> = sequenceOf(
+        true,
+        false,
+    )
 }

@@ -89,6 +89,7 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
         PlayerScaffold(
             modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
             viewState = playerState,
+            onAction = playerVm::handlePlayerAction,
         ) { pointerModifier ->
             Column(
                 modifier = Modifier.fillMaxSize().then(pointerModifier),

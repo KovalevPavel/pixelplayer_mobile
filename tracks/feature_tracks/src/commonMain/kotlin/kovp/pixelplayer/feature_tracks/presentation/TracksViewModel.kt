@@ -5,13 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.collections.immutable.toImmutableList
-import kovp.pixelplayer.core_player.data.TrackMetaData
+import kovp.pixelplayer.core_player.Player
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
+import kovp.pixelplayer.core_ui.components.player.PlayerVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_tracks.TracksRepository
 
 internal class TracksViewModel(
     private val repository: TracksRepository,
+    private val player: Player,
 ) : ViewModel() {
     var state: TracksState by mutableStateOf(TracksState.Loading)
         private set
@@ -24,7 +26,13 @@ internal class TracksViewModel(
         when (action) {
             is TracksAction.OnErrorActionClick,
             is TracksAction.FetchTracks,
-            -> fetchTracks()
+            -> {
+                fetchTracks()
+            }
+
+            is TracksAction.OnTrackClick -> {
+                handleOnTrackClick(id = action.trackId, metaData = action.metadata)
+            }
         }
     }
 
@@ -39,7 +47,7 @@ internal class TracksViewModel(
                             title = it.title,
                             imageUrl = it.cover,
                             description = "",
-                            payload = TrackMetaData(
+                            payload = PlayerVs.TrackMetaData(
                                 trackTitle = it.title,
                                 album = it.album,
                                 artist = it.artist,
@@ -56,5 +64,29 @@ internal class TracksViewModel(
                 )
             },
         )
+    }
+
+    private fun handleOnTrackClick(
+        id: String,
+        metaData: PlayerVs.TrackMetaData?,
+    ) {
+        (player.playerVs.value as? PlayerVs.Data)?.let { st ->
+            when (st.trackId) {
+                id -> {
+                    if (st.isPlaying) {
+                        player.pause()
+                    } else {
+                        player.resume()
+                    }
+                }
+
+                else -> {
+                    player.play(id = id, metadata = metaData)
+                }
+            }
+        }
+            ?: run {
+                player.play(id = id, metadata = metaData)
+            }
     }
 }

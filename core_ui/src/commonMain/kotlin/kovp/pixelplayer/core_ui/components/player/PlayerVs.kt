@@ -11,11 +11,17 @@ sealed interface PlayerVs {
 
     data class Data(
         override val trackId: String,
-        val trackTitle: String,
-        val album: String,
+        val metaData: TrackMetaData,
         val isPlaying: Boolean,
         val timeLine: AudioTimeline,
+        val hasNext: Boolean,
     ) : PlayerVs
+
+    data class TrackMetaData(
+        val trackTitle: String? = null,
+        val album: String? = null,
+        val artist: String? = null,
+    )
 
     @Suppress("unused")
     data class AudioTimeline(

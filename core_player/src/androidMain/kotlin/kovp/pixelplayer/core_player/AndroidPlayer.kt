@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kovp.pixelplayer.core_player.data.TrackMetaData
 import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 internal class AndroidPlayer(
@@ -26,13 +25,17 @@ internal class AndroidPlayer(
             val playerState = controller.currentId?.let { track ->
                 PlayerVs.Data(
                     trackId = track,
-                    trackTitle = controller.currentTrack.orEmpty(),
-                    album = controller.currentAlbum.orEmpty(),
+                    metaData = PlayerVs.TrackMetaData(
+                        trackTitle = controller.currentTrack,
+                        album = controller.currentAlbum,
+                        artist = controller.currentArtist,
+                    ),
                     isPlaying = controller.isPlaying,
                     timeLine = PlayerVs.AudioTimeline(
                         currentPositionMs = controller.currentPosition,
                         durationMs = controller.duration,
-                    )
+                    ),
+                    hasNext = controller.hasNext,
                 )
             }
                 ?: PlayerVs.Empty
@@ -48,7 +51,7 @@ internal class AndroidPlayer(
 
     override fun play(
         id: String,
-        metadata: TrackMetaData?,
+        metadata: PlayerVs.TrackMetaData?,
     ) {
         controller.play(
             id = id,
@@ -56,12 +59,12 @@ internal class AndroidPlayer(
         )
     }
 
-    override fun pause() {
-        controller.pause()
+    override fun resume() {
+        controller.resume()
     }
 
-    override fun stop() {
-        controller.stop()
+    override fun pause() {
+        controller.pause()
     }
 
     override fun next() {
@@ -72,7 +75,7 @@ internal class AndroidPlayer(
         controller.prev()
     }
 
-    override fun seekTo(position: Long) {
-        controller.seekTo(position)
+    override fun seekTo(fraction: Float) {
+        controller.seekTo(fraction = fraction)
     }
 }

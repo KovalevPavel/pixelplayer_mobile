@@ -1,7 +1,6 @@
 package kovp.pixelplayer.core_player
 
 import kotlinx.coroutines.flow.StateFlow
-import kovp.pixelplayer.core_player.data.TrackMetaData
 import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 interface Player {
@@ -9,12 +8,12 @@ interface Player {
 
     fun play(
         id: String,
-        metadata: TrackMetaData?,
+        metadata: PlayerVs.TrackMetaData?,
     )
 
+    fun resume()
     fun pause()
-    fun stop()
     fun next()
     fun previous()
-    fun seekTo(position: Long)
+    fun seekTo(fraction: Float)
 }

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,16 +42,21 @@ fun PlayerComposable(
     ) {
         PlayerCollapsingContainer(
             modifier = Modifier.fillMaxWidth(),
-            title = viewState.trackTitle,
-            album = viewState.album,
+            title = viewState.metaData.trackTitle.orEmpty(),
+            album = viewState.metaData.album.orEmpty(),
             isExpanded = isExpanded,
             fraction = viewState.timeLine.fraction,
-            onSeek = {}
+            onSeek = {
+                onPlayerAction(
+                    PlayerAction.Seek(fraction = it),
+                )
+            },
         )
 
         if (isExpanded) {
             Controls(
                 isPlaying = viewState.isPlaying,
+                hasNext = viewState.hasNext,
                 onPlayerAction = onPlayerAction,
             )
         }
@@ -60,6 +66,7 @@ fun PlayerComposable(
 @Composable
 private fun ColumnScope.Controls(
     isPlaying: Boolean,
+    hasNext: Boolean,
     onPlayerAction: (PlayerAction) -> Unit,
 ) {
     Row(
@@ -68,19 +75,24 @@ private fun ColumnScope.Controls(
     ) {
         IconButton(
             onClick = { onPlayerAction(PlayerAction.Previous) },
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary,
+            ),
         ) {
             Icon(
                 imageVector = Icons.Default.SkipPrevious,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
             )
         }
 
         IconButton(
             onClick = {
-                val action = if (isPlaying) PlayerAction.Pause else PlayerAction.Play
+                val action = if (isPlaying) PlayerAction.Pause else PlayerAction.Resume
                 onPlayerAction(action)
             },
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary,
+            ),
         ) {
             val icon = if (isPlaying) {
                 Icons.Default.Pause
@@ -90,17 +102,19 @@ private fun ColumnScope.Controls(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
             )
         }
 
         IconButton(
+            enabled = hasNext,
             onClick = { onPlayerAction(PlayerAction.Next) },
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary,
+            ),
         ) {
             Icon(
                 imageVector = Icons.Default.SkipNext,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -125,23 +139,28 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = false,
-            trackTitle = "Track title",
-            album = "Album",
-            timeLine = PlayerVs.AudioTimeline(
-                currentPositionMs = 4,
-                durationMs = 10,
-            )
-
-        ),
-        PlayerVs.Data(
-            trackId = "",
-            isPlaying = true,
-            trackTitle = "Track title ".repeat(10).trim(),
-            album = "Album ".repeat(10).trim(),
+            metaData = PlayerVs.TrackMetaData(
+                trackTitle = "Track title",
+                album = "Album",
+            ),
             timeLine = PlayerVs.AudioTimeline(
                 currentPositionMs = 4,
                 durationMs = 10,
             ),
+            hasNext = false,
+        ),
+        PlayerVs.Data(
+            trackId = "",
+            isPlaying = true,
+            metaData = PlayerVs.TrackMetaData(
+                trackTitle = "Track title",
+                album = "Album",
+            ),
+            timeLine = PlayerVs.AudioTimeline(
+                currentPositionMs = 4,
+                durationMs = 10,
+            ),
+            hasNext = true,
         ),
     )
 }

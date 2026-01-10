@@ -7,7 +7,8 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kovp.pixelplayer.core.context.AndroidAppContext
-import kovp.pixelplayer.core_player.data.TrackMetaData
+import kovp.pixelplayer.core_ui.components.player.PlayerVs
+import kotlin.math.roundToLong
 
 internal class AndroidAudioController(
     private val context: AndroidAppContext,
@@ -21,7 +22,9 @@ internal class AndroidAudioController(
     val currentId: String? get() = controller.currentMediaItem?.mediaId
     val currentTrack: String? get() = controller.currentMediaItem?.mediaMetadata?.title?.toString()
     val currentAlbum: String? get() = controller.currentMediaItem?.mediaMetadata?.albumTitle?.toString()
+    val currentArtist: String? get() = controller.currentMediaItem?.mediaMetadata?.artist?.toString()
     val isPlaying: Boolean get() = controller.isPlaying
+    val hasNext: Boolean get() = controller.hasNextMediaItem()
 
     private val listeners = mutableListOf<Player.Listener>()
 
@@ -48,7 +51,7 @@ internal class AndroidAudioController(
 
     fun play(
         id: String,
-        metadata: TrackMetaData?,
+        metadata: PlayerVs.TrackMetaData?,
     ) {
         id.let(::mapUrl)
             .let { mappedUri ->
@@ -70,12 +73,12 @@ internal class AndroidAudioController(
         controller.play()
     }
 
-    fun pause() {
-        controller.pause()
+    fun resume() {
+        controller.play()
     }
 
-    fun stop() {
-        controller.stop()
+    fun pause() {
+        controller.pause()
     }
 
     fun next() {
@@ -86,8 +89,9 @@ internal class AndroidAudioController(
         controller.seekToPrevious()
     }
 
-    fun seekTo(position: Long) {
-        controller.seekTo(position)
+    fun seekTo(fraction: Float) {
+        val newPosition = (controller.duration * fraction).roundToLong()
+        controller.seekTo(newPosition)
     }
 
     private fun mapUrl(uri: String): String {
