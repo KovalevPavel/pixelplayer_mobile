@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -60,51 +58,44 @@ private fun ArtistsScaffold(
     state: ArtistsState,
     handleAction: (ArtistsAction) -> Unit,
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(title = { Text(text = "Artists") })
-        },
-    ) { paddingValues ->
-        AnimatedContent(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
-            targetState = state,
-        ) { st ->
-            when (st) {
-                is ArtistsState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
+    AnimatedContent(
+        modifier = modifier.fillMaxSize(),
+        targetState = state,
+    ) { st ->
+        when (st) {
+            is ArtistsState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Text(
+                            text = st.message,
+                            textAlign = TextAlign.Center,
+                        )
+                        OutlinedButton(
+                            onClick = { handleAction(ArtistsAction.OnErrorActionClick) },
                         ) {
-                            Text(
-                                text = st.message,
-                                textAlign = TextAlign.Center,
-                            )
-                            OutlinedButton(
-                                onClick = { handleAction(ArtistsAction.OnErrorActionClick) },
-                            ) {
-                                Text(text = st.action)
-                            }
+                            Text(text = st.action)
                         }
                     }
                 }
+            }
 
-                is ArtistsState.List -> {
-                    ArtistsList(state = st, handleAction = handleAction)
-                }
+            is ArtistsState.List -> {
+                ArtistsList(state = st, handleAction = handleAction)
+            }
 
-                is ArtistsState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
+            is ArtistsState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }

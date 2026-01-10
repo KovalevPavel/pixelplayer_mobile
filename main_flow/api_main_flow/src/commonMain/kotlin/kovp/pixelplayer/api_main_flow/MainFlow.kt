@@ -1,13 +1,23 @@
 package kovp.pixelplayer.api_main_flow
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -77,27 +87,50 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
         }
 
         PlayerScaffold(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
             viewState = playerState,
         ) { pointerModifier ->
-            HorizontalPager(
-                modifier = Modifier
-                    .then(pointerModifier)
-                    .fillMaxSize(),
-                state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
-                key = { MainFlowScreen.entries[it] },
+            Column(
+                modifier = Modifier.fillMaxSize().then(pointerModifier),
             ) {
-                CompositionLocalProvider(LocalMainScope provides mainScope) {
-                    when (MainFlowScreen.entries[it]) {
-                        MainFlowScreen.Artists -> {
-                            ArtistsComposableWrapper()
-                        }
+                var selectedTab: Int by remember { mutableIntStateOf(0) }
+                PrimaryTabRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    selectedTabIndex = selectedTab,
+                ) {
+                    MainFlowScreen.entries.forEachIndexed { i, t ->
+                        Tab(
+                            selected = i == selectedTab,
+                            onClick = {
+                                selectedTab = MainFlowScreen.entries.indexOf(t)
+                            },
+                            text = {
+                                Text(text = t.name)
+                            }
+                        )
+                    }
+                }
+                HorizontalPager(
+                    modifier = Modifier
+                        .then(pointerModifier)
+                        .fillMaxSize(),
+                    state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
+                    userScrollEnabled = false,
+                    key = { MainFlowScreen.entries[selectedTab] },
+                ) {
+                    CompositionLocalProvider(LocalMainScope provides mainScope) {
+                        when (MainFlowScreen.entries[selectedTab]) {
+                            MainFlowScreen.Artists -> {
+                                ArtistsComposableWrapper()
+                            }
 
-                        MainFlowScreen.Albums -> {
-                            AlbumsComposableWrapper()
-                        }
+                            MainFlowScreen.Albums -> {
+                                AlbumsComposableWrapper()
+                            }
 
-                        MainFlowScreen.Tracks -> {
-                            TracksComposableWrapper()
+                            MainFlowScreen.Tracks -> {
+                                TracksComposableWrapper()
+                            }
                         }
                     }
                 }

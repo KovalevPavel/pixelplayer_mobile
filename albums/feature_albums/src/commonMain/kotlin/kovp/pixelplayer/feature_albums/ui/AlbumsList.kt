@@ -29,7 +29,7 @@ internal fun AlbumsList(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 32.dp),
     ) {
         items(items = state.albums, key = VerticalCardVs::id) { item ->
             VerticalCard(

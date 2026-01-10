@@ -25,23 +25,22 @@ internal class AndroidAudioController(
 
     private val listeners = mutableListOf<Player.Listener>()
 
-    private val controllerFuture =
-        MediaController.Builder(context.context, sessionToken)
-            .setListener(
-                object : MediaController.Listener {
-                    override fun onDisconnected(controller: MediaController) {
-                        listeners.forEach(controller::removeListener)
-                        super.onDisconnected(controller)
-                    }
+    private val controllerFuture = MediaController.Builder(context.context, sessionToken)
+        .setListener(
+            object : MediaController.Listener {
+                override fun onDisconnected(controller: MediaController) {
+                    listeners.forEach(controller::removeListener)
+                    super.onDisconnected(controller)
                 }
-            )
-            .buildAsync()
-            .also { future ->
-                future.addListener(
-                    { isInitialized = true },
-                    ContextCompat.getMainExecutor(context.context),
-                )
             }
+        )
+        .buildAsync()
+        .also { future ->
+            future.addListener(
+                { isInitialized = true },
+                ContextCompat.getMainExecutor(context.context),
+            )
+        }
 
     private val controller: MediaController by lazy {
         controllerFuture.get()

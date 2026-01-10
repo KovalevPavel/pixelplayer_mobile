@@ -39,6 +39,7 @@ private const val PLAYER_COLLAPSE_DELAY_MS = 3000L
 
 @Composable
 fun PlayerScaffold(
+    modifier: Modifier = Modifier,
     viewState: PlayerVs,
     content: @Composable (Modifier) -> Unit,
 ) {
@@ -66,7 +67,7 @@ fun PlayerScaffold(
         isExpanded = false
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         content(pointerModifier)
 
         if (viewState !is PlayerVs.Data) {
@@ -75,7 +76,6 @@ fun PlayerScaffold(
 
         PlayerComposable(
             modifier = Modifier
-                .clickable { isExpanded = !isExpanded }
                 .align(Alignment.BottomCenter)
                 .alpha(alpha)
                 .fillMaxWidth()
@@ -90,6 +90,7 @@ fun PlayerScaffold(
                         bottomStart = bottomRadius,
                     ),
                 )
+                .clickable { isExpanded = !isExpanded }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             viewState = viewState,
             isExpanded = isExpanded,

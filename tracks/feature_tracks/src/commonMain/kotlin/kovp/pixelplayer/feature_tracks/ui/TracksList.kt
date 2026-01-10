@@ -69,7 +69,7 @@ private fun TrackListData(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 32.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 32.dp),
     ) {
         items(items = tracks, key = HorizontalCardVs::id) { item ->
             HorizontalCard(
