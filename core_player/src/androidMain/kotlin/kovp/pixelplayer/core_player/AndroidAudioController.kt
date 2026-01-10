@@ -7,7 +7,6 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kovp.pixelplayer.core.context.AndroidAppContext
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
 import kotlin.math.roundToLong
 
 internal class AndroidAudioController(
@@ -49,9 +48,38 @@ internal class AndroidAudioController(
         controllerFuture.get()
     }
 
+    fun loadTracks(tracks: List<TrackIn>, clear: Boolean = true) {
+        if (clear) {
+            controller.clearMediaItems()
+        }
+
+        tracks.map { t ->
+            val url = mapUrl(t.trackId)
+
+            MediaItem.Builder()
+                .setMediaId(t.trackId)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(t.metadata?.trackTitle)
+                        .setAlbumTitle(t.metadata?.album)
+                        .setArtist(t.metadata?.artist)
+                        .build()
+                )
+                .setUri(url)
+                .build()
+        }
+            .let(controller::setMediaItems)
+        controller.prepare()
+    }
+
+    fun play(index: Int) {
+        controller.seekTo(index, 0)
+        controller.play()
+    }
+
     fun play(
         id: String,
-        metadata: PlayerVs.TrackMetaData?,
+        metadata: TrackIn.TrackMetaData?,
     ) {
         id.let(::mapUrl)
             .let { mappedUri ->

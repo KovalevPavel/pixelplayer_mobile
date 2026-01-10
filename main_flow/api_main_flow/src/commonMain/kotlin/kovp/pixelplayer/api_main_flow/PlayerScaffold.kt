@@ -30,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_ui.components.player.PlayerAction
+import kovp.pixelplayer.core_player.PlayerAction
 import kovp.pixelplayer.core_ui.components.player.PlayerComposable
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
+import kovp.pixelplayer.core_player.PlayerVs
+import kovp.pixelplayer.core_player.TrackIn
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
@@ -146,7 +147,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = false,
-            metaData = PlayerVs.TrackMetaData(
+            metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),
@@ -159,7 +160,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = true,
-            metaData = PlayerVs.TrackMetaData(
+            metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title ".repeat(10).trim(),
                 album = "Album ".repeat(10).trim(),
             ),

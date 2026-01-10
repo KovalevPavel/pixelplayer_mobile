@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_player.Player
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
+import kovp.pixelplayer.core_player.PlayerVs
+import kovp.pixelplayer.core_player.TrackIn
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_tracks.TracksRepository
 
@@ -47,7 +48,7 @@ internal class TracksViewModel(
                             title = it.title,
                             imageUrl = it.cover,
                             description = "",
-                            payload = PlayerVs.TrackMetaData(
+                            payload = TrackIn.TrackMetaData(
                                 trackTitle = it.title,
                                 album = it.album,
                                 artist = it.artist,
@@ -68,7 +69,7 @@ internal class TracksViewModel(
 
     private fun handleOnTrackClick(
         id: String,
-        metaData: PlayerVs.TrackMetaData?,
+        metaData: TrackIn.TrackMetaData?,
     ) {
         (player.playerVs.value as? PlayerVs.Data)?.let { st ->
             when (st.trackId) {

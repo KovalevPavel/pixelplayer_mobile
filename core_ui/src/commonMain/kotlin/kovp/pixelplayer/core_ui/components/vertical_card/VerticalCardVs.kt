@@ -5,4 +5,5 @@ data class VerticalCardVs(
     val imageUrl: String,
     val title: String,
     val description: String,
+    val tagline: String? = null,
 )

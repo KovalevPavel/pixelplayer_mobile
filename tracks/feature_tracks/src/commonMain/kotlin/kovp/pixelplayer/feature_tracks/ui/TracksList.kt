@@ -23,7 +23,8 @@ import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_player.PlayerViewModel
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
+import kovp.pixelplayer.core_player.PlayerVs
+import kovp.pixelplayer.core_player.TrackIn
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
 import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
@@ -48,7 +49,7 @@ internal fun TracksList(
             handleAction(
                 TracksAction.OnTrackClick(
                     trackId = id,
-                    metadata = payload as? PlayerVs.TrackMetaData,
+                    metadata = payload as? TrackIn.TrackMetaData,
                 ),
             )
         },

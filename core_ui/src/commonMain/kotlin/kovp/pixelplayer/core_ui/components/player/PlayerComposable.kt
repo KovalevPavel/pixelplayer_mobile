@@ -25,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
+import kovp.pixelplayer.core_player.PlayerAction
+import kovp.pixelplayer.core_player.PlayerVs
+import kovp.pixelplayer.core_player.TrackIn
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
@@ -139,7 +142,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = false,
-            metaData = PlayerVs.TrackMetaData(
+            metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),
@@ -152,7 +155,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
         PlayerVs.Data(
             trackId = "",
             isPlaying = true,
-            metaData = PlayerVs.TrackMetaData(
+            metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),

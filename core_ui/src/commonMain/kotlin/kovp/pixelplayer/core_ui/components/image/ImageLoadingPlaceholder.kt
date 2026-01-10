@@ -49,7 +49,7 @@ fun ImageLoadingPlaceholder(
 
     Box(
         modifier = modifier
-            .onSizeChanged { intSize -> endOffset = intSize.height.toFloat() }
+            .onSizeChanged { intSize -> endOffset = intSize.width.toFloat() }
             .background(brush = tt),
     )
 

@@ -26,6 +26,7 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
@@ -68,6 +69,8 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
 
         setSingletonImageLoaderFactory { context ->
             ImageLoader.Builder(context)
+                .networkCachePolicy(CachePolicy.ENABLED)
+                .diskCachePolicy(CachePolicy.ENABLED)
                 .crossfade(true)
                 .components {
                     add { chain ->

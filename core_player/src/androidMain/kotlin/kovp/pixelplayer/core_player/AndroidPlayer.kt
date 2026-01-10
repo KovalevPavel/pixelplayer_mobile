@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 internal class AndroidPlayer(
     private val controller: AndroidAudioController,
@@ -25,7 +24,7 @@ internal class AndroidPlayer(
             val playerState = controller.currentId?.let { track ->
                 PlayerVs.Data(
                     trackId = track,
-                    metaData = PlayerVs.TrackMetaData(
+                    metaData = TrackIn.TrackMetaData(
                         trackTitle = controller.currentTrack,
                         album = controller.currentAlbum,
                         artist = controller.currentArtist,
@@ -49,14 +48,26 @@ internal class AndroidPlayer(
             initialValue = PlayerVs.Empty,
         )
 
+    override fun loadTracks(vararg track: TrackIn, clear: Boolean) {
+        controller.loadTracks(track.toList(), clear)
+    }
+
+    override fun loadTracks(tracks: List<TrackIn>, clear: Boolean) {
+        controller.loadTracks(tracks, clear)
+    }
+
     override fun play(
         id: String,
-        metadata: PlayerVs.TrackMetaData?,
+        metadata: TrackIn.TrackMetaData?,
     ) {
         controller.play(
             id = id,
             metadata = metadata,
         )
+    }
+
+    override fun play(index: Int) {
+        controller.play(index)
     }
 
     override fun resume() {

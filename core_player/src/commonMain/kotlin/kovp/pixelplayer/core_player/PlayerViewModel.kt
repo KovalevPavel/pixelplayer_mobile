@@ -2,8 +2,6 @@ package kovp.pixelplayer.core_player
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kovp.pixelplayer.core_ui.components.player.PlayerAction
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 class PlayerViewModel internal constructor(
     private val player: Player,

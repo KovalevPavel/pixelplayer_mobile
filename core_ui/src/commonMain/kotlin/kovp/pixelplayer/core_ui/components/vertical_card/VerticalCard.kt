@@ -12,11 +12,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.AppTypography
 import kovp.pixelplayer.core_ui.components.image.PixelImage
+import kovp.pixelplayer.core_ui.withAnimation
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
@@ -34,34 +36,46 @@ fun VerticalCard(
         onClick = onClick,
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PixelImage(
                 modifier = Modifier
+                    .withAnimation(key = viewState.imageUrl)
                     .fillMaxWidth()
-                    .aspectRatio(1f),
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
                 url = viewState.imageUrl,
             )
 
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .withAnimation("${viewState.id}_${viewState.title}"),
                     text = viewState.title,
                     style = AppTypography.titleMedium,
-                    minLines = 2,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
 
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .withAnimation("${viewState.id}_${viewState.description}"),
                     text = viewState.description,
                     style = AppTypography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Text(
+                    modifier = Modifier.fillMaxWidth()
+                        .withAnimation("${viewState.id}_${viewState.tagline}"),
+                    text = viewState.tagline.orEmpty(),
+                    style = AppTypography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -90,6 +104,7 @@ private class ArtistProvider : PreviewParameterProvider<VerticalCardVs> {
             title = "Artist name ".repeat(it + 1).trim(),
             imageUrl = "",
             description = "Albums: ${20.0.pow(it).toInt()}",
+            tagline = if (it % 2 == 0) "2007" else "",
         )
     }
         .asSequence()

@@ -43,6 +43,7 @@ class ComposePlugin : ComposePlugin() {
                     implementation(composeDeps.ui)
                     implementation(composeDeps.components.resources)
                     implementation(composeDeps.components.uiToolingPreview)
+                    implementation(project.libs.jetbrains.compose.backhandler)
 
                     if (project.name != "core_design" && hasCompose) {
                         implementation(project(":core_design"))

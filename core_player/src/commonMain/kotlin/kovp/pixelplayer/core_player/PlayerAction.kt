@@ -1,4 +1,4 @@
-package kovp.pixelplayer.core_ui.components.player
+package kovp.pixelplayer.core_player
 
 sealed interface PlayerAction {
     data object Resume : PlayerAction

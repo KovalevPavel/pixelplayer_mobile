@@ -1,15 +1,20 @@
 package kovp.pixelplayer.core_player
 
 import kotlinx.coroutines.flow.StateFlow
-import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 interface Player {
     val playerVs: StateFlow<PlayerVs>
 
+    fun loadTracks(vararg track: TrackIn, clear: Boolean = true)
+
+    fun loadTracks(tracks: List<TrackIn>, clear: Boolean = true)
+
     fun play(
         id: String,
-        metadata: PlayerVs.TrackMetaData?,
+        metadata: TrackIn.TrackMetaData?,
     )
+
+    fun play(index: Int)
 
     fun resume()
     fun pause()

@@ -1,4 +1,4 @@
-package kovp.pixelplayer.core_ui.components.player
+package kovp.pixelplayer.core_player
 
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -11,17 +11,11 @@ sealed interface PlayerVs {
 
     data class Data(
         override val trackId: String,
-        val metaData: TrackMetaData,
+        val metaData: TrackIn.TrackMetaData,
         val isPlaying: Boolean,
         val timeLine: AudioTimeline,
         val hasNext: Boolean,
     ) : PlayerVs
-
-    data class TrackMetaData(
-        val trackTitle: String? = null,
-        val album: String? = null,
-        val artist: String? = null,
-    )
 
     @Suppress("unused")
     data class AudioTimeline(
