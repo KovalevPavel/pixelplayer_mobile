@@ -9,5 +9,9 @@ kotlin {
             implementation(libs.media3.datasource)
             implementation(libs.media3.session)
         }
+
+        commonMain.dependencies {
+            implementation(project(":core_ui"))
+        }
     }
 }

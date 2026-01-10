@@ -30,7 +30,7 @@ import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 @Composable
 fun PlayerComposable(
     modifier: Modifier = Modifier,
-    viewState: PlayerVs,
+    viewState: PlayerVs.Data,
     isExpanded: Boolean,
     onPlayerAction: (PlayerAction) -> Unit,
 ) {
@@ -44,7 +44,7 @@ fun PlayerComposable(
             title = viewState.trackTitle,
             album = viewState.album,
             isExpanded = isExpanded,
-            fraction = viewState.fraction,
+            fraction = viewState.timeLine.fraction,
             onSeek = {}
         )
 
@@ -107,7 +107,7 @@ private fun ColumnScope.Controls(
 @AppPreview
 @Composable
 private fun PlayerComposablePreview(
-    @PreviewParameter(PlayerVsProvider::class) viewState: PlayerVs,
+    @PreviewParameter(PlayerVsProvider::class) viewState: PlayerVs.Data,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     PlayerComposable(
@@ -118,23 +118,28 @@ private fun PlayerComposablePreview(
     )
 }
 
-private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
-    override val values: Sequence<PlayerVs> = sequenceOf(
-        PlayerVs(
+private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
+    override val values: Sequence<PlayerVs.Data> = sequenceOf(
+        PlayerVs.Data(
+            trackId = "",
             isPlaying = false,
             trackTitle = "Track title",
             album = "Album",
-            totalTime = "42:42",
-            currentTime = "00:42",
-            fraction = .2f,
+            timeLine = PlayerVs.AudioTimeline(
+                currentPositionMs = 4,
+                durationMs = 10,
+            )
+
         ),
-        PlayerVs(
+        PlayerVs.Data(
+            trackId = "",
             isPlaying = true,
             trackTitle = "Track title ".repeat(10).trim(),
             album = "Album ".repeat(10).trim(),
-            totalTime = "42:42",
-            currentTime = "00:42",
-            fraction = .7f,
+            timeLine = PlayerVs.AudioTimeline(
+                currentPositionMs = 4,
+                durationMs = 10,
+            ),
         ),
     )
 }

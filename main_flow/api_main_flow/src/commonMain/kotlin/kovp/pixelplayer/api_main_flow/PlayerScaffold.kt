@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -40,6 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 @Composable
 fun PlayerScaffold(
     viewState: PlayerVs,
+    content: @Composable (PaddingValues, SheetState) -> Unit,
 ) {
     val bottomSheetState = rememberStandardBottomSheetState(
         skipHiddenState = true,
@@ -52,12 +54,14 @@ fun PlayerScaffold(
         targetValue = if (bottomSheetState.targetValue == SheetValue.Expanded) 1f else .4f
     )
 
-    val scope = rememberCoroutineScope()
-
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
         sheetContent = {
+            if (viewState !is PlayerVs.Data) {
+                return@BottomSheetScaffold
+            }
+
             Box(
                 modifier = Modifier
                     .alpha(alpha)
@@ -83,24 +87,7 @@ fun PlayerScaffold(
         sheetShape = RectangleShape,
         sheetPeekHeight = 78.dp,
     ) {
-        val list = List(20) { "element $it" }
-
-        LazyColumn(
-            modifier = Modifier
-                .pointerInput(Unit) {
-                    awaitEachGesture {
-                        awaitPointerEvent()
-                        scope.launch {
-                            bottomSheetState.partialExpand()
-                        }
-                    }
-                }
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(64.dp),
-            contentPadding = PaddingValues(bottom = 92.dp)
-        ) {
-            items(list) { e -> Text(text = e) }
-        }
+        content(it, bottomSheetState)
     }
 }
 
@@ -110,28 +97,54 @@ fun PlayerScaffold(
 private fun PlayerPreview(
     @PreviewParameter(PlayerVsProvider::class) viewState: PlayerVs,
 ) {
+    val scope = rememberCoroutineScope()
     AppTheme {
-        PlayerScaffold(viewState = viewState)
+        PlayerScaffold(viewState = viewState) { paddingValues, bottomSheetState ->
+            val list = List(20) { "element $it" }
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .pointerInput(Unit) {
+                        awaitEachGesture {
+                            awaitPointerEvent()
+                            scope.launch {
+                                bottomSheetState.partialExpand()
+                            }
+                        }
+                    }
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(64.dp),
+                contentPadding = PaddingValues(bottom = 92.dp)
+            ) {
+                items(list) { e -> Text(text = e) }
+            }
+
+        }
     }
 }
 
 private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
     override val values: Sequence<PlayerVs> = sequenceOf(
-        PlayerVs(
+        PlayerVs.Data(
+            trackId = "",
             isPlaying = false,
             trackTitle = "Track title",
             album = "Album",
-            totalTime = "42:42",
-            currentTime = "00:42",
-            fraction = .2f,
+            timeLine = PlayerVs.AudioTimeline(
+                currentPositionMs = 4,
+                durationMs = 10,
+            ),
         ),
-        PlayerVs(
+        PlayerVs.Data(
+            trackId = "",
             isPlaying = true,
             trackTitle = "Track title ".repeat(10).trim(),
             album = "Album ".repeat(10).trim(),
-            totalTime = "42:42",
-            currentTime = "00:42",
-            fraction = .7f,
+            timeLine = PlayerVs.AudioTimeline(
+                currentPositionMs = 4,
+                durationMs = 10,
+            ),
         ),
     )
 }

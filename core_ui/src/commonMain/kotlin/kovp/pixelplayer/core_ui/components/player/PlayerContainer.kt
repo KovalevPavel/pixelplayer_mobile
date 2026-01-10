@@ -110,7 +110,6 @@ private fun ExpandedState(
                         sharedContentState = rememberSharedContentState(key = SLIDER_ID),
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
-
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .height(8.dp)
@@ -196,7 +195,7 @@ private fun Slider(
     onSeek: (Float) -> Unit,
 ) {
     var maxWidth by remember { mutableIntStateOf(0) }
-    var currentFraction by remember { mutableStateOf(fraction) }
+    var currentFraction by remember(fraction) { mutableStateOf(fraction) }
 
     Box(
         modifier = modifier
@@ -236,7 +235,7 @@ private fun Slider(
                 .background(
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape,
-                )
+                ),
         )
     }
 }

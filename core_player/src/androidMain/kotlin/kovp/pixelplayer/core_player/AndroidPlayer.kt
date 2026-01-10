@@ -2,65 +2,61 @@ package kovp.pixelplayer.core_player
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kovp.pixelplayer.core_player.data.TrackMetaData
+import kovp.pixelplayer.core_ui.components.player.PlayerVs
 
 internal class AndroidPlayer(
     private val controller: AndroidAudioController,
 ) : Player {
-    override val currentPlaying: StateFlow<String?> by lazy { _currentPlaying }
-    override val currentTimeLineFlow: StateFlow<AudioTimeline?> by lazy { _currentTimeLineFlow }
 
-    private val _currentPlaying = MutableStateFlow<String?>(null)
-    private val _currentTimeLineFlow = MutableStateFlow<AudioTimeline?>(null)
+    private val flowScope = CoroutineScope(Dispatchers.Main)
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    override val playerVs = flow {
+        while (true) {
+            delay(500)
 
-    private val listener by lazy {
-        object : androidx.media3.common.Player.Listener {
-            private var timelineJob: Job? = null
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                super.onIsPlayingChanged(isPlaying)
-                timelineJob?.cancel()
-                if (isPlaying) {
-                    timelineJob = CoroutineScope(Dispatchers.Main).launch {
-                        while (true) {
-                            _currentTimeLineFlow.emit(
-                                AudioTimeline(
-                                    currentPositionMs = controller.currentPosition,
-                                    durationMs = controller.duration,
-                                )
-                            )
-                            delay(500)
-                        }
-                    }
-                }
+            if (!controller.isInitialized) {
+                continue
             }
+
+            val playerState = controller.currentId?.let { track ->
+                PlayerVs.Data(
+                    trackId = track,
+                    trackTitle = controller.currentTrack.orEmpty(),
+                    album = controller.currentAlbum.orEmpty(),
+                    isPlaying = controller.isPlaying,
+                    timeLine = PlayerVs.AudioTimeline(
+                        currentPositionMs = controller.currentPosition,
+                        durationMs = controller.duration,
+                    )
+                )
+            }
+                ?: PlayerVs.Empty
+
+            emit(playerState)
         }
     }
+        .stateIn(
+            scope = flowScope,
+            started = SharingStarted.Eagerly,
+            initialValue = PlayerVs.Empty,
+        )
 
-    init {
-        controller.isInitialized
-            .onEach { isInitialized ->
-                if (isInitialized) {
-                    controller.addListener(listener)
-                }
-            }
-            .launchIn(scope)
-    }
-
-    override fun play(id: String) {
-        _currentPlaying.value = id
-        controller.play(uri = id)
+    override fun play(
+        id: String,
+        metadata: TrackMetaData?,
+    ) {
+        controller.play(
+            id = id,
+            metadata = metadata,
+        )
     }
 
     override fun pause() {
-        _currentPlaying.value = null
         controller.pause()
     }
 

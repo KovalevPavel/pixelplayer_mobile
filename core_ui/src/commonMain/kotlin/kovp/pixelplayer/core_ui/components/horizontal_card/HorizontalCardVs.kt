@@ -5,4 +5,5 @@ data class HorizontalCardVs(
     val imageUrl: String,
     val title: String,
     val description: String,
+    val payload: Any? = null,
 )

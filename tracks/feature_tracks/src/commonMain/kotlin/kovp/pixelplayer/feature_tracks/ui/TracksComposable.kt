@@ -95,7 +95,7 @@ private fun TracksScaffold(
                 }
 
                 is TracksState.List -> {
-                    TracksList(state = st, handleAction = handleAction)
+                    TracksList(state = st)
                 }
 
                 is TracksState.Loading -> {

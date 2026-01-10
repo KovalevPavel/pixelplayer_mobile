@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kovp.pixelplayer.core_player.data.TrackMetaData
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_tracks.TracksRepository
@@ -38,6 +39,11 @@ internal class TracksViewModel(
                             title = it.title,
                             imageUrl = it.cover,
                             description = "",
+                            payload = TrackMetaData(
+                                trackTitle = it.title,
+                                album = it.album,
+                                artist = it.artist,
+                            ),
                         )
                     }
                     .toImmutableList()
