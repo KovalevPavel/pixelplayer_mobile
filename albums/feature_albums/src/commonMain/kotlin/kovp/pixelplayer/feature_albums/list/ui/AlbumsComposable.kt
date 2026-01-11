@@ -1,4 +1,4 @@
-package kovp.pixelplayer.feature_albums.ui
+package kovp.pixelplayer.feature_albums.list.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +19,13 @@ import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_main_flow.LocalMainScope
+import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.feature_albums.di.AlbumsScope
 import kovp.pixelplayer.feature_albums.di.albumsModule
-import kovp.pixelplayer.feature_albums.presentation.AlbumsAction
-import kovp.pixelplayer.feature_albums.presentation.AlbumsState
-import kovp.pixelplayer.feature_albums.presentation.AlbumsViewModel
+import kovp.pixelplayer.feature_albums.list.AlbumsAction
+import kovp.pixelplayer.feature_albums.list.AlbumsEvent
+import kovp.pixelplayer.feature_albums.list.AlbumsState
+import kovp.pixelplayer.feature_albums.list.AlbumsViewModel
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import org.koin.compose.getKoin
@@ -31,6 +33,7 @@ import org.koin.compose.getKoin
 @Composable
 fun AlbumsScaffoldWrapper(
     modifier: Modifier = Modifier,
+    navigateToDetail: (String) -> Unit,
 ) {
     val koin = getKoin()
     val mainScope = LocalMainScope.current
@@ -43,7 +46,13 @@ fun AlbumsScaffoldWrapper(
 
     val viewModel: AlbumsViewModel = remember { scope.get() }
 
-    ArtistsScaffold(
+    viewModel.eventsFlow.CollectWithLifecycle { event ->
+        when (event) {
+            is AlbumsEvent.NavigateToAlbum -> navigateToDetail(event.albumId)
+        }
+    }
+
+    AlbumsScaffold(
         modifier = modifier,
         state = viewModel.state,
         handleAction = viewModel::handleAction,
@@ -51,7 +60,7 @@ fun AlbumsScaffoldWrapper(
 }
 
 @Composable
-private fun ArtistsScaffold(
+private fun AlbumsScaffold(
     modifier: Modifier = Modifier,
     state: AlbumsState,
     handleAction: (AlbumsAction) -> Unit,
@@ -102,11 +111,11 @@ private fun ArtistsScaffold(
 
 @AppPreview
 @Composable
-private fun ArtistsScaffoldPreview(
+private fun AlbumsScaffoldPreview(
     @PreviewParameter(ArtistStateProvider::class) viewState: AlbumsState,
 ) {
     AppTheme {
-        ArtistsScaffold(
+        AlbumsScaffold(
             state = viewState,
             handleAction = {},
         )

@@ -15,21 +15,17 @@ import kovp.pixelplayer.api_login.LoginFlow
 import kovp.pixelplayer.api_login.registerLoginFlow
 import kovp.pixelplayer.api_main_flow.MainFlow
 import kovp.pixelplayer.api_main_flow.registerMainFlow
-import kovp.pixelplayer.core_credentials.credentialsModule
-import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core.context.AppContext
 import kovp.pixelplayer.core.context.bindContext
+import kovp.pixelplayer.core_credentials.credentialsModule
+import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_storage.di.storageModule
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.di.mainModule
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
-@Preview
 fun App(
     ctx: AppContext,
 ) {

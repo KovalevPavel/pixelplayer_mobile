@@ -43,8 +43,9 @@ class AlbumDetailViewModel(
                 val album = repository.getAlbum(albumId = albumId)
                 viewState = AlbumDetailState.Data(
                     title = album.title,
-                    artist = "artist",
+                    artist = album.artist,
                     year = album.year,
+                    cover = album.cover,
                     tracks = album.tracks.map {
                         HorizontalCardVs(
                             id = it.id,

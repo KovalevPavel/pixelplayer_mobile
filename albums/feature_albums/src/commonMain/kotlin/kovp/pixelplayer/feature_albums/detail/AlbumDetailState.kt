@@ -8,6 +8,7 @@ sealed interface AlbumDetailState {
     data class Data(
         val title: String,
         val artist: String,
+        val cover: String,
         val year: String,
         val tracks: ImmutableList<HorizontalCardVs>,
     ) : AlbumDetailState

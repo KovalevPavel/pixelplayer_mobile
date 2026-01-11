@@ -51,7 +51,7 @@ fun VerticalCard(
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = 8.dp)
                     .padding(bottom = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth()

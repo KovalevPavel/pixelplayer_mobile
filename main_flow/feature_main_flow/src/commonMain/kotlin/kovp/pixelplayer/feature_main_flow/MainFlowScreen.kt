@@ -5,8 +5,16 @@ import kotlinx.serialization.Serializable
 enum class MainFlowScreen {
     @Serializable
     Artists,
+
     @Serializable
     Albums,
+
     @Serializable
     Tracks,
+    ;
+
+    companion object {
+        @Serializable
+        object Host
+    }
 }

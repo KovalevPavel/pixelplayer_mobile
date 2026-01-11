@@ -1,26 +1,21 @@
 package kovp.pixelplayer.api_main_flow
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -30,15 +25,15 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
-import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
-import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
+import kovp.pixelplayer.api_albums.AlbumDetails
+import kovp.pixelplayer.api_albums.AlbumDetailsComposableWrapper
 import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
-import kovp.pixelplayer.api_tracks.TracksComposableWrapper
 import kovp.pixelplayer.core.context.AppContext
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.core_player.PlayerViewModel
 import kovp.pixelplayer.core_player.di.playerModule
+import kovp.pixelplayer.feature_main_flow.MainFlowComposable
 import kovp.pixelplayer.feature_main_flow.MainFlowScreen
 import org.koin.compose.getKoin
 
@@ -94,48 +89,29 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
             viewState = playerState,
             onAction = playerVm::handlePlayerAction,
         ) { pointerModifier ->
-            Column(
-                modifier = Modifier.fillMaxSize().then(pointerModifier),
-            ) {
-                var selectedTab: Int by remember { mutableIntStateOf(0) }
-                PrimaryTabRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    selectedTabIndex = selectedTab,
+            CompositionLocalProvider(LocalMainScope provides mainScope) {
+                val mainFlowController = rememberNavController()
+
+                NavHost(
+                    modifier = Modifier.fillMaxSize().then(pointerModifier),
+                    navController = mainFlowController,
+                    startDestination = MainFlowScreen.Companion.Host,
+                    enterTransition = { slideInHorizontally { it } },
+                    exitTransition = { slideOutHorizontally { -it } },
+                    popEnterTransition = { slideInHorizontally { -it } },
+                    popExitTransition = { slideOutHorizontally { it } },
                 ) {
-                    MainFlowScreen.entries.forEachIndexed { i, t ->
-                        Tab(
-                            selected = i == selectedTab,
-                            onClick = {
-                                selectedTab = MainFlowScreen.entries.indexOf(t)
-                            },
-                            text = {
-                                Text(text = t.name)
-                            }
-                        )
+                    composable<MainFlowScreen.Companion.Host> {
+                        MainFlowComposable(navController = mainFlowController)
                     }
-                }
-                HorizontalPager(
-                    modifier = Modifier
-                        .then(pointerModifier)
-                        .fillMaxSize(),
-                    state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
-                    userScrollEnabled = false,
-                    key = { MainFlowScreen.entries[selectedTab] },
-                ) {
-                    CompositionLocalProvider(LocalMainScope provides mainScope) {
-                        when (MainFlowScreen.entries[selectedTab]) {
-                            MainFlowScreen.Artists -> {
-                                ArtistsComposableWrapper()
-                            }
 
-                            MainFlowScreen.Albums -> {
-                                AlbumsComposableWrapper()
-                            }
+                    composable<AlbumDetails> { entry ->
+                        val albumId = entry.toRoute<AlbumDetails>().id
 
-                            MainFlowScreen.Tracks -> {
-                                TracksComposableWrapper()
-                            }
-                        }
+                        AlbumDetailsComposableWrapper(
+                            albumId = albumId,
+                            navController = mainFlowController,
+                        )
                     }
                 }
             }

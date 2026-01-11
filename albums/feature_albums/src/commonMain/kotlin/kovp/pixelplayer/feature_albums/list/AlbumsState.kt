@@ -1,4 +1,4 @@
-package kovp.pixelplayer.feature_albums.presentation
+package kovp.pixelplayer.feature_albums.list
 
 import kotlinx.collections.immutable.ImmutableList
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
