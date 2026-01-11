@@ -41,18 +41,21 @@ fun HorizontalCard(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier.height(IntrinsicSize.Max),
+        modifier = modifier,
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
         onClick = onClick,
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(8.dp)
+                .padding(end = 8.dp)
+                .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PixelImage(
-                modifier = Modifier.size(80.dp).clip(RoundedCornerShape(2.dp)),
+                modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
                 url = viewState.imageUrl,
             )
 
@@ -62,7 +65,7 @@ fun HorizontalCard(
             ) {
                 Text(
                     text = viewState.title,
-                    style = AppTypography.titleMedium,
+                    style = AppTypography.titleSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )

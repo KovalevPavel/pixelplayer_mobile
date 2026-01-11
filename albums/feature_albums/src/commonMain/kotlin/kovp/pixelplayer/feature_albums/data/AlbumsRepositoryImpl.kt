@@ -17,6 +17,7 @@ class AlbumsRepositoryImpl(
                     id = dto.id ?: return@mapNotNull null,
                     title = dto.title.orEmpty(),
                     cover = dto.cover.orEmpty(),
+                    artist = dto.artist.orEmpty(),
                     year = dto.year.orEmpty(),
                 )
             }
@@ -32,6 +33,7 @@ class AlbumsRepositoryImpl(
             id = dto.id.orEmpty(),
             title = dto.title.orEmpty(),
             cover = dto.cover.orEmpty(),
+            artist = dto.artist.orEmpty(),
             year = dto.year.orEmpty(),
             tracks = dto.tracks?.mapNotNull {
                 AlbumVo.TrackVo(
@@ -53,6 +55,8 @@ private class AlbumDto(
     val title: String? = null,
     @SerialName("cover")
     val cover: String? = null,
+    @SerialName("artist")
+    val artist: String? = null,
     @SerialName("year")
     val year: String? = null,
     @SerialName("tracks")

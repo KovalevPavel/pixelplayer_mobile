@@ -47,7 +47,7 @@ internal class TracksViewModel(
                             id = it.id,
                             title = it.title,
                             imageUrl = it.cover,
-                            description = "",
+                            description = "${it.artist} • ${it.album}",
                             payload = TrackIn.TrackMetaData(
                                 trackTitle = it.title,
                                 album = it.album,

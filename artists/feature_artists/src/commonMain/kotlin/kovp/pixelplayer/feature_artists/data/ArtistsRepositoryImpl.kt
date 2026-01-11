@@ -9,7 +9,7 @@ import kovp.pixelplayer.domain_artists.ArtistsRepository
 
 class ArtistsRepositoryImpl(
     private val client: HttpClient,
-): ArtistsRepository {
+) : ArtistsRepository {
     override suspend fun getAllArtists(): List<ArtistVo> {
         return client.get<List<ArtistDto>>(path = "artists/all")
             .mapNotNull { dto ->
@@ -17,6 +17,8 @@ class ArtistsRepositoryImpl(
                     id = dto.id ?: return@mapNotNull null,
                     name = dto.name.orEmpty(),
                     avatar = dto.avatar.orEmpty(),
+                    albums = dto.albums?.mapNotNull { it.id ?: return@mapNotNull null }?.size
+                        ?: 0,
                 )
             }
     }
@@ -30,4 +32,12 @@ private class ArtistDto(
     val name: String? = null,
     @SerialName("avatar_url")
     val avatar: String? = null,
+    @SerialName("albums")
+    val albums: List<AlbumDto>? = null,
+)
+
+@Serializable
+private class AlbumDto(
+    @SerialName("id")
+    val id: String? = null,
 )

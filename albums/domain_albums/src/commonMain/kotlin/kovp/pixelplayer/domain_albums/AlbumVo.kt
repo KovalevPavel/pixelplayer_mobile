@@ -4,6 +4,7 @@ data class AlbumVo(
     val id: String,
     val title: String,
     val cover: String,
+    val artist: String,
     val year: String,
     val tracks: List<TrackVo> = emptyList(),
 ) {

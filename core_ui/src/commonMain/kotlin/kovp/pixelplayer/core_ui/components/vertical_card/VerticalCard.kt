@@ -71,14 +71,16 @@ fun VerticalCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Text(
-                    modifier = Modifier.fillMaxWidth()
-                        .withAnimation("${viewState.id}_${viewState.tagline}"),
-                    text = viewState.tagline.orEmpty(),
-                    style = AppTypography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                viewState.tagline?.let { tag ->
+                    Text(
+                        modifier = Modifier.fillMaxWidth()
+                            .withAnimation("${viewState.id}_${viewState.tagline}"),
+                        text = tag,
+                        style = AppTypography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }
@@ -98,13 +100,13 @@ private fun VerticalCardPreview(
 }
 
 private class ArtistProvider : PreviewParameterProvider<VerticalCardVs> {
-    override val values: Sequence<VerticalCardVs> = List(4) {
+    override val values: Sequence<VerticalCardVs> = List(4) { index ->
         VerticalCardVs(
             id = "",
-            title = "Artist name ".repeat(it + 1).trim(),
+            title = "Artist name ".repeat(index + 1).trim(),
             imageUrl = "",
-            description = "Albums: ${20.0.pow(it).toInt()}",
-            tagline = if (it % 2 == 0) "2007" else "",
+            description = "Albums: ${20.0.pow(index).toInt()}",
+            tagline = if (index % 2 == 0) "2007" else "".takeIf { index % 3 == 0 },
         )
     }
         .asSequence()

@@ -94,7 +94,7 @@ internal fun AlbumsList(
                                         title = item.title,
                                         artist = item.description,
                                         cover = item.imageUrl,
-                                        year = "2007",
+                                        year = item.tagline.orEmpty(),
                                     )
                                 },
                             )

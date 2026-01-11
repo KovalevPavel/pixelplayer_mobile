@@ -37,7 +37,7 @@ internal class ArtistsViewModel(
                             id = it.id,
                             title = it.name,
                             imageUrl = it.avatar,
-                            description = "",
+                            description = "Albums: ${it.albums}",
                         )
                     }
                     .toImmutableList()

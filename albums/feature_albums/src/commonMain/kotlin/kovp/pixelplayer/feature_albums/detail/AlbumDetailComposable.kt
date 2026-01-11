@@ -92,6 +92,12 @@ fun AlbumDetailComposable(
                         text = dto.artist,
                         style = AppTypography.bodyMedium,
                     )
+
+                    Text(
+                        modifier = Modifier.withAnimation(key = "${dto.albumId}_${dto.year}"),
+                        text = dto.year,
+                        style = AppTypography.bodySmall,
+                    )
                 }
             }
         }

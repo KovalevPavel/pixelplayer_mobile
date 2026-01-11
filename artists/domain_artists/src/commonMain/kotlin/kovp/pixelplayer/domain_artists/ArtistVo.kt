@@ -4,4 +4,5 @@ data class ArtistVo(
     val id: String,
     val name: String,
     val avatar: String,
+    val albums: Int,
 )

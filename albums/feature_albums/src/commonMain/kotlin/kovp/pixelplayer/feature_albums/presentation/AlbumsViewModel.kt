@@ -39,7 +39,8 @@ internal class AlbumsViewModel(
                             id = it.id,
                             title = it.title,
                             imageUrl = it.cover,
-                            description = it.year,
+                            description = it.artist,
+                            tagline = it.year,
                         )
                     }
                     .toImmutableList()
