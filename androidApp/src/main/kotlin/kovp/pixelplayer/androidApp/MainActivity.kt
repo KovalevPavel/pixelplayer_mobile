@@ -1,9 +1,10 @@
-package kovp.pixelplayer
+package kovp.pixelplayer.androidApp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import kovp.pixelplayer.App
 import kovp.pixelplayer.core.context.AndroidAppContext
 
 class MainActivity: ComponentActivity() {

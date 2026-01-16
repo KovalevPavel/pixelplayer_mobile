@@ -1,4 +1,4 @@
-package kovp.pixelplayer
+package kovp.pixelplayer.androidApp
 
 import android.app.Application
 

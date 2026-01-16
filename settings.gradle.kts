@@ -47,6 +47,7 @@ fun withDirectory(dir: String, action: DepScope.() -> Unit) {
     DepScope(dir).apply(action)
 }
 
+include(":androidApp")
 include(":composeApp")
 include(":core")
 include(":core_design")
