@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 fun Project.configureKotlin(withAndroid: Boolean) {
     pluginManager.apply {
-        libs.plugins.kotlinMultiplatform.get().pluginId.let(::apply)
+        libs.plugins.kotlin.multiplatform.get().pluginId.let(::apply)
     }
 
     extensions.configure<KotlinMultiplatformExtension> {

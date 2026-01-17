@@ -15,7 +15,7 @@ class LibraryPlugin : Plugin<Project> {
             project.libs.plugins.pixelplayer.library.get().pluginId,
         )
         project.pluginManager.apply {
-            project.libs.plugins.androidLibrary.get().pluginId.let(::apply)
+            project.libs.plugins.android.library.get().pluginId.let(::apply)
             project.libs.plugins.kotlinx.serialization.get().pluginId.let(::apply)
         }
 

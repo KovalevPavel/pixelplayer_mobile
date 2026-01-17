@@ -12,7 +12,7 @@ import utils.libs
 class KotlinPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.pluginManager.apply {
-            project.libs.plugins.kotlinMultiplatform.get().pluginId.let(::apply)
+            project.libs.plugins.kotlin.multiplatform.get().pluginId.let(::apply)
         }
 
         project.extensions.configure<KotlinMultiplatformExtension> {

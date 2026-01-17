@@ -20,8 +20,8 @@ class ComposePlugin : ComposePlugin() {
         val composeDeps = Dependencies(project)
         project.pluginManager.apply {
             listOf(
-                project.libs.plugins.composeMultiplatform,
-                project.libs.plugins.composeCompiler,
+                project.libs.plugins.compose.multiplatform,
+                project.libs.plugins.compose.compiler,
             )
                 .map { it.get().pluginId }
                 .forEach(::apply)
