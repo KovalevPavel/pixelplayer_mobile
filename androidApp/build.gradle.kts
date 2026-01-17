@@ -1,42 +1,42 @@
+import org.gradle.kotlin.dsl.android
+import org.gradle.kotlin.dsl.kotlin
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
-    jvmToolchain(libs.versions.java.sdk.get().toInt())
-}
+    android {
+        namespace = "kovp.pixelplayer"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-android {
-    namespace = "kovp.pixelplayer"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "kovp.pixelplayer"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        defaultConfig {
+            applicationId = "kovp.pixelplayer"
+            minSdk = libs.versions.android.minSdk.get().toInt()
+            targetSdk = libs.versions.android.targetSdk.get().toInt()
+            versionCode = 1
+            versionName = "1.0"
         }
-    }
-    buildTypes {
-        getByName("debug") {
-            applicationIdSuffix = ".debug"
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
+        }
+        buildTypes {
+            getByName("debug") {
+                applicationIdSuffix = ".debug"
+            }
+
+            getByName("release") {
+                isMinifyEnabled = true
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
 
-        getByName("release") {
-            isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("debug")
+        buildFeatures {
+            buildConfig = true
         }
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 }
 

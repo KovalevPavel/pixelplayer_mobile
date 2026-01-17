@@ -15,6 +15,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -28,8 +30,6 @@ import kovp.pixelplayer.core_player.TrackIn
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
 import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import org.koin.compose.getKoin
 
 @Composable

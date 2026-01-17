@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.android.libraryPlugin)
+    compileOnly(libs.kotlin.multiplatform.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.multiplatform.gradlePlugin)
 

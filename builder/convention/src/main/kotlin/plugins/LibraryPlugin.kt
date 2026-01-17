@@ -1,6 +1,6 @@
 package plugins
 
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -15,15 +15,18 @@ class LibraryPlugin : Plugin<Project> {
             project.libs.plugins.pixelplayer.library.get().pluginId,
         )
         project.pluginManager.apply {
-            project.libs.plugins.android.library.get().pluginId.let(::apply)
+            project.libs.plugins.kotlin.multiplatform.library.get().pluginId.let(::apply)
             project.libs.plugins.kotlinx.serialization.get().pluginId.let(::apply)
         }
 
-        project.configureKotlin(withAndroid = true)
+        project.configureKotlin(kotlinOnly = false)
 
-        project.extensions.configure<LibraryExtension> {
-            namespace = "kovp.pixelplayer.${project.name}"
-            compileSdk = project.libs.versions.android.compileSdk.get().toInt()
+        project.extensions.configure<KotlinMultiplatformAndroidComponentsExtension> {
+            finalizeDsl { androidDsl ->
+                androidDsl.namespace = "kovp.pixelplayer.${project.name}"
+                androidDsl.compileSdk = project.libs.versions.android.compileSdk.get().toInt()
+                androidDsl.minSdk = project.libs.versions.android.minSdk.get().toInt()
+            }
         }
 
         project.extensions.configure<KotlinMultiplatformExtension> {

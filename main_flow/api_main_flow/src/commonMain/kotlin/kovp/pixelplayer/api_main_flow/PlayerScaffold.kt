@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
@@ -34,8 +36,6 @@ import kovp.pixelplayer.core_player.PlayerAction
 import kovp.pixelplayer.core_ui.components.player.PlayerComposable
 import kovp.pixelplayer.core_player.PlayerVs
 import kovp.pixelplayer.core_player.TrackIn
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
 private const val PLAYER_COLLAPSE_DELAY_MS = 3000L
 

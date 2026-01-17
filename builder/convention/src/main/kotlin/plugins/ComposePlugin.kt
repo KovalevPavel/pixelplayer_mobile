@@ -6,7 +6,6 @@ import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import utils.addTargets
 import utils.libs
 
 @Suppress("unused")
@@ -28,21 +27,15 @@ class ComposePlugin : ComposePlugin() {
         }
 
         project.extensions.configure<KotlinMultiplatformExtension> {
-            addTargets(withAndroid = true)
-            sourceSets.getByName("androidMain")
-                .dependencies {
-                    implementation(composeDeps.preview)
-                }
-
             sourceSets.getByName("commonMain")
                 .dependencies {
-                    implementation(composeDeps.runtime)
-                    implementation(composeDeps.foundation)
-                    implementation(composeDeps.material3)
-                    implementation(composeDeps.materialIconsExtended)
-                    implementation(composeDeps.ui)
-                    implementation(composeDeps.components.resources)
-                    implementation(composeDeps.components.uiToolingPreview)
+                    implementation(project.libs.jetbrains.compose.runtime)
+                    implementation(project.libs.jetbrains.compose.foundation.foundation)
+                    implementation(project.libs.jetbrains.compose.material.material)
+                    implementation(project.libs.jetbrains.compose.material.icons)
+                    implementation(project.libs.jetbrains.compose.ui.core)
+                    implementation(project.libs.jetbrains.compose.components.resources)
+                    implementation(project.libs.jetbrains.compose.ui.toolingPreview)
                     implementation(project.libs.navigation)
                     implementation(project.libs.jetbrains.compose.backhandler)
 
@@ -65,7 +58,7 @@ class ComposePlugin : ComposePlugin() {
         }
 
         project.dependencies {
-            add("debugImplementation", composeDeps.uiTooling)
+            add("androidRuntimeClasspath", project.libs.jetbrains.compose.ui.tooling)
         }
     }
 }

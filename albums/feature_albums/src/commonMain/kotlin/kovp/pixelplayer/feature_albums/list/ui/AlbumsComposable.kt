@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
@@ -26,8 +28,6 @@ import kovp.pixelplayer.feature_albums.list.AlbumsAction
 import kovp.pixelplayer.feature_albums.list.AlbumsEvent
 import kovp.pixelplayer.feature_albums.list.AlbumsState
 import kovp.pixelplayer.feature_albums.list.AlbumsViewModel
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import org.koin.compose.getKoin
 
 @Composable
