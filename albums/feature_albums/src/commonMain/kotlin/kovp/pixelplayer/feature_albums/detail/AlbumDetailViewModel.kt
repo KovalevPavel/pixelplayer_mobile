@@ -51,11 +51,10 @@ class AlbumDetailViewModel(
                             id = it.id,
                             title = it.title,
                             description = it.position.toString(),
-                            imageUrl = "",
                             payload = TrackIn.TrackMetaData(
                                 trackTitle = it.title,
                                 album = album.title,
-                            )
+                            ),
                         )
                     }
                         .toImmutableList(),

@@ -41,7 +41,7 @@ fun HorizontalCard(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.height(80.dp),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
         onClick = onClick,
@@ -54,10 +54,13 @@ fun HorizontalCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PixelImage(
-                modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
-                url = viewState.imageUrl,
-            )
+            viewState.imageUrl?.let {
+                PixelImage(
+                    modifier = Modifier.size(60.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    url = viewState.imageUrl,
+                )
+            }
 
             Column(
                 modifier = Modifier.fillMaxHeight().weight(1f),
@@ -154,12 +157,12 @@ private fun HorizontalCardPlayingPreview() {
 }
 
 private class HorizontalVsProvider : PreviewParameterProvider<HorizontalCardVs> {
-    override val values: Sequence<HorizontalCardVs> = List(5) {
+    override val values: Sequence<HorizontalCardVs> = List(5) { i ->
         HorizontalCardVs(
-            id = it.toString(),
-            imageUrl = "",
-            title = "Horiz card title $it ".repeat(it + 1).trim(),
-            description = "Card_$it • Description ".repeat(it + 1).trim(),
+            id = i.toString(),
+            imageUrl = "".takeIf { i % 2 == 0 },
+            title = "Horiz card title $i ".repeat(i + 1).trim(),
+            description = "Card_$i • Description ".repeat(i + 1).trim(),
         )
     }
         .asSequence()
