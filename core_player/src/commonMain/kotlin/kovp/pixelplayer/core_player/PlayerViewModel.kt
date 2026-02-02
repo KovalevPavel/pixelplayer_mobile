@@ -22,7 +22,6 @@ class PlayerViewModel internal constructor(
                 player.next()
             }
 
-
             is PlayerAction.Previous -> {
                 player.previous()
             }

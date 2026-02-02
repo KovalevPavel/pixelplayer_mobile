@@ -47,7 +47,6 @@ fun MainFlowComposable(
             modifier = Modifier.fillMaxSize(),
             state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
             userScrollEnabled = false,
-            key = { MainFlowScreen.entries[selectedTab] },
         ) {
             when (MainFlowScreen.entries[selectedTab]) {
                 MainFlowScreen.Artists -> {

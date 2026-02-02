@@ -15,7 +15,6 @@ interface Player {
     )
 
     fun play(index: Int)
-
     fun resume()
     fun pause()
     fun next()

@@ -3,6 +3,7 @@ package kovp.pixelplayer.core_ui.components.player
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,9 +48,8 @@ internal fun PlayerCollapsingContainer(
     fraction: Float,
     onSeek: (Float) -> Unit,
 ) {
-    SharedTransitionScope { m ->
+    SharedTransitionLayout(modifier = modifier) {
         AnimatedContent(
-            modifier = m.then(modifier),
             targetState = isExpanded,
             label = "player_anim",
         ) { isE ->
@@ -59,7 +59,7 @@ internal fun PlayerCollapsingContainer(
                     trackTitle = title,
                     album = album,
                     fraction = fraction,
-                    sharedTransitionScope = this@SharedTransitionScope,
+                    sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@AnimatedContent,
                     onSeek = onSeek,
                 )
@@ -69,7 +69,7 @@ internal fun PlayerCollapsingContainer(
                     trackTitle = title,
                     album = album,
                     fraction = fraction,
-                    sharedTransitionScope = this@SharedTransitionScope,
+                    sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@AnimatedContent,
                     onSeek = onSeek,
                 )
@@ -89,16 +89,17 @@ private fun ExpandedState(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onSeek: (Float) -> Unit,
 ) {
-    with(sharedTransitionScope) {
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        with(sharedTransitionScope) {
             TrackData(
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(key = TRACK_DATA_ID),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                )
+                modifier = Modifier
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(key = TRACK_DATA_ID),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
                     .fillMaxWidth(),
                 trackTitle = trackTitle,
                 album = album,
@@ -106,14 +107,13 @@ private fun ExpandedState(
 
             Slider(
                 modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .height(8.dp)
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = SLIDER_ID),
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .height(8.dp)
-                ,
+                    .fillMaxWidth(),
                 fraction = fraction,
                 onSeek = onSeek,
             )
@@ -132,12 +132,12 @@ private fun CollapsedState(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onSeek: (Float) -> Unit,
 ) {
-    with(sharedTransitionScope) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        with(sharedTransitionScope) {
             TrackData(
                 modifier = Modifier
                     .sharedElement(
@@ -150,7 +150,8 @@ private fun CollapsedState(
             )
 
             Slider(
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier
+                    .height(8.dp)
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = SLIDER_ID),
                         animatedVisibilityScope = animatedVisibilityScope,
