@@ -44,7 +44,7 @@ internal fun TracksList(
     TrackListData(
         tracks = state.tracks,
         currentPlaying = playerVs.trackId,
-        isPlaying = (playerVs as? PlayerVs.Data)?.isPlaying == true,
+        isPlaying = (playerVs as? PlayerVs.Data)?.timeLine?.isPlaying == true,
         onClick = { id, payload ->
             handleAction(
                 TracksAction.OnTrackClick(

@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface Player {
     val playerVs: StateFlow<PlayerVs>
 
-    fun loadTracks(vararg track: TrackIn, clear: Boolean = true)
-
     fun loadTracks(tracks: List<TrackIn>, clear: Boolean = true)
 
     fun play(

@@ -146,12 +146,12 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
     override val values: Sequence<PlayerVs> = sequenceOf(
         PlayerVs.Data(
             trackId = "",
-            isPlaying = false,
             metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),
             timeLine = PlayerVs.AudioTimeline(
+                isPlaying = false,
                 currentPositionMs = 4,
                 durationMs = 10,
             ),
@@ -159,12 +159,12 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
         ),
         PlayerVs.Data(
             trackId = "",
-            isPlaying = true,
             metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title ".repeat(10).trim(),
                 album = "Album ".repeat(10).trim(),
             ),
             timeLine = PlayerVs.AudioTimeline(
+                isPlaying = true,
                 currentPositionMs = 4,
                 durationMs = 10,
             ),

@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_player.PlayerAction
 import kovp.pixelplayer.core_player.PlayerVs
@@ -38,6 +40,17 @@ fun PlayerComposable(
     isExpanded: Boolean,
     onPlayerAction: (PlayerAction) -> Unit,
 ) {
+    var currentPosition by remember(viewState) {
+        mutableStateOf(viewState.timeLine.currentPositionMs)
+    }
+
+    LaunchedEffect(viewState) {
+        while (currentPosition < viewState.timeLine.durationMs && viewState.timeLine.isPlaying) {
+            delay(500)
+            currentPosition += 500
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -48,7 +61,7 @@ fun PlayerComposable(
             title = viewState.metaData.trackTitle.orEmpty(),
             album = viewState.metaData.album.orEmpty(),
             isExpanded = isExpanded,
-            fraction = viewState.timeLine.fraction,
+            fraction = currentPosition / viewState.timeLine.durationMs.toFloat(),
             onSeek = {
                 onPlayerAction(
                     PlayerAction.Seek(fraction = it),
@@ -58,7 +71,7 @@ fun PlayerComposable(
 
         if (isExpanded) {
             Controls(
-                isPlaying = viewState.isPlaying,
+                isPlaying = viewState.timeLine.isPlaying,
                 hasNext = viewState.hasNext,
                 onPlayerAction = onPlayerAction,
             )
@@ -141,12 +154,12 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
     override val values: Sequence<PlayerVs.Data> = sequenceOf(
         PlayerVs.Data(
             trackId = "",
-            isPlaying = false,
             metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),
             timeLine = PlayerVs.AudioTimeline(
+                isPlaying = false,
                 currentPositionMs = 4,
                 durationMs = 10,
             ),
@@ -154,12 +167,12 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {
         ),
         PlayerVs.Data(
             trackId = "",
-            isPlaying = true,
             metaData = TrackIn.TrackMetaData(
                 trackTitle = "Track title",
                 album = "Album",
             ),
             timeLine = PlayerVs.AudioTimeline(
+                isPlaying = true,
                 currentPositionMs = 4,
                 durationMs = 10,
             ),

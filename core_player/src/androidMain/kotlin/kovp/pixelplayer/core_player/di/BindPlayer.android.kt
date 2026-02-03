@@ -4,7 +4,6 @@ import android.content.ComponentName
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.SessionToken
-import kovp.pixelplayer.core_player.AndroidAudioController
 import kovp.pixelplayer.core_player.AndroidPlayer
 import kovp.pixelplayer.core_player.PlaybackService
 import kovp.pixelplayer.core_player.TokenProvider
@@ -29,16 +28,10 @@ internal actual fun Module.bindPlayer(ctx: AppContext, token: String, baseUrl: S
     }
 
     single {
-        AndroidAudioController(
+        AndroidPlayer(
             context = ctx,
             sessionToken = get(),
             baseUrl = baseUrl,
-        )
-    }
-
-    single {
-        AndroidPlayer(
-            controller = get(),
         )
     }
         .bind<kovp.pixelplayer.core_player.Player>()

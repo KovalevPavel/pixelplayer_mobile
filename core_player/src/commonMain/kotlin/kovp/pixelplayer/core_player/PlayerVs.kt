@@ -12,19 +12,16 @@ sealed interface PlayerVs {
     data class Data(
         override val trackId: String,
         val metaData: TrackIn.TrackMetaData,
-        val isPlaying: Boolean,
         val timeLine: AudioTimeline,
         val hasNext: Boolean,
     ) : PlayerVs
 
     @Suppress("unused")
     data class AudioTimeline(
+        val isPlaying: Boolean,
         val currentPositionMs: Long,
-        private val durationMs: Long,
+        val durationMs: Long,
     ) {
-        val fraction: Float
-            get() = currentPositionMs.toFloat() / durationMs
-
         val formattedPosition: String
             get() = format(currentPositionMs)
 

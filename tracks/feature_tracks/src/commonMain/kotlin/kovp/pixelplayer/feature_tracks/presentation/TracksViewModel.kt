@@ -74,7 +74,7 @@ internal class TracksViewModel(
         (player.playerVs.value as? PlayerVs.Data)?.let { st ->
             when (st.trackId) {
                 id -> {
-                    if (st.isPlaying) {
+                    if (st.timeLine.isPlaying) {
                         player.pause()
                     } else {
                         player.resume()
