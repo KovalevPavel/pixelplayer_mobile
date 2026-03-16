@@ -21,10 +21,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_design.AppTypography
-import kovp.pixelplayer.core_design.scrimLight
+import kovp.pixelplayer.core_design.pixelColors
 
 @Immutable
 data class MessageDialogVs(
@@ -56,7 +56,7 @@ fun MessageDialog(
         ModalBottomSheet(
             modifier = Modifier.fillMaxWidth()
                 .wrapContentHeight(),
-            scrimColor = scrimLight.copy(alpha = .2f),
+            scrimColor = pixelColors.scrim.copy(alpha = .2f),
             sheetState = sheetState,
             onDismissRequest = onDismiss,
         ) {
@@ -72,7 +72,7 @@ fun MessageDialog(
                     ?.let {
                         Text(
                             text = it,
-                            style = AppTypography.titleMedium,
+                            style = pixelTypography.titleMedium,
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -82,7 +82,7 @@ fun MessageDialog(
                     ?.let {
                         Text(
                             text = it,
-                            style = AppTypography.bodyLarge,
+                            style = pixelTypography.bodyLarge,
                             textAlign = TextAlign.Center,
                         )
                     }

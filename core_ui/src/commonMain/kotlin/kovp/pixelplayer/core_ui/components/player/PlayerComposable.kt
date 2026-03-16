@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
+import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_player.PlayerAction
 import kovp.pixelplayer.core_player.PlayerVs
 import kovp.pixelplayer.core_player.TrackIn
@@ -142,12 +143,14 @@ private fun PlayerComposablePreview(
     @PreviewParameter(PlayerVsProvider::class) viewState: PlayerVs.Data,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    PlayerComposable(
-        modifier = Modifier.clickable { isExpanded = !isExpanded },
-        viewState = viewState,
-        isExpanded = isExpanded,
-        onPlayerAction = {},
-    )
+    AppTheme {
+        PlayerComposable(
+            modifier = Modifier.clickable { isExpanded = !isExpanded },
+            viewState = viewState,
+            isExpanded = isExpanded,
+            onPlayerAction = {},
+        )
+    }
 }
 
 private class PlayerVsProvider : PreviewParameterProvider<PlayerVs.Data> {

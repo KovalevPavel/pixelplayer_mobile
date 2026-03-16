@@ -2,10 +2,12 @@ package kovp.pixelplayer.core_ui.components.vertical_card
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,8 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kovp.pixelplayer.core_design.AppPreview
+import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_design.AppTypography
 import kovp.pixelplayer.core_ui.components.image.PixelImage
 import kovp.pixelplayer.core_ui.withAnimation
 import kotlin.math.pow
@@ -57,7 +60,7 @@ fun VerticalCard(
                     modifier = Modifier.fillMaxWidth()
                         .withAnimation("${viewState.id}_${viewState.title}"),
                     text = viewState.title,
-                    style = AppTypography.titleMedium,
+                    style = pixelTypography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -66,7 +69,7 @@ fun VerticalCard(
                     modifier = Modifier.fillMaxWidth()
                         .withAnimation("${viewState.id}_${viewState.description}"),
                     text = viewState.description,
-                    style = AppTypography.bodyMedium,
+                    style = pixelTypography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -76,7 +79,7 @@ fun VerticalCard(
                         modifier = Modifier.fillMaxWidth()
                             .withAnimation("${viewState.id}_${viewState.tagline}"),
                         text = tag,
-                        style = AppTypography.bodySmall,
+                        style = pixelTypography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -86,16 +89,18 @@ fun VerticalCard(
     }
 }
 
-@Preview(widthDp = 200)
+@AppPreview
 @Composable
 private fun VerticalCardPreview(
     @PreviewParameter(ArtistProvider::class) vs: VerticalCardVs,
 ) {
     AppTheme {
-        VerticalCard(
-            viewState = vs,
-            onClick = {},
-        )
+        Box(modifier = Modifier.width(200.dp)) {
+            VerticalCard(
+                viewState = vs,
+                onClick = {},
+            )
+        }
     }
 }
 

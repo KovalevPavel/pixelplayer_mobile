@@ -1,7 +1,6 @@
 package kovp.pixelplayer.core_ui.components.playing_icon
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +32,17 @@ fun PlayingIcon(
     isPlaying: Boolean,
 ) {
     Row(
-        modifier = modifier.size(24.dp).padding(2.dp),
+        modifier = modifier.size(24.dp).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        repeat(count) {
+        val step = 1f / (count + 1)
+
+        repeat(count) { index ->
             Bar(
-                delay = PlayingIconDefaults.getDelay(it),
                 color = color,
+                minValue = 1f - step * (index / 1.2f + 1),
+                maxValue = 1f - step * (index * 1.2f),
                 isPlaying = isPlaying,
             )
         }
@@ -49,24 +51,20 @@ fun PlayingIcon(
 
 @Composable
 private fun RowScope.Bar(
-    delay: Int,
     color: Color,
+    minValue: Float,
+    maxValue: Float,
     isPlaying: Boolean,
 ) {
     var flag by remember { mutableStateOf(false) }
     val value by animateFloatAsState(
         targetValue = run {
             when {
-                isPlaying -> if (flag) 1f else 0f
+                isPlaying -> if (flag) maxValue else minValue
                 else -> .1f
             }
         },
-        animationSpec = tween(
-            delayMillis = delay,
-        ),
-        finishedListener = {
-            flag = !flag
-        },
+        finishedListener = { flag = !flag },
     )
 
     Box(

@@ -1,7 +1,8 @@
 package kovp.pixelplayer.feature_albums.detail
 
+import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
-import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
+import kovp.pixelplayer.domain_albums.AlbumVo
 
 sealed interface AlbumDetailState {
     data object Loading : AlbumDetailState
@@ -10,6 +11,23 @@ sealed interface AlbumDetailState {
         val artist: String,
         val cover: String,
         val year: String,
-        val tracks: ImmutableList<HorizontalCardVs>,
+        val disks: ImmutableList<Disk>,
     ) : AlbumDetailState
+
+    @Immutable
+    data class Disk(
+        val diskNumber: Int,
+        val tracks: ImmutableList<TrackVs>,
+    )
+
+    @Immutable
+    data class TrackVs(
+        val id: String,
+        val title: String,
+        val artist: String,
+        val position: Int,
+        val globalPosition: Int,
+        val duration: String,
+        val quality: AlbumVo.Quality,
+    )
 }

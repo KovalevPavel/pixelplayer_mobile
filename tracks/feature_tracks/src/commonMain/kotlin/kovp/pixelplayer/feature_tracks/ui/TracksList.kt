@@ -1,5 +1,6 @@
 package kovp.pixelplayer.feature_tracks.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_player.PlayerViewModel
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
@@ -66,7 +68,12 @@ private fun TrackListData(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 32.dp),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 32.dp,
+            bottom = 100.dp,
+        ),
     ) {
         items(items = tracks, key = HorizontalCardVs::id) { item ->
             HorizontalCard(
@@ -83,6 +90,14 @@ private fun TrackListData(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
+                },
+                border = {
+                    val color = if (currentPlaying == item.id) {
+                        pixelColors.primary
+                    } else {
+                        pixelColors.onSurfaceVariant
+                    }
+                    BorderStroke(width = 1.dp, color = color)
                 }
             )
         }

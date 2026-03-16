@@ -3,12 +3,16 @@ package kovp.pixelplayer
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import kovp.pixelplayer.api_login.LoginFlow
@@ -24,13 +28,18 @@ import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.di.mainModule
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.dsl.koinConfiguration
+
+private val rippleConfiguration = RippleConfiguration(
+    color = Color.White,
+)
 
 @Composable
 fun App(
     ctx: AppContext,
 ) {
     KoinApplication(
-        application = {
+        configuration = koinConfiguration {
             bindContext(ctx)
             modules(
                 storageModule,
@@ -56,7 +65,11 @@ fun App(
                 }
             }
 
-            HostComposable(result = checkResult, context = ctx)
+            CompositionLocalProvider(
+                LocalRippleConfiguration provides rippleConfiguration,
+            ) {
+                HostComposable(result = checkResult, context = ctx)
+            }
         }
     }
 }

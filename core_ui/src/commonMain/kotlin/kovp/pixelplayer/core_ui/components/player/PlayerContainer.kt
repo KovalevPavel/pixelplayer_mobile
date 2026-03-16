@@ -31,9 +31,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kovp.pixelplayer.core.orZero
+import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_design.AppTypography
+import kovp.pixelplayer.core_design.pixelColors
 
 private const val TRACK_DATA_ID = "TRACK_DATA_ID"
 private const val SLIDER_ID = "SLIDER_ID"
@@ -176,15 +178,17 @@ private fun TrackData(
     ) {
         Text(
             text = trackTitle,
-            style = AppTypography.titleMedium,
+            style = pixelTypography.titleLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            color = pixelColors.onBackground,
         )
 
         Text(
             text = album,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            color = pixelColors.onBackground,
         )
     }
 }
@@ -205,19 +209,19 @@ private fun Slider(
                 awaitPointerEventScope {
                     while (true) {
                         val e = awaitPointerEvent()
-                        val lastChange = e.changes.lastOrNull()?.position?.x ?: 0f
+                        val lastChange = e.changes.lastOrNull()?.position?.x.orZero()
 
                         when (e.type) {
                             PointerEventType.Move -> {
                                 currentFraction = runCatching { lastChange / maxWidth }
                                     .getOrNull()
-                                    ?: 0f
+                                    .orZero()
                             }
 
                             PointerEventType.Release -> {
                                 currentFraction = runCatching { lastChange / maxWidth }
                                     .getOrNull()
-                                    ?: 0f
+                                    .orZero()
                                 onSeek(currentFraction)
                             }
                         }

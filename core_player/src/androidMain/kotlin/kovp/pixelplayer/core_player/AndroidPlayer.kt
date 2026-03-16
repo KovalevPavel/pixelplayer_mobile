@@ -71,6 +71,8 @@ internal class AndroidPlayer(
                             .setTitle(t.metadata?.trackTitle)
                             .setAlbumTitle(t.metadata?.album)
                             .setArtist(t.metadata?.artist)
+                            .setDiscNumber(t.metadata?.disk)
+                            .setTrackNumber(t.metadata?.position)
                             .build()
                     )
                     .setUri(url)
@@ -99,6 +101,8 @@ internal class AndroidPlayer(
                                 .setTitle(metadata?.trackTitle)
                                 .setAlbumTitle(metadata?.album)
                                 .setArtist(metadata?.artist)
+                                .setDiscNumber(metadata?.disk)
+                                .setTrackNumber(metadata?.position)
                                 .build()
                         )
                         .setUri(mappedUri)
@@ -161,6 +165,8 @@ internal class AndroidPlayer(
                     trackTitle = controller.currentMediaItem?.mediaMetadata?.title?.toString(),
                     album = controller.currentMediaItem?.mediaMetadata?.albumTitle?.toString(),
                     artist = controller.currentMediaItem?.mediaMetadata?.artist?.toString(),
+                    disk = controller.currentMediaItem?.mediaMetadata?.discNumber,
+                    position = controller.currentMediaItem?.mediaMetadata?.trackNumber,
                 ),
                 timeLine = PlayerVs.AudioTimeline(
                     isPlaying = controller.isPlaying,

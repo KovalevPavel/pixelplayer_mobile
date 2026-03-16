@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kov_p.pixelplayer.network.get
+import kovp.pixelplayer.core.orZero
 import kovp.pixelplayer.domain_artists.ArtistVo
 import kovp.pixelplayer.domain_artists.ArtistsRepository
 
@@ -17,8 +18,9 @@ class ArtistsRepositoryImpl(
                     id = dto.id ?: return@mapNotNull null,
                     name = dto.name.orEmpty(),
                     avatar = dto.avatar.orEmpty(),
-                    albums = dto.albums?.mapNotNull { it.id ?: return@mapNotNull null }?.size
-                        ?: 0,
+                    albums = dto.albums?.mapNotNull { it.id ?: return@mapNotNull null }
+                        ?.size
+                        .orZero(),
                 )
             }
     }

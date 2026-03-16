@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.delay
-import kovp.pixelplayer.core_design.scrimLight
+import kovp.pixelplayer.core_design.pixelColors
 
 @Composable
 fun FullScreenLoader(
@@ -34,7 +34,7 @@ fun FullScreenLoader(
     if (isLoaderVisible) {
         Box(
             modifier = Modifier
-                .background(color = scrimLight.copy(alpha = .2f))
+                .background(color = pixelColors.scrim.copy(alpha = .2f))
                 .fillMaxSize()
                 .pointerInput(Unit) {},
             contentAlignment = Alignment.Center,

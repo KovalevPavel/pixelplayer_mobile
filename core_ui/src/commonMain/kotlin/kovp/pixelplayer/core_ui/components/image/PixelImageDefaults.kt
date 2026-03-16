@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import kovp.pixelplayer.core_design.pixelColors
 
 internal object PixelImageDefaults {
     val loadPlaceholder: @Composable BoxScope.() -> Unit = {
@@ -21,7 +21,7 @@ internal object PixelImageDefaults {
     val errorPlaceholder: @Composable BoxScope.() -> Unit = {
         Box(
             modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surfaceDim)
+                .background(color = pixelColors.surfaceBright)
                 .matchParentSize(),
             contentAlignment = Alignment.Center,
         ) {
@@ -30,7 +30,7 @@ internal object PixelImageDefaults {
                 imageVector = Icons.Default.ErrorOutline,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(
-                    MaterialTheme.colorScheme.onSurfaceVariant,
+                    pixelColors.onSurfaceVariant,
                 ),
             )
         }

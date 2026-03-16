@@ -4,8 +4,11 @@ import io.ktor.client.HttpClient
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kov_p.pixelplayer.network.get
+import kovp.pixelplayer.core.orZero
 import kovp.pixelplayer.domain_albums.AlbumVo
 import kovp.pixelplayer.domain_albums.AlbumsRepository
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class AlbumsRepositoryImpl(
     private val client: HttpClient,
@@ -39,7 +42,13 @@ class AlbumsRepositoryImpl(
                 AlbumVo.TrackVo(
                     id = it.id ?: return@mapNotNull null,
                     title = it.title.orEmpty(),
-                    position = it.position ?: 0,
+                    position = it.position.orZero(),
+                    disk = it.disk.orZero() + 1,
+                    duration = it.duration?.seconds ?: Duration.ZERO,
+                    quality = when {
+                        it.isLossless == true -> AlbumVo.Quality.Lossless
+                        else -> AlbumVo.Quality.Bitrate(bitrate = it.bitrate.orZero())
+                    },
                 )
             }
                 .orEmpty(),
@@ -71,4 +80,12 @@ private class TrackDto(
     val title: String? = null,
     @SerialName("position")
     val position: Int? = null,
+    @SerialName("disk")
+    val disk: Int? = null,
+    @SerialName("duration")
+    val duration: Int? = null,
+    @SerialName("bitrate")
+    val bitrate: Int? = null,
+    @SerialName("is_lossless")
+    val isLossless: Boolean? = null,
 )

@@ -28,8 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kovp.pixelplayer.core_design.AppPreview
+import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_design.AppTypography
+import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_ui.components.image.PixelImage
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
 
@@ -38,12 +40,15 @@ fun HorizontalCard(
     modifier: Modifier = Modifier,
     viewState: HorizontalCardVs,
     trailingIcon: @Composable BoxScope.() -> Unit = {},
+    border: @Composable () -> BorderStroke = {
+        BorderStroke(width = 1.dp, color = pixelColors.onSurfaceVariant)
+    },
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier.height(80.dp),
         shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+        border = border(),
         onClick = onClick,
     ) {
         Row(
@@ -68,13 +73,13 @@ fun HorizontalCard(
             ) {
                 Text(
                     text = viewState.title,
-                    style = AppTypography.titleSmall,
+                    style = pixelTypography.titleSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = viewState.description,
-                    style = AppTypography.bodyMedium,
+                    style = pixelTypography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -131,7 +136,7 @@ private fun HorizontalCardIconPreview() {
     }
 }
 
-@Preview(name = "Playing icon")
+@AppPreview
 @Composable
 private fun HorizontalCardPlayingPreview() {
     val vs = HorizontalCardVs(

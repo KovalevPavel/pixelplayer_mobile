@@ -43,8 +43,10 @@ kotlin {
 dependencies {
     implementation(project(":composeApp"))
     implementation(project(":core"))
+    implementation(project(":core_design"))
     implementation(project(":core_player"))
 
+    implementation(libs.google.material)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
 }

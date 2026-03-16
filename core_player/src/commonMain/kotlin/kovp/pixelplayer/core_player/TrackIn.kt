@@ -8,5 +8,7 @@ data class TrackIn(
         val trackTitle: String? = null,
         val album: String? = null,
         val artist: String? = null,
+        val disk: Int? = null,
+        val position: Int? = null,
     )
 }

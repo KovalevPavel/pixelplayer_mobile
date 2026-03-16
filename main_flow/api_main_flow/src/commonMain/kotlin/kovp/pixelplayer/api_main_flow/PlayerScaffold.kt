@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_player.PlayerAction
 import kovp.pixelplayer.core_ui.components.player.PlayerComposable
 import kovp.pixelplayer.core_player.PlayerVs
@@ -72,7 +73,11 @@ fun PlayerScaffold(
         isExpanded = false
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = pixelColors.background),
+    ) {
         content(pointerModifier)
 
         if (viewState !is PlayerVs.Data) {
@@ -136,7 +141,7 @@ private fun PlayerPreview(
                 verticalArrangement = Arrangement.spacedBy(64.dp),
                 contentPadding = PaddingValues(bottom = 92.dp)
             ) {
-                items(list) { e -> Text(text = e) }
+                items(list) { e -> Text(text = e, color = pixelColors.onBackground) }
             }
         }
     }
