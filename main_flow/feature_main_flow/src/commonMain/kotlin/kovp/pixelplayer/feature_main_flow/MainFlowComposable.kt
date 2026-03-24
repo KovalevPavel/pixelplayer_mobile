@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
+import kovp.pixelplayer.api_settings.SettingsScreenWrapper
 import kovp.pixelplayer.api_tracks.TracksComposableWrapper
 
 @Composable
 fun MainFlowComposable(
     navController: NavController,
+    onLogout: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -59,6 +61,10 @@ fun MainFlowComposable(
 
                 MainFlowScreen.Tracks -> {
                     TracksComposableWrapper()
+                }
+
+                MainFlowScreen.Settings -> {
+                    SettingsScreenWrapper(onLogout = onLogout)
                 }
             }
         }

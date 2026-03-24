@@ -18,4 +18,5 @@ interface Player {
     fun next()
     fun previous()
     fun seekTo(fraction: Float)
+    fun clearPlayer()
 }

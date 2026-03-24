@@ -6,9 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
-import kovp.pixelplayer.core_ui.components.MessageDialogVs
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_login.LoginRepository
+import pixelplayer.core_design.generated.resources.Res
+import pixelplayer.core_design.generated.resources.ok
 
 class LoginViewModel(
     private val loginRepo: LoginRepository,
@@ -43,8 +45,8 @@ class LoginViewModel(
             onFailure = {
                 println(it)
                 MessageDialogVs(
-                    message = it.message,
-                    primaryAction = "Ok",
+                    message = MessageDialogVs.Field.Text(it.message),
+                    primaryAction = Res.string.ok,
                 )
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)
@@ -57,6 +59,7 @@ class LoginViewModel(
             body = {
                 val token = loginRepo.login(login = login, password = password)
                 if (token.isNotEmpty()) {
+                    credentialsRepo.saveUsername(username = login)
                     credentialsRepo.saveToken(token)
                     LoginEvent.NavigateNext(
                         token = token,
@@ -70,8 +73,8 @@ class LoginViewModel(
             },
             onFailure = {
                 MessageDialogVs(
-                    message = it.message,
-                    primaryAction = "Ok",
+                    message = MessageDialogVs.Field.Text(it.message),
+                    primaryAction = Res.string.ok,
                 )
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)

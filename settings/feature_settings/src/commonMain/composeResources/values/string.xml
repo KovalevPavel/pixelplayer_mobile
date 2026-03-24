@@ -1,0 +1,5 @@
+<resources>
+    <string name="username">Current user</string>
+    <string name="logout_message">Are you sure you want to clear your login data?</string>
+    <string name="change_endpoint">Are you sure you want to change your server?\nThis will also clear your login data.</string>
+</resources>

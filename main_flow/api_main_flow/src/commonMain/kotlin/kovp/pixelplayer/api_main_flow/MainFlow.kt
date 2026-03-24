@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,8 +42,10 @@ data class MainFlow(
     val baseUrl: String,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
+fun NavGraphBuilder.registerMainFlow(
+    ctx: AppContext,
+    onLogout: () -> Unit,
+) {
     composable<MainFlow> { entry ->
         val route = entry.toRoute<MainFlow>()
         val koin = getKoin()
@@ -102,7 +103,10 @@ fun NavGraphBuilder.registerMainFlow(ctx: AppContext) {
                     popExitTransition = { slideOutHorizontally { it } },
                 ) {
                     composable<MainFlowScreen.Companion.Host> {
-                        MainFlowComposable(navController = mainFlowController)
+                        MainFlowComposable(
+                            navController = mainFlowController,
+                            onLogout = onLogout,
+                        )
                     }
 
                     composable<AlbumDetails> { entry ->

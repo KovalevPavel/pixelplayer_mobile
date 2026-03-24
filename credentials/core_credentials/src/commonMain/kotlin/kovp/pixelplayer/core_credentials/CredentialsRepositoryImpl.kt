@@ -10,8 +10,16 @@ class CredentialsRepositoryImpl(
         return prefs.getString(TOKEN_KEY)
     }
 
-    override suspend fun saveToken(token: String) {
+    override suspend fun saveToken(token: String?) {
         prefs.updateValue(TOKEN_KEY, token)
+    }
+
+    override suspend fun getUsername(): String? {
+        return prefs.getString(USERNAME_KEY)
+    }
+
+    override suspend fun saveUsername(username: String?) {
+        prefs.updateValue(USERNAME_KEY, username)
     }
 
     override suspend fun getEndpoint(): String? {
@@ -25,5 +33,6 @@ class CredentialsRepositoryImpl(
     companion object {
         private const val ENDPOINT_KEY = "endpoint"
         private const val TOKEN_KEY = "token"
+        private const val USERNAME_KEY = "username"
     }
 }

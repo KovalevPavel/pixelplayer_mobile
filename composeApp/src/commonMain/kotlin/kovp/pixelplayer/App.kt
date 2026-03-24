@@ -2,7 +2,9 @@ package kovp.pixelplayer
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
@@ -68,14 +71,30 @@ fun App(
             CompositionLocalProvider(
                 LocalRippleConfiguration provides rippleConfiguration,
             ) {
-                HostComposable(result = checkResult, context = ctx)
+                HostComposable(result = checkResult, context = ctx) {
+                    checkResult = null
+                    MainAction.CheckCredentials.let(viewModel::handleAction)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun HostComposable(result: MainEvent.CheckResult?, context: AppContext) {
+private fun HostComposable(
+    result: MainEvent.CheckResult?,
+    context: AppContext,
+    refreshCredentials: () -> Unit,
+) {
+    if (result == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+
     val startDestination = when (result) {
         null -> return
         MainEvent.CheckResult.EmptyEndpoint,
@@ -119,6 +138,9 @@ private fun HostComposable(result: MainEvent.CheckResult?, context: AppContext) 
                     .let(hostNavController::navigate)
             },
         )
-        registerMainFlow(ctx = context)
+        registerMainFlow(
+            ctx = context,
+            onLogout = refreshCredentials,
+        )
     }
 }

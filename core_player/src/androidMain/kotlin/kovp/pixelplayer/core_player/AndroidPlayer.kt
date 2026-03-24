@@ -7,6 +7,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kotlin.math.roundToLong
 
@@ -58,7 +59,7 @@ internal class AndroidPlayer(
             PlayerImpl.COMMAND_CHANGE_MEDIA_ITEMS,
         ) {
             if (clear) {
-                controller.clearMediaItems()
+                clearMediaItems()
             }
 
             tracks.map { t ->
@@ -78,8 +79,8 @@ internal class AndroidPlayer(
                     .setUri(url)
                     .build()
             }
-                .let(controller::setMediaItems)
-            controller.prepare()
+                .let(::setMediaItems)
+            prepare()
         }
     }
 
@@ -108,10 +109,10 @@ internal class AndroidPlayer(
                         .setUri(mappedUri)
                         .build()
                 }
-                .let(controller::setMediaItem)
+                .let(::setMediaItem)
 
-            controller.prepare()
-            controller.play()
+            prepare()
+            play()
         }
     }
 
@@ -120,26 +121,26 @@ internal class AndroidPlayer(
             PlayerImpl.COMMAND_PLAY_PAUSE,
             PlayerImpl.COMMAND_SEEK_TO_MEDIA_ITEM,
         ) {
-            controller.seekTo(index, 0)
-            controller.play()
+            seekTo(index, 0)
+            play()
         }
     }
 
     override fun resume() {
         doIfAvailable(PlayerImpl.COMMAND_PLAY_PAUSE) {
-            controller.play()
+            play()
         }
     }
 
     override fun pause() {
         doIfAvailable(PlayerImpl.COMMAND_PLAY_PAUSE) {
-            controller.pause()
+            pause()
         }
     }
 
     override fun next() {
         doIfAvailable(PlayerImpl.COMMAND_SEEK_TO_NEXT) {
-            controller.seekToNext()
+            seekToNext()
         }
     }
 
@@ -151,14 +152,22 @@ internal class AndroidPlayer(
 
     override fun seekTo(fraction: Float) {
         doIfAvailable(PlayerImpl.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
-            val newPosition = (controller.duration * fraction).roundToLong()
+            val newPosition = (duration * fraction).roundToLong()
             seekTo(newPosition)
         }
     }
 
+    override fun clearPlayer() {
+        doIfAvailable(PlayerImpl.COMMAND_STOP) {
+            stop()
+            clearMediaItems()
+            updatePlayerState()
+        }
+    }
+
     private fun updatePlayerState() {
-        _playerState.value = run {
-            val id = controller.currentMediaItem?.mediaId ?: return@run PlayerVs.Empty
+        _playerState.update {
+            val id = controller.currentMediaItem?.mediaId ?: return@update PlayerVs.Empty
             PlayerVs.Data(
                 trackId = id,
                 metaData = TrackIn.TrackMetaData(

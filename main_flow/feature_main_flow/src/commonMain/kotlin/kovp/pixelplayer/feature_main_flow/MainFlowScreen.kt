@@ -11,6 +11,9 @@ enum class MainFlowScreen {
 
     @Serializable
     Tracks,
+
+    @Serializable
+    Settings,
     ;
 
     companion object {

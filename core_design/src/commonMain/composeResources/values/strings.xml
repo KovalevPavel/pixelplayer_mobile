@@ -1,0 +1,9 @@
+<resources>
+    <string name="logout">Logout</string>
+    <string name="change_server">Change server</string>
+    <string name="login">Login</string>
+    <string name="endpoint">Server url</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+</resources>

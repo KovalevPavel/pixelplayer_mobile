@@ -50,11 +50,9 @@ fun NavGraphBuilder.registerLoginFlow(
                 },
                 onChangeEndpoint = {
                     navController.previousBackStackEntry?.let {
-                        println("navigate up")
                         navController.navigateUp()
                     }
                         ?: run {
-                            println("reset")
                             navController.popBackStack(
                                 route = LoginScreen.Credentials,
                                 inclusive = true,

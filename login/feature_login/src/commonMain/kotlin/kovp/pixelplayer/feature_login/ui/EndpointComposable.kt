@@ -23,8 +23,8 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.core_ui.components.FullScreenLoader
-import kovp.pixelplayer.core_ui.components.MessageDialog
-import kovp.pixelplayer.core_ui.components.MessageDialogVs
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.feature_login.LoginAction
 import kovp.pixelplayer.feature_login.LoginEvent
 import kovp.pixelplayer.feature_login.LoginViewModel
@@ -66,11 +66,12 @@ fun EndpointComposable(
         },
     )
 
-    MessageDialog(
-        viewState = messageDialogVs,
-        isVisible = messageDialogVs != null,
-        onDismiss = { messageDialogVs = null },
-    )
+    messageDialogVs?.let {
+        MessageDialog(
+            viewState = it,
+            removeFromComposition = { messageDialogVs = null },
+        )
+    }
 }
 
 @Composable

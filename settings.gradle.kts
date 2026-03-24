@@ -94,3 +94,8 @@ withDirectory("tracks") {
     addModule("domain_tracks")
     addModule("feature_tracks")
 }
+
+withDirectory("settings") {
+    addModule("api_settings")
+    addModule("feature_settings")
+}

@@ -10,8 +10,9 @@ import kovp.pixelplayer.core_ui.launch
 class MainViewModel(
     private val credentialsRepository: CredentialsRepository,
 ) : ViewModel() {
+    val event: Flow<MainEvent> by lazy { _eventsFlow }
+
     private val _eventsFlow = MutableSharedFlow<MainEvent>()
-    val event: Flow<MainEvent> = _eventsFlow
 
     init {
         MainAction.CheckCredentials.let(::handleAction)

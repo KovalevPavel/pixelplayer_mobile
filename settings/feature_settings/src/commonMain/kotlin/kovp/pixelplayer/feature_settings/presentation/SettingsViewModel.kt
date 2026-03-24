@@ -1,0 +1,121 @@
+package kovp.pixelplayer.feature_settings.presentation
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.core_player.Player
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
+import kovp.pixelplayer.core_ui.launch
+import pixelplayer.core_design.generated.resources.cancel
+import pixelplayer.core_design.generated.resources.ok
+import pixelplayer.core_design.generated.resources.Res as designRes
+import pixelplayer.feature_settings.generated.resources.Res
+import pixelplayer.feature_settings.generated.resources.change_endpoint
+import pixelplayer.feature_settings.generated.resources.logout_message
+
+class SettingsViewModel(
+    private val player: Player,
+    private val credentialsRepository: CredentialsRepository,
+) : ViewModel() {
+    val stateFlow: StateFlow<SettingsState> by lazy { _stateFlow }
+    val settingsEvents: Flow<SettingsEvent> by lazy { _settingsEvents }
+
+    private val _settingsEvents = MutableSharedFlow<SettingsEvent>()
+    private val _stateFlow = MutableStateFlow<SettingsState>(SettingsState.Loading)
+
+    init {
+        fetchData()
+    }
+
+    fun handleAction(action: SettingsAction) {
+        when (action) {
+            SettingsAction.ChangeEndpoint -> changeEndpoint()
+            SettingsAction.Logout -> logout()
+            is SettingsAction.OnMessageDialogPrimaryClick -> handleDialogPrimaryAction(action.dialogId)
+        }
+    }
+
+    private fun fetchData() {
+        launch(
+            body = {
+                val login = credentialsRepository.getUsername().orEmpty()
+                val endpoint = credentialsRepository.getEndpoint().orEmpty()
+
+                _stateFlow.update {
+                    SettingsState.Data(
+                        login = login,
+                        endpoint = endpoint,
+                        isProcessing = false,
+                    )
+                }
+            },
+        )
+    }
+
+    private fun logout() {
+        MessageDialogVs(
+            id = LOGOUT_DIALOG_ID,
+            title = MessageDialogVs.Field.Resource(Res.string.logout_message),
+            primaryAction = designRes.string.ok,
+            secondaryAction = designRes.string.cancel,
+        )
+            .let(SettingsEvent::ShowMessageDialog)
+            .let(::emitNewEvent)
+    }
+
+    private fun changeEndpoint() {
+        MessageDialogVs(
+            id = CHANGE_ENDPOINT_DIALOG_ID,
+            title = MessageDialogVs.Field.Resource(Res.string.change_endpoint),
+            primaryAction = designRes.string.ok,
+            secondaryAction = designRes.string.cancel,
+        )
+            .let(SettingsEvent::ShowMessageDialog)
+            .let(::emitNewEvent)
+    }
+
+    private fun handleDialogPrimaryAction(dialogId: String) {
+        launch(
+            body = {
+                _stateFlow.update { st ->
+                    (st as? SettingsState.Data)?.let { st.copy(isProcessing = true) } ?: st
+                }
+
+                when (dialogId) {
+                    LOGOUT_DIALOG_ID -> {
+                        player.clearPlayer()
+                        clearUserData()
+                        SettingsEvent.NavigateToLoginFlow.let(::emitNewEvent)
+                    }
+
+                    CHANGE_ENDPOINT_DIALOG_ID -> {
+                        player.clearPlayer()
+                        clearUserData()
+                        credentialsRepository.saveEndpoint(null)
+                        SettingsEvent.NavigateToLoginFlow.let(::emitNewEvent)
+                    }
+                }
+            },
+        )
+    }
+
+    private fun emitNewEvent(newEvent: SettingsEvent) {
+        viewModelScope.launch { _settingsEvents.emit(newEvent) }
+    }
+
+    private suspend fun clearUserData() {
+        credentialsRepository.saveUsername(null)
+        credentialsRepository.saveToken(null)
+    }
+
+    companion object {
+        private const val LOGOUT_DIALOG_ID = "LOGOUT_DIALOG_ID"
+        private const val CHANGE_ENDPOINT_DIALOG_ID = "CHANGE_ENDPOINT_DIALOG_ID"
+    }
+}
