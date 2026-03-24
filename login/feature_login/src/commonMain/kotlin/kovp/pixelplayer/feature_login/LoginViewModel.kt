@@ -9,8 +9,8 @@ import kovp.pixelplayer.api_credentials.CredentialsRepository
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_login.LoginRepository
-import pixelplayer.core_design.generated.resources.Res
-import pixelplayer.core_design.generated.resources.ok
+import pixelplayer.core_ui.generated.resources.Res
+import pixelplayer.core_ui.generated.resources.ok
 
 class LoginViewModel(
     private val loginRepo: LoginRepository,

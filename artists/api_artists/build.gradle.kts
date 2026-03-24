@@ -5,7 +5,9 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":domain_artists"))
             implementation(project(":feature_artists"))
+            implementation(project(":network"))
         }
     }
 }

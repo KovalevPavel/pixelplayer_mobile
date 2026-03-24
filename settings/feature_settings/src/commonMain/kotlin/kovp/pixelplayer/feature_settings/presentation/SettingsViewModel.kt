@@ -12,9 +12,9 @@ import kovp.pixelplayer.api_credentials.CredentialsRepository
 import kovp.pixelplayer.core_player.Player
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
-import pixelplayer.core_design.generated.resources.cancel
-import pixelplayer.core_design.generated.resources.ok
-import pixelplayer.core_design.generated.resources.Res as designRes
+import pixelplayer.core_ui.generated.resources.cancel
+import pixelplayer.core_ui.generated.resources.ok
+import pixelplayer.core_ui.generated.resources.Res as coreRes
 import pixelplayer.feature_settings.generated.resources.Res
 import pixelplayer.feature_settings.generated.resources.change_endpoint
 import pixelplayer.feature_settings.generated.resources.logout_message
@@ -62,8 +62,8 @@ class SettingsViewModel(
         MessageDialogVs(
             id = LOGOUT_DIALOG_ID,
             title = MessageDialogVs.Field.Resource(Res.string.logout_message),
-            primaryAction = designRes.string.ok,
-            secondaryAction = designRes.string.cancel,
+            primaryAction = coreRes.string.ok,
+            secondaryAction = coreRes.string.cancel,
         )
             .let(SettingsEvent::ShowMessageDialog)
             .let(::emitNewEvent)
@@ -73,8 +73,8 @@ class SettingsViewModel(
         MessageDialogVs(
             id = CHANGE_ENDPOINT_DIALOG_ID,
             title = MessageDialogVs.Field.Resource(Res.string.change_endpoint),
-            primaryAction = designRes.string.ok,
-            secondaryAction = designRes.string.cancel,
+            primaryAction = coreRes.string.ok,
+            secondaryAction = coreRes.string.cancel,
         )
             .let(SettingsEvent::ShowMessageDialog)
             .let(::emitNewEvent)

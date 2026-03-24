@@ -21,10 +21,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_design.pixelColors
+import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_main_flow.LocalMainScope
+import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.feature_artists.di.ArtistsScope
 import kovp.pixelplayer.feature_artists.di.artistsModule
 import kovp.pixelplayer.feature_artists.presentation.ArtistsAction
+import kovp.pixelplayer.feature_artists.presentation.ArtistsEvent
 import kovp.pixelplayer.feature_artists.presentation.ArtistsState
 import kovp.pixelplayer.feature_artists.presentation.ArtistsViewModel
 import org.koin.compose.getKoin
@@ -32,6 +36,7 @@ import org.koin.compose.getKoin
 @Composable
 fun ArtistsScaffoldWrapper(
     modifier: Modifier = Modifier,
+    onArtistClick: (artistId: String) -> Unit,
 ) {
     val koin = getKoin()
     val mainScope = LocalMainScope.current
@@ -43,6 +48,14 @@ fun ArtistsScaffoldWrapper(
     scope.linkTo(mainScope)
 
     val viewModel: ArtistsViewModel = remember { scope.get() }
+
+    viewModel.artistsEvents.CollectWithLifecycle { event ->
+        when (event) {
+            is ArtistsEvent.NavigateToArtist -> {
+                onArtistClick(event.artistId)
+            }
+        }
+    }
 
     ArtistsScaffold(
         modifier = modifier,
@@ -61,6 +74,7 @@ private fun ArtistsScaffold(
     AnimatedContent(
         modifier = modifier.fillMaxSize(),
         targetState = state,
+        contentKey = { it::class },
     ) { st ->
         when (st) {
             is ArtistsState.Error -> {
@@ -76,6 +90,8 @@ private fun ArtistsScaffold(
                         Text(
                             text = st.message,
                             textAlign = TextAlign.Center,
+                            style = pixelTypography.bodyMedium,
+                            color = pixelColors.onBackground,
                         )
                         OutlinedButton(
                             onClick = { handleAction(ArtistsAction.OnErrorActionClick) },

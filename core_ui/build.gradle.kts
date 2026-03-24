@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.pixelplayer.compose)
 }
 
+compose.resources {
+    publicResClass = true
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {

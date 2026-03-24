@@ -4,7 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_artists.ArtistsRepository
@@ -15,15 +19,26 @@ internal class ArtistsViewModel(
     var state: ArtistsState by mutableStateOf(ArtistsState.Loading)
         private set
 
+    val artistsEvents: Flow<ArtistsEvent> by lazy { _artistsEvents }
+
+    private val _artistsEvents = MutableSharedFlow<ArtistsEvent>()
+
     init {
         ArtistsAction.FetchArtists.let(::handleAction)
     }
 
     fun handleAction(action: ArtistsAction) {
         when (action) {
-            is ArtistsAction.OnArtistClick -> {}
-            is ArtistsAction.OnErrorActionClick -> fetchArtistsList()
-            is ArtistsAction.FetchArtists -> fetchArtistsList()
+            is ArtistsAction.OnArtistClick -> {
+                ArtistsEvent.NavigateToArtist(artistId = action.artistId)
+                    .let(::emitNewEvent)
+            }
+
+            is ArtistsAction.OnErrorActionClick,
+            is ArtistsAction.FetchArtists,
+            -> {
+                fetchArtistsList()
+            }
         }
     }
 
@@ -37,7 +52,7 @@ internal class ArtistsViewModel(
                             id = it.id,
                             title = it.name,
                             imageUrl = it.avatar,
-                            description = "Albums: ${it.albums}",
+                            description = "Albums: ${it.albums.size}",
                         )
                     }
                     .toImmutableList()
@@ -50,5 +65,9 @@ internal class ArtistsViewModel(
                 )
             },
         )
+    }
+
+    private fun emitNewEvent(newEvent: ArtistsEvent) {
+        viewModelScope.launch { _artistsEvents.emit(newEvent) }
     }
 }

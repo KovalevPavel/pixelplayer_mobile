@@ -26,6 +26,10 @@ import coil3.request.crossfade
 import kotlinx.serialization.Serializable
 import kovp.pixelplayer.api_albums.AlbumDetails
 import kovp.pixelplayer.api_albums.AlbumDetailsComposableWrapper
+import kovp.pixelplayer.api_albums.albumsRepoModule
+import kovp.pixelplayer.api_artists.ArtistDetails
+import kovp.pixelplayer.api_artists.ArtistDetailsComposableWrapper
+import kovp.pixelplayer.api_artists.artistsRepoModule
 import kovp.pixelplayer.api_main_flow.di.MainFlowScope
 import kovp.pixelplayer.api_main_flow.di.mainFlowModule
 import kovp.pixelplayer.core.context.AppContext
@@ -55,6 +59,8 @@ fun NavGraphBuilder.registerMainFlow(
                 listOf(
                     mainFlowModule(token = route.token, baseUrl = route.baseUrl),
                     playerModule(ctx = ctx, token = route.token, baseUrl = route.baseUrl),
+                    artistsRepoModule,
+                    albumsRepoModule,
                 ),
             )
             koin.getOrCreateScope<MainFlowScope>(MainFlowScope.toString())
@@ -115,6 +121,18 @@ fun NavGraphBuilder.registerMainFlow(
                         AlbumDetailsComposableWrapper(
                             albumId = albumId,
                             navController = mainFlowController,
+                        )
+                    }
+
+                    composable<ArtistDetails> { entry ->
+                        val artistId = entry.toRoute<ArtistDetails>().artistId
+
+                        ArtistDetailsComposableWrapper(
+                            artistId = artistId,
+                            navController = mainFlowController,
+                            navigateToAlbum = {
+                                AlbumDetails(id = it).let(mainFlowController::navigate)
+                            },
                         )
                     }
                 }

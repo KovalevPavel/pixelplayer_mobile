@@ -52,7 +52,7 @@ fun MainFlowComposable(
         ) {
             when (MainFlowScreen.entries[selectedTab]) {
                 MainFlowScreen.Artists -> {
-                    ArtistsComposableWrapper()
+                    ArtistsComposableWrapper(navController = navController)
                 }
 
                 MainFlowScreen.Albums -> {

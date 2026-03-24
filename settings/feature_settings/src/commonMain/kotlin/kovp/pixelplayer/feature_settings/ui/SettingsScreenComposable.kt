@@ -36,10 +36,10 @@ import kovp.pixelplayer.feature_settings.presentation.SettingsViewModel
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.scope.Scope
-import pixelplayer.core_design.generated.resources.Res as designRes
-import pixelplayer.core_design.generated.resources.change_server
-import pixelplayer.core_design.generated.resources.endpoint
-import pixelplayer.core_design.generated.resources.logout
+import pixelplayer.core_ui.generated.resources.Res as coreRes
+import pixelplayer.core_ui.generated.resources.change_server
+import pixelplayer.core_ui.generated.resources.endpoint
+import pixelplayer.core_ui.generated.resources.logout
 import pixelplayer.feature_settings.generated.resources.Res
 import pixelplayer.feature_settings.generated.resources.username
 
@@ -122,7 +122,7 @@ private fun SettingsScreenData(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             TextData(
-                title = designRes.string.endpoint,
+                title = coreRes.string.endpoint,
                 text = viewState.endpoint,
             )
 
@@ -140,7 +140,7 @@ private fun SettingsScreenData(
                     enabled = true,
                     onClick = { onAction(SettingsAction.ChangeEndpoint) },
                 ) {
-                    Text(text = stringResource(designRes.string.change_server))
+                    Text(text = stringResource(coreRes.string.change_server))
                 }
 
                 Button(
@@ -148,7 +148,7 @@ private fun SettingsScreenData(
                     enabled = true,
                     onClick = { onAction(SettingsAction.Logout) },
                 ) {
-                    Text(text = stringResource(designRes.string.logout))
+                    Text(text = stringResource(coreRes.string.logout))
                 }
             }
         }

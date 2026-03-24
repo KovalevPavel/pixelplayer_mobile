@@ -25,9 +25,9 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
 import org.jetbrains.compose.resources.stringResource
-import pixelplayer.core_design.generated.resources.Res
-import pixelplayer.core_design.generated.resources.cancel
-import pixelplayer.core_design.generated.resources.ok
+import pixelplayer.core_ui.generated.resources.Res
+import pixelplayer.core_ui.generated.resources.cancel
+import pixelplayer.core_ui.generated.resources.ok
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +119,7 @@ fun MessageDialog(
 @AppPreview
 @Composable
 private fun MessageDialogPreview(
-    @PreviewParameter(ErrorVsProvider::class) viewState: MessageDialogVs,
+    @PreviewParameter(MessageDialogVsProvider::class) viewState: MessageDialogVs,
 ) {
     AppTheme {
         MessageDialog(
@@ -129,7 +129,7 @@ private fun MessageDialogPreview(
     }
 }
 
-private class ErrorVsProvider : PreviewParameterProvider<MessageDialogVs> {
+private class MessageDialogVsProvider : PreviewParameterProvider<MessageDialogVs> {
     override val values: Sequence<MessageDialogVs> = sequenceOf(
         MessageDialogVs(
             primaryAction = Res.string.ok,
