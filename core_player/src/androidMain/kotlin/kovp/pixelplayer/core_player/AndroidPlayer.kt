@@ -5,13 +5,22 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kotlin.math.roundToLong
 
 private typealias PlayerImpl = androidx.media3.common.Player
+private const val PROGRESS_UPDATE_INTERVAL_MS = 250L
 
 internal class AndroidPlayer(
     private val context: AndroidAppContext,
@@ -20,11 +29,33 @@ internal class AndroidPlayer(
 ) : Player {
     override val playerVs: StateFlow<PlayerVs> by lazy { _playerState }
     private val _playerState = MutableStateFlow<PlayerVs>(PlayerVs.Empty)
+    private val playerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var progressUpdateJob: Job? = null
+    private var isReleased = false
 
     private val listener = object : androidx.media3.common.Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
-            updatePlayerState()
+            refreshStateAndSyncProgressLoop()
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            super.onMediaItemTransition(mediaItem, reason)
+            refreshStateAndSyncProgressLoop()
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: androidx.media3.common.Player.PositionInfo,
+            newPosition: androidx.media3.common.Player.PositionInfo,
+            reason: Int,
+        ) {
+            super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+            refreshStateAndSyncProgressLoop()
+        }
+
+        override fun onTimelineChanged(timeline: androidx.media3.common.Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            refreshStateAndSyncProgressLoop()
         }
     }
 
@@ -32,6 +63,7 @@ internal class AndroidPlayer(
         .setListener(
             object : MediaController.Listener {
                 override fun onDisconnected(controller: MediaController) {
+                    shutdownPlayerState()
                     controller.removeListener(listener)
                     super.onDisconnected(controller)
                 }
@@ -41,8 +73,17 @@ internal class AndroidPlayer(
         .also { future ->
             future.addListener(
                 {
-                    controller.addListener(listener)
-                    updatePlayerState()
+                    if (isReleased) {
+                        MediaController.releaseFuture(future)
+                        return@addListener
+                    }
+
+                    runCatching { future.get() }
+                        .getOrNull()
+                        ?.let { controller ->
+                            controller.addListener(listener)
+                            refreshStateAndSyncProgressLoop()
+                        }
                 },
                 ContextCompat.getMainExecutor(context.context),
             )
@@ -62,22 +103,8 @@ internal class AndroidPlayer(
                 clearMediaItems()
             }
 
-            tracks.map { t ->
-                val url = mapUrl(t.trackId)
-
-                MediaItem.Builder()
-                    .setMediaId(t.trackId)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(t.metadata?.trackTitle)
-                            .setAlbumTitle(t.metadata?.album)
-                            .setArtist(t.metadata?.artist)
-                            .setDiscNumber(t.metadata?.disk)
-                            .setTrackNumber(t.metadata?.position)
-                            .build()
-                    )
-                    .setUri(url)
-                    .build()
+            tracks.map { track ->
+                mapMediaItem(trackId = track.trackId, metadata = track.metadata)
             }
                 .let(::setMediaItems)
             prepare()
@@ -93,22 +120,7 @@ internal class AndroidPlayer(
             PlayerImpl.COMMAND_PREPARE,
             PlayerImpl.COMMAND_PLAY_PAUSE,
         ) {
-            id.let(::mapUrl)
-                .let { mappedUri ->
-                    MediaItem.Builder()
-                        .setMediaId(id)
-                        .setMediaMetadata(
-                            MediaMetadata.Builder()
-                                .setTitle(metadata?.trackTitle)
-                                .setAlbumTitle(metadata?.album)
-                                .setArtist(metadata?.artist)
-                                .setDiscNumber(metadata?.disk)
-                                .setTrackNumber(metadata?.position)
-                                .build()
-                        )
-                        .setUri(mappedUri)
-                        .build()
-                }
+            mapMediaItem(trackId = id, metadata = metadata)
                 .let(::setMediaItem)
 
             prepare()
@@ -135,6 +147,7 @@ internal class AndroidPlayer(
     override fun pause() {
         doIfAvailable(PlayerImpl.COMMAND_PLAY_PAUSE) {
             pause()
+            refreshStateAndSyncProgressLoop()
         }
     }
 
@@ -159,23 +172,94 @@ internal class AndroidPlayer(
 
     override fun clearPlayer() {
         doIfAvailable(PlayerImpl.COMMAND_STOP) {
+            stopProgressLoop()
             stop()
             clearMediaItems()
-            updatePlayerState()
+            clearPlayerState()
         }
     }
 
+    internal fun release() {
+        if (isReleased) {
+            return
+        }
+        isReleased = true
+
+        shutdownPlayerState()
+        playerScope.coroutineContext.cancelChildren()
+
+        ContextCompat.getMainExecutor(context.context).execute {
+            if (controllerFuture.isDone) {
+                runCatching { controllerFuture.get() }
+                    .getOrNull()
+                    ?.let { controller ->
+                        controller.removeListener(listener)
+                        controller.release()
+                    }
+            } else {
+                MediaController.releaseFuture(controllerFuture)
+            }
+        }
+    }
+
+    private fun refreshStateAndSyncProgressLoop() {
+        if (isReleased) {
+            return
+        }
+        updatePlayerState()
+        syncProgressLoopWithPlayback()
+    }
+
+    private fun syncProgressLoopWithPlayback() {
+        if (controller.isPlaying && isActiveForUpdates()) {
+            startProgressLoop()
+        } else {
+            stopProgressLoop()
+        }
+    }
+
+    private fun startProgressLoop() {
+        if (isReleased) {
+            return
+        }
+        progressUpdateJob?.cancel()
+        progressUpdateJob = playerScope.launch {
+            while (isActive && controller.isPlaying && isActiveForUpdates()) {
+                updatePlayerState()
+                delay(PROGRESS_UPDATE_INTERVAL_MS)
+            }
+        }
+    }
+
+    private fun stopProgressLoop() {
+        progressUpdateJob?.cancel()
+        progressUpdateJob = null
+    }
+
+    private fun shutdownPlayerState() {
+        stopProgressLoop()
+        clearPlayerState()
+    }
+
+    private fun clearPlayerState() {
+        _playerState.value = PlayerVs.Empty
+    }
+
     private fun updatePlayerState() {
+        if (isReleased) {
+            return
+        }
         _playerState.update {
-            val id = controller.currentMediaItem?.mediaId ?: return@update PlayerVs.Empty
+            val currentMediaItem = controller.currentMediaItem ?: return@update PlayerVs.Empty
+            val metadata = currentMediaItem.mediaMetadata
             PlayerVs.Data(
-                trackId = id,
+                trackId = currentMediaItem.mediaId,
                 metaData = TrackIn.TrackMetaData(
-                    trackTitle = controller.currentMediaItem?.mediaMetadata?.title?.toString(),
-                    album = controller.currentMediaItem?.mediaMetadata?.albumTitle?.toString(),
-                    artist = controller.currentMediaItem?.mediaMetadata?.artist?.toString(),
-                    disk = controller.currentMediaItem?.mediaMetadata?.discNumber,
-                    position = controller.currentMediaItem?.mediaMetadata?.trackNumber,
+                    trackTitle = metadata.title?.toString(),
+                    album = metadata.albumTitle?.toString(),
+                    artist = metadata.artist?.toString(),
+                    disk = metadata.discNumber,
+                    position = metadata.trackNumber,
                 ),
                 timeLine = PlayerVs.AudioTimeline(
                     isPlaying = controller.isPlaying,
@@ -187,10 +271,36 @@ internal class AndroidPlayer(
         }
     }
 
+    private fun isActiveForUpdates(): Boolean {
+        return !isReleased && controller.currentMediaItem != null
+    }
+
     private fun doIfAvailable(vararg command: Int, action: MediaController.() -> Unit) {
+        if (isReleased) {
+            return
+        }
         if (command.all(controller::isCommandAvailable)) {
             controller.action()
         }
+    }
+
+    private fun mapMediaItem(
+        trackId: String,
+        metadata: TrackIn.TrackMetaData?,
+    ): MediaItem {
+        return MediaItem.Builder()
+            .setMediaId(trackId)
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setTitle(metadata?.trackTitle)
+                    .setAlbumTitle(metadata?.album)
+                    .setArtist(metadata?.artist)
+                    .setDiscNumber(metadata?.disk)
+                    .setTrackNumber(metadata?.position)
+                    .build()
+            )
+            .setUri(mapUrl(trackId))
+            .build()
     }
 
     private fun mapUrl(uri: String): String {

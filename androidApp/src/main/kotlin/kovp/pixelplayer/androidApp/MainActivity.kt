@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App(ctx = AndroidAppContext(this))
+            App(ctx = AndroidAppContext(this@MainActivity.applicationContext))
         }
     }
 }
