@@ -24,7 +24,8 @@ import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
-import org.jetbrains.compose.resources.stringResource
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import pixelplayer.core_ui.generated.resources.Res
 import pixelplayer.core_ui.generated.resources.cancel
 import pixelplayer.core_ui.generated.resources.ok
@@ -59,20 +60,20 @@ fun MessageDialog(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             viewState.title
-                ?.takeUnless(MessageDialogVs.Field::isEmpty)
+                ?.takeUnless(UiText::isEmpty)
                 ?.let {
                     Text(
-                        text = it.value,
+                        text = it.asString(),
                         style = pixelTypography.titleMedium,
                         textAlign = TextAlign.Center,
                     )
                 }
 
             viewState.message
-                ?.takeUnless(MessageDialogVs.Field::isEmpty)
+                ?.takeUnless(UiText::isEmpty)
                 ?.let {
                     Text(
-                        text = it.value,
+                        text = it.asString(),
                         style = pixelTypography.bodyLarge,
                         textAlign = TextAlign.Center,
                     )
@@ -92,7 +93,7 @@ fun MessageDialog(
                     },
                 ) {
                     Text(
-                        text = stringResource(viewState.primaryAction),
+                        text = viewState.primaryAction.asString(),
                     )
                 }
 
@@ -108,7 +109,7 @@ fun MessageDialog(
                                 }
                             },
                         ) {
-                            Text(text = stringResource(it))
+                            Text(text = it.asString())
                         }
                     }
             }
@@ -132,26 +133,26 @@ private fun MessageDialogPreview(
 private class MessageDialogVsProvider : PreviewParameterProvider<MessageDialogVs> {
     override val values: Sequence<MessageDialogVs> = sequenceOf(
         MessageDialogVs(
-            primaryAction = Res.string.ok,
+            primaryAction = UiText.Resource(Res.string.ok),
         ),
         MessageDialogVs(
-            message = MessageDialogVs.Field.Text("Simple message"),
-            primaryAction = Res.string.ok,
+            message = UiText.Dynamic("Simple message"),
+            primaryAction = UiText.Resource(Res.string.ok),
         ),
         MessageDialogVs(
-            title = MessageDialogVs.Field.Text("Message dialog title"),
-            message = MessageDialogVs.Field.Text("Simple message"),
-            primaryAction = Res.string.ok,
-            secondaryAction = Res.string.cancel,
+            title = UiText.Dynamic("Message dialog title"),
+            message = UiText.Dynamic("Simple message"),
+            primaryAction = UiText.Resource(Res.string.ok),
+            secondaryAction = UiText.Resource(Res.string.cancel),
         ),
         MessageDialogVs(
-            title = MessageDialogVs.Field.Text("Message dialog title ".repeat(3).trim()),
-            message = MessageDialogVs.Field.Text("Simple message ".repeat(5).trim()),
-            primaryAction = Res.string.ok,
+            title = UiText.Dynamic("Message dialog title ".repeat(3).trim()),
+            message = UiText.Dynamic("Simple message ".repeat(5).trim()),
+            primaryAction = UiText.Resource(Res.string.ok),
         ),
         MessageDialogVs(
-            title = MessageDialogVs.Field.Text("Message dialog title ".repeat(3).trim()),
-            primaryAction = Res.string.ok,
+            title = UiText.Dynamic("Message dialog title ".repeat(3).trim()),
+            primaryAction = UiText.Resource(Res.string.ok),
         ),
     )
 }

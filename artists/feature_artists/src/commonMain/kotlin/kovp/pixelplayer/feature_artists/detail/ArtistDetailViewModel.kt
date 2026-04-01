@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_artists.ArtistsRepository
@@ -53,9 +54,9 @@ class ArtistDetailViewModel(
                             VerticalCardVs(
                                 id = vo.id,
                                 imageUrl = vo.cover,
-                                title = vo.title,
-                                description = vo.tracks.toString(),
-                                tagline = vo.year,
+                                title = UiText.Dynamic(vo.title),
+                                description = UiText.Dynamic(vo.tracks.toString()),
+                                tagline = UiText.Dynamic(vo.year),
                             )
                         }
                             .toImmutableList()

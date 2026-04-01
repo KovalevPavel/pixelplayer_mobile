@@ -1,6 +1,7 @@
 package kovp.pixelplayer.feature_tracks.presentation
 
 import kotlinx.collections.immutable.ImmutableList
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 
 internal sealed interface TracksState {
@@ -11,7 +12,7 @@ internal sealed interface TracksState {
     ) : TracksState
 
     data class Error(
-        val message: String,
-        val action: String,
+        val message: UiText,
+        val action: UiText,
     ) : TracksState
 }

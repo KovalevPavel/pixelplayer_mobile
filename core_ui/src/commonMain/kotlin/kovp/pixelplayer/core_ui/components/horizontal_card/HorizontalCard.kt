@@ -32,6 +32,8 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import kovp.pixelplayer.core_ui.components.image.PixelImage
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
 
@@ -78,7 +80,7 @@ fun HorizontalCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = viewState.description,
+                    text = viewState.description.asString(),
                     style = pixelTypography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -116,7 +118,7 @@ private fun HorizontalCardIconPreview() {
         id = "",
         imageUrl = "",
         title = "Horiz card title",
-        description = "Card • Description",
+        description = UiText.Dynamic("Card • Description"),
     )
 
     AppTheme {
@@ -143,7 +145,7 @@ private fun HorizontalCardPlayingPreview() {
         id = "",
         imageUrl = "",
         title = "Horiz card title",
-        description = "Card • Description",
+        description = UiText.Dynamic("Card • Description"),
     )
 
     AppTheme {
@@ -167,7 +169,7 @@ private class HorizontalVsProvider : PreviewParameterProvider<HorizontalCardVs> 
             id = i.toString(),
             imageUrl = "".takeIf { i % 2 == 0 },
             title = "Horiz card title $i ".repeat(i + 1).trim(),
-            description = "Card_$i • Description ".repeat(i + 1).trim(),
+            description = UiText.Dynamic("Card_$i • Description ".repeat(i + 1).trim()),
         )
     }
         .asSequence()

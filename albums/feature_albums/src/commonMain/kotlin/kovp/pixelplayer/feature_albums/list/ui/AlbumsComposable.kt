@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.feature_albums.di.AlbumsScope
@@ -81,13 +83,13 @@ private fun AlbumsScaffold(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = st.message,
+                            text = st.message.asString(),
                             textAlign = TextAlign.Center,
                         )
                         OutlinedButton(
                             onClick = { handleAction(AlbumsAction.OnErrorActionClick) },
                         ) {
-                            Text(text = st.action)
+                            Text(text = st.action.asString())
                         }
                     }
                 }
@@ -126,8 +128,8 @@ private class ArtistStateProvider : PreviewParameterProvider<AlbumsState> {
     override val values: Sequence<AlbumsState> = sequenceOf(
         AlbumsState.Loading,
         AlbumsState.Error(
-            message = "Unexpected error",
-            action = "Retry",
+            message = UiText.Dynamic("Unexpected error"),
+            action = UiText.Dynamic("Retry"),
         ),
     )
 }

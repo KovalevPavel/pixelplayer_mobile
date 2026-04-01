@@ -9,8 +9,13 @@ import kovp.pixelplayer.core_player.Player
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.core_player.PlayerVs
 import kovp.pixelplayer.core_player.TrackIn
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_tracks.TracksRepository
+import pixelplayer.core_ui.generated.resources.Res as coreRes
+import pixelplayer.core_ui.generated.resources.retry
+import pixelplayer.feature_tracks.generated.resources.Res
+import pixelplayer.feature_tracks.generated.resources.track_description
 
 internal class TracksViewModel(
     private val repository: TracksRepository,
@@ -47,7 +52,10 @@ internal class TracksViewModel(
                             id = it.id,
                             title = it.title,
                             imageUrl = it.cover,
-                            description = "${it.artist} • ${it.album}",
+                            description = UiText.Resource(
+                                value = Res.string.track_description,
+                                args = listOf(it.artist, it.album),
+                            ),
                             payload = TrackIn.TrackMetaData(
                                 trackTitle = it.title,
                                 album = it.album,
@@ -60,8 +68,8 @@ internal class TracksViewModel(
             },
             onFailure = {
                 state = TracksState.Error(
-                    message = it.message.orEmpty(),
-                    action = "Retry",
+                    message = UiText.Dynamic(it.message.orEmpty()),
+                    action = UiText.Resource(coreRes.string.retry),
                 )
             },
         )

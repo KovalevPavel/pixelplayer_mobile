@@ -6,11 +6,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_login.LoginRepository
 import pixelplayer.core_ui.generated.resources.Res
 import pixelplayer.core_ui.generated.resources.ok
+import pixelplayer.feature_login.generated.resources.Res as loginRes
+import pixelplayer.feature_login.generated.resources.cant_validate_url
+import pixelplayer.feature_login.generated.resources.wrong_credentials
 
 class LoginViewModel(
     private val loginRepo: LoginRepository,
@@ -39,14 +43,11 @@ class LoginViewModel(
                         .let(::emitEvent)
                     return@launch
                 }
-
-                error("Can't validate url. Try another one")
             },
             onFailure = {
-                println(it)
                 MessageDialogVs(
-                    message = MessageDialogVs.Field.Text(it.message),
-                    primaryAction = Res.string.ok,
+                    message = UiText.Resource(loginRes.string.cant_validate_url),
+                    primaryAction = UiText.Resource(Res.string.ok),
                 )
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)
@@ -68,13 +69,16 @@ class LoginViewModel(
                         .let(::emitEvent)
                     return@launch
                 }
-
-                error("Wrong credentials")
             },
             onFailure = {
+                val message = when (it.message) {
+                    WRONG_CREDS_ERROR -> UiText.Resource(loginRes.string.wrong_credentials)
+                    else -> UiText.Dynamic(it.message)
+                }
+
                 MessageDialogVs(
-                    message = MessageDialogVs.Field.Text(it.message),
-                    primaryAction = Res.string.ok,
+                    message = message,
+                    primaryAction = UiText.Resource(Res.string.ok),
                 )
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)
@@ -93,5 +97,9 @@ class LoginViewModel(
 
     private fun emitEvent(event: LoginEvent) {
         viewModelScope.launch { _eventsFlow.emit(event) }
+    }
+
+    companion object {
+        private const val WRONG_CREDS_ERROR = "invalid input"
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCard
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.feature_albums.list.AlbumsAction
@@ -58,9 +59,9 @@ private class ArtistsListProvider : PreviewParameterProvider<AlbumsState.List> {
             albums = List((i + 1) * 3) {
                 VerticalCardVs(
                     id = it.toString(),
-                    title = "Album $it ".repeat(it + 1),
+                    title = UiText.Dynamic("Album $it ".repeat(it + 1)),
                     imageUrl = "",
-                    description = "2007",
+                    description = UiText.Dynamic("2007"),
                 )
             }
                 .toImmutableList()

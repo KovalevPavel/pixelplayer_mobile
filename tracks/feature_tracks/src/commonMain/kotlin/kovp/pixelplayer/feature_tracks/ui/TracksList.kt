@@ -29,6 +29,7 @@ import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCard
 import kovp.pixelplayer.core_ui.components.horizontal_card.HorizontalCardVs
 import kovp.pixelplayer.core_player.PlayerVs
 import kovp.pixelplayer.core_player.TrackIn
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.playing_icon.PlayingIcon
 import kovp.pixelplayer.feature_tracks.presentation.TracksAction
 import kovp.pixelplayer.feature_tracks.presentation.TracksState
@@ -127,7 +128,7 @@ private class TracksListStateProvider : PreviewParameterProvider<TracksState.Lis
                     id = it.toString(),
                     title = "Track $it ".repeat(it + 1),
                     imageUrl = "",
-                    description = "Albums: $it".repeat(10 * (it)),
+                    description = UiText.Dynamic("Albums: $it".repeat(10 * (it))),
                 )
             }
                 .toImmutableList()

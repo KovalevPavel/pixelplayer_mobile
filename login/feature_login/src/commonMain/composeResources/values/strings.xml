@@ -1,0 +1,8 @@
+<resources>
+    <string name="password">Password</string>
+    <string name="endpoint_placeholder">https://</string>
+    <string name="enter_server_endpoint">Enter server's endpoint</string>
+    <string name="check">Check</string>
+    <string name="cant_validate_url">Can't validate url. Try another one</string>
+    <string name="wrong_credentials">Wrong credentials</string>
+</resources>

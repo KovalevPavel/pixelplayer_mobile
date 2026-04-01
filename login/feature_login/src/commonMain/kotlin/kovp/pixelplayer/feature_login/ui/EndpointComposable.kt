@@ -28,7 +28,12 @@ import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.feature_login.LoginAction
 import kovp.pixelplayer.feature_login.LoginEvent
 import kovp.pixelplayer.feature_login.LoginViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.scope.Scope
+import pixelplayer.feature_login.generated.resources.Res
+import pixelplayer.feature_login.generated.resources.check
+import pixelplayer.feature_login.generated.resources.endpoint_placeholder
+import pixelplayer.feature_login.generated.resources.enter_server_endpoint
 
 @Composable
 fun EndpointComposable(
@@ -93,8 +98,8 @@ private fun EndpointScreen(
                 value = endpoint,
                 onValueChange = { endpoint = it },
                 singleLine = true,
-                placeholder = { Text("https://") },
-                label = { Text("Enter server's endpoint") },
+                placeholder = { Text(stringResource(Res.string.endpoint_placeholder)) },
+                label = { Text(stringResource(Res.string.enter_server_endpoint)) },
             )
 
             Button(
@@ -104,7 +109,7 @@ private fun EndpointScreen(
                     handleAction(LoginAction.CheckEndpoint(endpoint))
                 },
             ) {
-                Text("Check")
+                Text(stringResource(Res.string.check))
             }
         }
 

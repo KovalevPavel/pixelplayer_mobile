@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
 import kovp.pixelplayer.core_player.Player
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
 import pixelplayer.core_ui.generated.resources.cancel
@@ -61,9 +62,9 @@ class SettingsViewModel(
     private fun logout() {
         MessageDialogVs(
             id = LOGOUT_DIALOG_ID,
-            title = MessageDialogVs.Field.Resource(Res.string.logout_message),
-            primaryAction = coreRes.string.ok,
-            secondaryAction = coreRes.string.cancel,
+            title = UiText.Resource(Res.string.logout_message),
+            primaryAction = UiText.Resource(coreRes.string.ok),
+            secondaryAction = UiText.Resource(coreRes.string.cancel),
         )
             .let(SettingsEvent::ShowMessageDialog)
             .let(::emitNewEvent)
@@ -72,9 +73,9 @@ class SettingsViewModel(
     private fun changeEndpoint() {
         MessageDialogVs(
             id = CHANGE_ENDPOINT_DIALOG_ID,
-            title = MessageDialogVs.Field.Resource(Res.string.change_endpoint),
-            primaryAction = coreRes.string.ok,
-            secondaryAction = coreRes.string.cancel,
+            title = UiText.Resource(Res.string.change_endpoint),
+            primaryAction = UiText.Resource(coreRes.string.ok),
+            secondaryAction = UiText.Resource(coreRes.string.cancel),
         )
             .let(SettingsEvent::ShowMessageDialog)
             .let(::emitNewEvent)

@@ -23,6 +23,8 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_design.pixelTypography
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.feature_artists.di.ArtistsScope
@@ -88,7 +90,7 @@ private fun ArtistsScaffold(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = st.message,
+                            text = st.message.asString(),
                             textAlign = TextAlign.Center,
                             style = pixelTypography.bodyMedium,
                             color = pixelColors.onBackground,
@@ -96,7 +98,7 @@ private fun ArtistsScaffold(
                         OutlinedButton(
                             onClick = { handleAction(ArtistsAction.OnErrorActionClick) },
                         ) {
-                            Text(text = st.action)
+                            Text(text = st.action.asString())
                         }
                     }
                 }
@@ -135,8 +137,8 @@ private class ArtistStateProvider : PreviewParameterProvider<ArtistsState> {
     override val values: Sequence<ArtistsState> = sequenceOf(
         ArtistsState.Loading,
         ArtistsState.Error(
-            message = "Unexpected error",
-            action = "Retry",
+            message = UiText.Dynamic("Unexpected error"),
+            action = UiText.Dynamic("Retry"),
         ),
     )
 }
