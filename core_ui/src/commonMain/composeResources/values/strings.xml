@@ -10,4 +10,10 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>
+    <string name="language">Language</string>
+    <string name="system">System</string>
+    <string name="english">English</string>
+    <string name="russian">Russian</string>
+    <string name="german">German</string>
+    <string name="change_language">Change</string>
 </resources>

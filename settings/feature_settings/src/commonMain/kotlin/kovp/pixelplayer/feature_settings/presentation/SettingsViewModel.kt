@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.core.language.AppLanguageManager
+import kovp.pixelplayer.core.language.AppLanguageRepository
+import kovp.pixelplayer.core.language.LanguageSelection
 import kovp.pixelplayer.core_player.Player
 import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
@@ -23,6 +26,8 @@ import pixelplayer.feature_settings.generated.resources.logout_message
 class SettingsViewModel(
     private val player: Player,
     private val credentialsRepository: CredentialsRepository,
+    private val appLanguageRepository: AppLanguageRepository,
+    private val appLanguageManager: AppLanguageManager,
 ) : ViewModel() {
     val stateFlow: StateFlow<SettingsState> by lazy { _stateFlow }
     val settingsEvents: Flow<SettingsEvent> by lazy { _settingsEvents }
@@ -37,8 +42,10 @@ class SettingsViewModel(
     fun handleAction(action: SettingsAction) {
         when (action) {
             SettingsAction.ChangeEndpoint -> changeEndpoint()
+            is SettingsAction.ChangeLanguage -> changeLanguage(action.selection)
             SettingsAction.Logout -> logout()
             is SettingsAction.OnMessageDialogPrimaryClick -> handleDialogPrimaryAction(action.dialogId)
+            SettingsAction.OnChangeLanguageClick -> showLanguagesDialog()
         }
     }
 
@@ -47,11 +54,15 @@ class SettingsViewModel(
             body = {
                 val login = credentialsRepository.getUsername().orEmpty()
                 val endpoint = credentialsRepository.getEndpoint().orEmpty()
+                val languageSelection = appLanguageRepository.getSelection()
 
                 _stateFlow.update {
                     SettingsState.Data(
                         login = login,
                         endpoint = endpoint,
+                        languageSelection = languageSelection,
+                        deviceLanguage = appLanguageManager.resolveDeviceLanguage(),
+                        isLanguagePickerVisible = appLanguageManager.supportsOverride,
                         isProcessing = false,
                     )
                 }
@@ -68,6 +79,10 @@ class SettingsViewModel(
         )
             .let(SettingsEvent::ShowMessageDialog)
             .let(::emitNewEvent)
+    }
+
+    private fun showLanguagesDialog() {
+        SettingsEvent.ShowLanguagesDialog.let(::emitNewEvent)
     }
 
     private fun changeEndpoint() {
@@ -101,6 +116,22 @@ class SettingsViewModel(
                         credentialsRepository.saveEndpoint(null)
                         SettingsEvent.NavigateToLoginFlow.let(::emitNewEvent)
                     }
+                }
+            },
+        )
+    }
+
+    private fun changeLanguage(selection: LanguageSelection) {
+        launch(
+            body = {
+                appLanguageRepository.setSelection(selection)
+                appLanguageManager.applySelection(selection)
+                _stateFlow.update { st ->
+                    (st as? SettingsState.Data)?.copy(
+                        languageSelection = selection,
+                        deviceLanguage = appLanguageManager.resolveDeviceLanguage(),
+                    )
+                        ?: st
                 }
             },
         )

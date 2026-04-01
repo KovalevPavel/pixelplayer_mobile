@@ -1,0 +1,5 @@
+<resources>
+    <string name="username">Текущий пользователь</string>
+    <string name="logout_message">Вы уверены, что хотите очистить данные входа?</string>
+    <string name="change_endpoint">Вы уверены, что хотите сменить сервер?\nЭто также очистит данные входа.</string>
+</resources>
