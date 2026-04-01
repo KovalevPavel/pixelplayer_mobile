@@ -5,13 +5,22 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kotlin.math.roundToLong
 
 private typealias PlayerImpl = androidx.media3.common.Player
+private const val PROGRESS_UPDATE_INTERVAL_MS = 250L
 
 internal class AndroidPlayer(
     private val context: AndroidAppContext,
@@ -20,11 +29,32 @@ internal class AndroidPlayer(
 ) : Player {
     override val playerVs: StateFlow<PlayerVs> by lazy { _playerState }
     private val _playerState = MutableStateFlow<PlayerVs>(PlayerVs.Empty)
+    private val playerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var progressUpdateJob: Job? = null
 
     private val listener = object : androidx.media3.common.Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
-            updatePlayerState()
+            syncPlayerStateAndProgressUpdates()
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            super.onMediaItemTransition(mediaItem, reason)
+            syncPlayerStateAndProgressUpdates()
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: androidx.media3.common.Player.PositionInfo,
+            newPosition: androidx.media3.common.Player.PositionInfo,
+            reason: Int,
+        ) {
+            super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+            syncPlayerStateAndProgressUpdates()
+        }
+
+        override fun onTimelineChanged(timeline: androidx.media3.common.Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            syncPlayerStateAndProgressUpdates()
         }
     }
 
@@ -32,6 +62,8 @@ internal class AndroidPlayer(
         .setListener(
             object : MediaController.Listener {
                 override fun onDisconnected(controller: MediaController) {
+                    stopProgressUpdates()
+                    playerScope.cancel()
                     controller.removeListener(listener)
                     super.onDisconnected(controller)
                 }
@@ -42,7 +74,7 @@ internal class AndroidPlayer(
             future.addListener(
                 {
                     controller.addListener(listener)
-                    updatePlayerState()
+                    syncPlayerStateAndProgressUpdates()
                 },
                 ContextCompat.getMainExecutor(context.context),
             )
@@ -135,6 +167,7 @@ internal class AndroidPlayer(
     override fun pause() {
         doIfAvailable(PlayerImpl.COMMAND_PLAY_PAUSE) {
             pause()
+            syncPlayerStateAndProgressUpdates()
         }
     }
 
@@ -159,10 +192,36 @@ internal class AndroidPlayer(
 
     override fun clearPlayer() {
         doIfAvailable(PlayerImpl.COMMAND_STOP) {
+            stopProgressUpdates()
             stop()
             clearMediaItems()
             updatePlayerState()
         }
+    }
+
+    private fun syncPlayerStateAndProgressUpdates() {
+        updatePlayerState()
+
+        if (controller.isPlaying && controller.currentMediaItem != null) {
+            startProgressUpdates()
+        } else {
+            stopProgressUpdates()
+        }
+    }
+
+    private fun startProgressUpdates() {
+        progressUpdateJob?.cancel()
+        progressUpdateJob = playerScope.launch {
+            while (isActive && controller.isPlaying && controller.currentMediaItem != null) {
+                updatePlayerState()
+                delay(PROGRESS_UPDATE_INTERVAL_MS)
+            }
+        }
+    }
+
+    private fun stopProgressUpdates() {
+        progressUpdateJob?.cancel()
+        progressUpdateJob = null
     }
 
     private fun updatePlayerState() {

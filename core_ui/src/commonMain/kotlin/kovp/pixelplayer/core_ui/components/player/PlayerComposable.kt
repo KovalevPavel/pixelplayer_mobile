@@ -17,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_player.PlayerAction
@@ -41,15 +39,11 @@ fun PlayerComposable(
     isExpanded: Boolean,
     onPlayerAction: (PlayerAction) -> Unit,
 ) {
-    var currentPosition by remember(viewState) {
-        mutableStateOf(viewState.timeLine.currentPositionMs)
-    }
-
-    LaunchedEffect(viewState) {
-        while (currentPosition < viewState.timeLine.durationMs && viewState.timeLine.isPlaying) {
-            delay(500)
-            currentPosition += 500
-        }
+    val durationMs = viewState.timeLine.durationMs
+    val fraction = if (durationMs > 0) {
+        viewState.timeLine.currentPositionMs / durationMs.toFloat()
+    } else {
+        0f
     }
 
     Column(
@@ -62,7 +56,7 @@ fun PlayerComposable(
             title = viewState.metaData.trackTitle.orEmpty(),
             album = viewState.metaData.album.orEmpty(),
             isExpanded = isExpanded,
-            fraction = currentPosition / viewState.timeLine.durationMs.toFloat(),
+            fraction = fraction.coerceIn(0f, 1f),
             onSeek = {
                 onPlayerAction(
                     PlayerAction.Seek(fraction = it),
