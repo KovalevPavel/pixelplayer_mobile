@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,7 @@ internal class AndroidPlayer(
     private val _playerState = MutableStateFlow<PlayerVs>(PlayerVs.Empty)
     private val playerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var progressUpdateJob: Job? = null
+    private var isReleased = false
 
     private val listener = object : androidx.media3.common.Player.Listener {
         override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -71,8 +73,17 @@ internal class AndroidPlayer(
         .also { future ->
             future.addListener(
                 {
-                    controller.addListener(listener)
-                    refreshStateAndSyncProgressLoop()
+                    if (isReleased) {
+                        MediaController.releaseFuture(future)
+                        return@addListener
+                    }
+
+                    runCatching { future.get() }
+                        .getOrNull()
+                        ?.let { controller ->
+                            controller.addListener(listener)
+                            refreshStateAndSyncProgressLoop()
+                        }
                 },
                 ContextCompat.getMainExecutor(context.context),
             )
@@ -168,13 +179,39 @@ internal class AndroidPlayer(
         }
     }
 
+    internal fun release() {
+        if (isReleased) {
+            return
+        }
+        isReleased = true
+
+        shutdownPlayerState()
+        playerScope.coroutineContext.cancelChildren()
+
+        ContextCompat.getMainExecutor(context.context).execute {
+            if (controllerFuture.isDone) {
+                runCatching { controllerFuture.get() }
+                    .getOrNull()
+                    ?.let { controller ->
+                        controller.removeListener(listener)
+                        controller.release()
+                    }
+            } else {
+                MediaController.releaseFuture(controllerFuture)
+            }
+        }
+    }
+
     private fun refreshStateAndSyncProgressLoop() {
+        if (isReleased) {
+            return
+        }
         updatePlayerState()
         syncProgressLoopWithPlayback()
     }
 
     private fun syncProgressLoopWithPlayback() {
-        if (controller.isPlaying && controller.currentMediaItem != null) {
+        if (controller.isPlaying && isActiveForUpdates()) {
             startProgressLoop()
         } else {
             stopProgressLoop()
@@ -182,9 +219,12 @@ internal class AndroidPlayer(
     }
 
     private fun startProgressLoop() {
+        if (isReleased) {
+            return
+        }
         progressUpdateJob?.cancel()
         progressUpdateJob = playerScope.launch {
-            while (isActive && controller.isPlaying && controller.currentMediaItem != null) {
+            while (isActive && controller.isPlaying && isActiveForUpdates()) {
                 updatePlayerState()
                 delay(PROGRESS_UPDATE_INTERVAL_MS)
             }
@@ -206,6 +246,9 @@ internal class AndroidPlayer(
     }
 
     private fun updatePlayerState() {
+        if (isReleased) {
+            return
+        }
         _playerState.update {
             val currentMediaItem = controller.currentMediaItem ?: return@update PlayerVs.Empty
             val metadata = currentMediaItem.mediaMetadata
@@ -228,7 +271,14 @@ internal class AndroidPlayer(
         }
     }
 
+    private fun isActiveForUpdates(): Boolean {
+        return !isReleased && controller.currentMediaItem != null
+    }
+
     private fun doIfAvailable(vararg command: Int, action: MediaController.() -> Unit) {
+        if (isReleased) {
+            return
+        }
         if (command.all(controller::isCommandAvailable)) {
             controller.action()
         }

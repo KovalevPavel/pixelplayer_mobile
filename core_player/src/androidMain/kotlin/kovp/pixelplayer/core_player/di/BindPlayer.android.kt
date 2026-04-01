@@ -9,6 +9,8 @@ import kovp.pixelplayer.core_player.PlaybackService
 import kovp.pixelplayer.core_player.TokenProvider
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kovp.pixelplayer.core.context.AppContext
+import org.koin.core.module.dsl.onClose
+import org.koin.core.module.dsl.withOptions
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 
@@ -34,5 +36,8 @@ internal actual fun Module.bindPlayer(ctx: AppContext, token: String, baseUrl: S
             baseUrl = baseUrl,
         )
     }
+        .withOptions {
+            onClose { player -> player?.release() }
+        }
         .bind<kovp.pixelplayer.core_player.Player>()
 }
