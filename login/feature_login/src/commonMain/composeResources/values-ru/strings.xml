@@ -1,0 +1,8 @@
+<resources>
+    <string name="password">Пароль</string>
+    <string name="endpoint_placeholder">https://</string>
+    <string name="enter_server_endpoint">Введите адрес сервера</string>
+    <string name="check">Проверить</string>
+    <string name="cant_validate_url">Не удалось проверить адрес. Попробуйте другой.</string>
+    <string name="wrong_credentials">Неверные учетные данные</string>
+</resources>

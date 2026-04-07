@@ -15,7 +15,8 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_design.pixelTypography
-import org.jetbrains.compose.resources.stringResource
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import pixelplayer.core_ui.generated.resources.Res
 import pixelplayer.core_ui.generated.resources.retry
 
@@ -31,7 +32,7 @@ fun ErrorView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = viewState.message,
+            text = viewState.message.asString(),
             style = pixelTypography.bodyMedium,
             color = pixelColors.onBackground,
             textAlign = TextAlign.Center,
@@ -41,7 +42,7 @@ fun ErrorView(
             onClick = onActionClick,
         ) {
             Text(
-                text = stringResource(viewState.action),
+                text = viewState.action.asString(),
             )
         }
     }
@@ -63,12 +64,12 @@ private fun ErrorViewPreview(
 private class ErrorVsProvider : PreviewParameterProvider<ErrorVs> {
     override val values: Sequence<ErrorVs> = sequenceOf(
         ErrorVs(
-            message = "Error message",
-            action = Res.string.retry,
+            message = UiText.Dynamic("Error message"),
+            action = UiText.Resource(Res.string.retry),
         ),
         ErrorVs(
-            message = "Error message ".repeat(5).trim(),
-            action = Res.string.retry,
+            message = UiText.Dynamic("Error message ".repeat(5).trim()),
+            action = UiText.Resource(Res.string.retry),
         ),
     )
 }

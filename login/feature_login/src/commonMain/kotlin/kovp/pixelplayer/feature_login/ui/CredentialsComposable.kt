@@ -32,7 +32,13 @@ import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.feature_login.LoginAction
 import kovp.pixelplayer.feature_login.LoginEvent
 import kovp.pixelplayer.feature_login.LoginViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.scope.Scope
+import pixelplayer.core_ui.generated.resources.Res as coreRes
+import pixelplayer.core_ui.generated.resources.change_server
+import pixelplayer.core_ui.generated.resources.login
+import pixelplayer.feature_login.generated.resources.Res
+import pixelplayer.feature_login.generated.resources.password
 
 @Composable
 fun CredentialsComposable(
@@ -99,7 +105,7 @@ private fun CredentialsScreen(
                     singleLine = true,
                     onValueChange = { login = it },
                     label = {
-                        Text("login")
+                        Text(stringResource(coreRes.string.login))
                     },
                 )
 
@@ -111,7 +117,7 @@ private fun CredentialsScreen(
                         keyboardType = KeyboardType.Password,
                     ),
                     label = {
-                        Text("password")
+                        Text(stringResource(Res.string.password))
                     },
                     visualTransformation = PasswordVisualTransformation(),
                 )
@@ -127,7 +133,7 @@ private fun CredentialsScreen(
                         )
                     },
                 ) {
-                    Text(text = "Login")
+                    Text(text = stringResource(coreRes.string.login))
                 }
 
                 TextButton(
@@ -136,7 +142,7 @@ private fun CredentialsScreen(
                         handleAction(LoginAction.ChangeEndpoint)
                     },
                 ) {
-                    Text(text = "Change endpoint")
+                    Text(text = stringResource(coreRes.string.change_server))
                 }
             }
         }

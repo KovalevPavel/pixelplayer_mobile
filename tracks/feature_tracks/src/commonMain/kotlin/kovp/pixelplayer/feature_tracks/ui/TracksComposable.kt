@@ -21,6 +21,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.feature_tracks.di.TracksScope
 import kovp.pixelplayer.feature_tracks.di.tracksModule
@@ -74,13 +76,13 @@ private fun TracksScaffold(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = st.message,
+                            text = st.message.asString(),
                             textAlign = TextAlign.Center,
                         )
                         OutlinedButton(
                             onClick = { handleAction(TracksAction.OnErrorActionClick) },
                         ) {
-                            Text(text = st.action)
+                            Text(text = st.action.asString())
                         }
                     }
                 }
@@ -119,8 +121,8 @@ private class TracksStateProvider : PreviewParameterProvider<TracksState> {
     override val values: Sequence<TracksState> = sequenceOf(
         TracksState.Loading,
         TracksState.Error(
-            message = "Unexpected error",
-            action = "Retry",
+            message = UiText.Dynamic("Unexpected error"),
+            action = UiText.Dynamic("Retry"),
         ),
     )
 }

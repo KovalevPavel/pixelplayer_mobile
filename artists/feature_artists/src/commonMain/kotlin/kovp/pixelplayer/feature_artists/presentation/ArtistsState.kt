@@ -1,6 +1,7 @@
 package kovp.pixelplayer.feature_artists.presentation
 
 import kotlinx.collections.immutable.ImmutableList
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 
 internal sealed interface ArtistsState {
@@ -11,7 +12,7 @@ internal sealed interface ArtistsState {
     ) : ArtistsState
 
     data class Error(
-        val message: String,
-        val action: String,
+        val message: UiText,
+        val action: UiText,
     ) : ArtistsState
 }

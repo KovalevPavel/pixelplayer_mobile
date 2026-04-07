@@ -16,13 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.asString
 import kovp.pixelplayer.core_ui.components.image.PixelImage
 import kovp.pixelplayer.core_ui.withAnimation
 import kotlin.math.pow
@@ -59,7 +60,7 @@ fun VerticalCard(
                 Text(
                     modifier = Modifier.fillMaxWidth()
                         .withAnimation("${viewState.id}_${viewState.title}"),
-                    text = viewState.title,
+                    text = viewState.title.asString(),
                     style = pixelTypography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -68,7 +69,7 @@ fun VerticalCard(
                 Text(
                     modifier = Modifier.fillMaxWidth()
                         .withAnimation("${viewState.id}_${viewState.description}"),
-                    text = viewState.description,
+                    text = viewState.description.asString(),
                     style = pixelTypography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -78,7 +79,7 @@ fun VerticalCard(
                     Text(
                         modifier = Modifier.fillMaxWidth()
                             .withAnimation("${viewState.id}_${viewState.tagline}"),
-                        text = tag,
+                        text = tag.asString(),
                         style = pixelTypography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -108,10 +109,11 @@ private class ArtistProvider : PreviewParameterProvider<VerticalCardVs> {
     override val values: Sequence<VerticalCardVs> = List(4) { index ->
         VerticalCardVs(
             id = "",
-            title = "Artist name ".repeat(index + 1).trim(),
+            title = UiText.Dynamic("Artist name ".repeat(index + 1).trim()),
             imageUrl = "",
-            description = "Albums: ${20.0.pow(index).toInt()}",
-            tagline = if (index % 2 == 0) "2007" else "".takeIf { index % 3 == 0 },
+            description = UiText.Dynamic("Albums: ${20.0.pow(index).toInt()}"),
+            tagline = UiText.Dynamic(if (index % 2 == 0) "2007" else "")
+                .takeIf { index % 3 == 0 },
         )
     }
         .asSequence()

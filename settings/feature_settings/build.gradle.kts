@@ -6,6 +6,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core"))
             implementation(project(":core_player"))
             implementation(project(":api_credentials"))
         }

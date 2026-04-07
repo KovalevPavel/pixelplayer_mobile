@@ -7,5 +7,7 @@ sealed interface SettingsEvent {
         val viewState: MessageDialogVs,
     ) : SettingsEvent
 
+    data object ShowLanguagesDialog : SettingsEvent
+
     data object NavigateToLoginFlow : SettingsEvent
 }

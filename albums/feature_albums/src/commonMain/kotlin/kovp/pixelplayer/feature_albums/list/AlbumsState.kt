@@ -1,6 +1,7 @@
 package kovp.pixelplayer.feature_albums.list
 
 import kotlinx.collections.immutable.ImmutableList
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 
 internal sealed interface AlbumsState {
@@ -11,7 +12,7 @@ internal sealed interface AlbumsState {
     ) : AlbumsState
 
     data class Error(
-        val message: String,
-        val action: String,
+        val message: UiText,
+        val action: UiText,
     ) : AlbumsState
 }

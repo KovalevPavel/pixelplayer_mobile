@@ -57,8 +57,11 @@ import kovp.pixelplayer.domain_albums.AlbumVo
 import kovp.pixelplayer.feature_albums.di.AlbumDetailsScope
 import kovp.pixelplayer.feature_albums.di.AlbumsScope
 import kovp.pixelplayer.feature_albums.di.detailsModule
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.getKoin
 import org.koin.core.parameter.parametersOf
+import pixelplayer.feature_albums.generated.resources.Res
+import pixelplayer.feature_albums.generated.resources.disk
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -147,7 +150,7 @@ private fun AlbumDetailsContent(
                                     )
                                     .padding(end = 16.dp)
                                     .padding(vertical = 8.dp),
-                                text = "Disk $n",
+                                text = stringResource(Res.string.disk, n),
                                 style = pixelTypography.titleSmall,
                                 color = pixelColors.onSurfaceVariant,
                                 textAlign = TextAlign.End,

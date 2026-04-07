@@ -10,6 +10,7 @@ kotlin {
             implementation(project(":core_design"))
             implementation(project(":core_storage"))
             implementation(project(":api_credentials"))
+            implementation(project(":api_settings"))
             implementation(project(":core_credentials"))
             implementation(project(":core_ui"))
             implementation(project(":api_login"))

@@ -1,0 +1,5 @@
+<resources>
+    <string name="username">Aktueller Benutzer</string>
+    <string name="logout_message">Möchten Sie Ihre Anmeldedaten wirklich löschen?</string>
+    <string name="change_endpoint">Möchten Sie Ihren Server wirklich ändern?\nDabei werden auch Ihre Anmeldedaten gelöscht.</string>
+</resources>

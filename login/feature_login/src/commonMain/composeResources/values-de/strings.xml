@@ -1,0 +1,8 @@
+<resources>
+    <string name="password">Passwort</string>
+    <string name="endpoint_placeholder">https://</string>
+    <string name="enter_server_endpoint">Serveradresse eingeben</string>
+    <string name="check">Prüfen</string>
+    <string name="cant_validate_url">Die Adresse konnte nicht geprüft werden. Versuchen Sie eine andere.</string>
+    <string name="wrong_credentials">Falsche Anmeldedaten</string>
+</resources>

@@ -9,9 +9,13 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_artists.ArtistsRepository
+import pixelplayer.core_ui.generated.resources.Res as coreRes
+import pixelplayer.core_ui.generated.resources.albums
+import pixelplayer.core_ui.generated.resources.retry
 
 internal class ArtistsViewModel(
     private val repository: ArtistsRepository,
@@ -50,9 +54,12 @@ internal class ArtistsViewModel(
                     .map {
                         VerticalCardVs(
                             id = it.id,
-                            title = it.name,
+                            title = UiText.Dynamic(it.name),
                             imageUrl = it.avatar,
-                            description = "Albums: ${it.albums.size}",
+                            description = UiText.Resource(
+                                value = coreRes.string.albums,
+                                args = listOf(it.albums.size),
+                            ),
                         )
                     }
                     .toImmutableList()
@@ -60,8 +67,8 @@ internal class ArtistsViewModel(
             },
             onFailure = {
                 state = ArtistsState.Error(
-                    message = it.message.orEmpty(),
-                    action = "Retry",
+                    message = UiText.Dynamic(it.message.orEmpty()),
+                    action = UiText.Resource(coreRes.string.retry),
                 )
             },
         )

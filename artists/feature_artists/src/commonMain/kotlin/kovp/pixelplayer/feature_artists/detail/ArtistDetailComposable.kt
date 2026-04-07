@@ -46,6 +46,7 @@ import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_design.pixelTypography
+import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.core_ui.components.error_view.ErrorView
 import kovp.pixelplayer.core_ui.components.error_view.ErrorVs
@@ -149,8 +150,8 @@ private fun ArtistDetailContent(
                     ) {
                         ErrorView(
                             viewState = ErrorVs(
-                                message = st.message,
-                                action = Res.string.retry,
+                                message = UiText.Dynamic(st.message),
+                                action = UiText.Resource(Res.string.retry),
                             ),
                             onActionClick = { onAction(ArtistDetailAction.FetchData) },
                         )
@@ -246,9 +247,11 @@ private fun LazyGridScope.albums(
             items(items = viewState.albums, key = VerticalCardVs::id) { item ->
                 VerticalCard(
                     viewState = item.copy(
-                        description = stringResource(
-                            Res.string.tracks,
-                            item.description.toIntOrNull().orZero(),
+                        description = UiText.Dynamic(
+                            stringResource(
+                                Res.string.tracks,
+                                (item.description as? UiText.Dynamic)?.value?.toIntOrNull().orZero(),
+                            )
                         )
                     ),
                     onClick = {
@@ -343,9 +346,9 @@ private class ArtistDetailStateProvider : PreviewParameterProvider<ArtistDetailS
                 VerticalCardVs(
                     id = it.toString(),
                     imageUrl = "",
-                    title = "Album $it",
-                    description = "42",
-                    tagline = "2007",
+                    title = UiText.Dynamic("Album $it"),
+                    description = UiText.Dynamic("42"),
+                    tagline = UiText.Dynamic("2007"),
                 )
             }
                 .toImmutableList(),
