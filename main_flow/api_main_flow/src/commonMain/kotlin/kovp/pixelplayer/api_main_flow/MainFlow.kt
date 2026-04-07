@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -54,7 +55,7 @@ fun NavGraphBuilder.registerMainFlow(
         val route = entry.toRoute<MainFlow>()
         val koin = getKoin()
 
-        val mainScope = remember {
+        val mainScope = remember(route.token, route.baseUrl) {
             koin.loadModules(
                 listOf(
                     mainFlowModule(token = route.token, baseUrl = route.baseUrl),
@@ -63,10 +64,16 @@ fun NavGraphBuilder.registerMainFlow(
                     albumsRepoModule,
                 ),
             )
-            koin.getOrCreateScope<MainFlowScope>(MainFlowScope.toString())
+            koin.getOrCreateScope<MainFlowScope>("${MainFlowScope}:${route.baseUrl}:${route.token}")
         }
 
-        val playerVm: PlayerViewModel = remember { koin.get() }
+        DisposableEffect(mainScope) {
+            onDispose {
+                runCatching { mainScope.close() }
+            }
+        }
+
+        val playerVm: PlayerViewModel = remember(route.token, route.baseUrl) { koin.get() }
         val playerState by playerVm.playerVs.collectAsState()
 
         setSingletonImageLoaderFactory { context ->

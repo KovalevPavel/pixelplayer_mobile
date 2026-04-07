@@ -9,6 +9,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,10 +26,19 @@ fun MainFlowComposable(
     navController: NavController,
     onLogout: () -> Unit,
 ) {
+    var selectedTab: Int by rememberSaveable { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState(
+        initialPage = selectedTab,
+        pageCount = { MainFlowScreen.entries.size },
+    )
+
+    LaunchedEffect(selectedTab) {
+        pagerState.animateScrollToPage(selectedTab)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        var selectedTab: Int by rememberSaveable { mutableIntStateOf(0) }
         PrimaryTabRow(
             modifier = Modifier.fillMaxWidth(),
             selectedTabIndex = selectedTab,
@@ -47,10 +57,10 @@ fun MainFlowComposable(
         }
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
-            state = rememberPagerState(pageCount = { MainFlowScreen.entries.size }),
+            state = pagerState,
             userScrollEnabled = false,
-        ) {
-            when (MainFlowScreen.entries[selectedTab]) {
+        ) { page ->
+            when (MainFlowScreen.entries[page]) {
                 MainFlowScreen.Artists -> {
                     ArtistsComposableWrapper(navController = navController)
                 }
