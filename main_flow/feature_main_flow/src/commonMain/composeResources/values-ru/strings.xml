@@ -3,4 +3,5 @@
     <string name="tab_albums">Альбомы</string>
     <string name="tab_tracks">Треки</string>
     <string name="tab_settings">Настройки</string>
+    <string name="test_account_notice_message">Это тестовый аккаунт, который предоставляет доступ к музыке без авторских прав.\nЕсли Вы артист, и Вы считаете, что Ваши права нарушены, свяжитесь с нами по почте, которую Вы найдете на странице приложения в Google Play</string>
 </resources>

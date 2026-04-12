@@ -1,5 +1,6 @@
 package kovp.pixelplayer.feature_main_flow
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,8 +8,11 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -23,62 +27,104 @@ import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistDetails
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
 import kovp.pixelplayer.api_settings.SettingsScreenWrapper
+import kovp.pixelplayer.core_main_flow.LocalMainScope
+import kovp.pixelplayer.core_ui.UiText
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
+import kovp.pixelplayer.feature_main_flow.presentation.MainFlowAction
+import kovp.pixelplayer.feature_main_flow.presentation.MainFlowViewModel
 import kovp.pixelplayer.api_tracks.TracksComposableWrapper
+import kovp.pixelplayer.core_ui.CollectWithLifecycle
+import kovp.pixelplayer.feature_main_flow.presentation.MainFlowEvent
 import org.jetbrains.compose.resources.stringResource
+import pixelplayer.core_ui.generated.resources.ok
 import pixelplayer.feature_main_flow.generated.resources.Res
 import pixelplayer.feature_main_flow.generated.resources.tab_albums
 import pixelplayer.feature_main_flow.generated.resources.tab_artists
 import pixelplayer.feature_main_flow.generated.resources.tab_settings
 import pixelplayer.feature_main_flow.generated.resources.tab_tracks
+import pixelplayer.feature_main_flow.generated.resources.test_account_notice_message
+import pixelplayer.core_ui.generated.resources.Res as coreRes
 
 @Composable
 fun MainFlowComposable(
     navController: NavController,
     onLogout: () -> Unit,
 ) {
+    val mainScope = LocalMainScope.current
+    var showTestAccountNotice by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val viewModel: MainFlowViewModel = remember(mainScope) { mainScope.get() }
+
+    viewModel.eventsFlow.CollectWithLifecycle { event ->
+        when (event) {
+            MainFlowEvent.ShowTestAccountNotice -> showTestAccountNotice = true
+        }
+    }
     val rootNavController = rememberNavController()
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-        PrimaryTabRow(
-            modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = selectedTabIndex,
+        Column(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            MainFlowScreen.entries.forEachIndexed { i, t ->
-                val isSelected = i == selectedTabIndex
-                Tab(
-                    selected = isSelected,
-                    onClick = {
-                        if (isSelected) {
-                            return@Tab
-                        }
-                        rootNavController.navigate(t.route)
-                        selectedTabIndex = i
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(t.titleRes),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
+            PrimaryTabRow(
+                modifier = Modifier.fillMaxWidth(),
+                selectedTabIndex = selectedTabIndex,
+            ) {
+                MainFlowScreen.entries.forEachIndexed { i, t ->
+                    val isSelected = i == selectedTabIndex
+                    Tab(
+                        selected = isSelected,
+                        onClick = {
+                            if (isSelected) {
+                                return@Tab
+                            }
+                            rootNavController.navigate(t.route)
+                            selectedTabIndex = i
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(t.titleRes),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        },
+                    )
+                }
+            }
+
+            NavHost(
+                modifier = Modifier.fillMaxSize(),
+                navController = rootNavController,
+                startDestination = MainFlowScreen.entries.first().route,
+            ) {
+                registerRootTabs(
+                    navController = navController,
+                    onLogout = onLogout,
                 )
             }
         }
 
-        NavHost(
-            modifier = Modifier.fillMaxSize(),
-            navController = rootNavController,
-            startDestination = MainFlowScreen.entries.first().route,
-        ) {
-            registerRootTabs(
-                navController = navController,
-                onLogout = onLogout,
+        if (showTestAccountNotice) {
+            MessageDialog(
+                viewState = kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs(
+                    message = UiText.Resource(Res.string.test_account_notice_message),
+                    primaryAction = UiText.Resource(coreRes.string.ok),
+                ),
+                removeFromComposition = {
+                    showTestAccountNotice = false
+                },
             )
         }
+    }
+
+    LaunchedEffect(Unit) {
+        MainFlowAction.CheckTestAccountNotice.let(viewModel::handleAction)
     }
 }
 
