@@ -97,7 +97,6 @@ kotlin {
 
             getByName("release") {
                 isMinifyEnabled = true
-                signingConfig = signingConfigs.getByName("debug")
             }
         }
 
