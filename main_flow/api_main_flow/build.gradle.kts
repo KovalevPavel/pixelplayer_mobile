@@ -12,7 +12,6 @@ kotlin {
             implementation(project(":api_artists"))
             implementation(project(":api_albums"))
             implementation(project(":api_tracks"))
-            implementation(project(":api_storage"))
         }
     }
 }
