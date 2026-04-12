@@ -8,8 +8,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -18,7 +17,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kovp.pixelplayer.api_albums.AlbumDetails
 import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
@@ -39,36 +37,26 @@ fun MainFlowComposable(
     onLogout: () -> Unit,
 ) {
     val rootNavController = rememberNavController()
-    val currentEntry by rootNavController.currentBackStackEntryAsState()
-    val restoredSelectedTab = currentEntry?.destination?.route?.let(MainFlowScreen::fromRoute)
 
-    var selectedTabRoute by rememberSaveable { mutableStateOf(MainFlowScreen.Artists.route) }
-    val selectedTab = restoredSelectedTab
-        ?: MainFlowScreen.fromRoute(selectedTabRoute)
-        ?: MainFlowScreen.Artists
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
         PrimaryTabRow(
             modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = MainFlowScreen.entries.indexOf(selectedTab),
+            selectedTabIndex = selectedTabIndex,
         ) {
-            MainFlowScreen.entries.forEach { t ->
+            MainFlowScreen.entries.forEachIndexed { i, t ->
+                val isSelected = i == selectedTabIndex
                 Tab(
-                    selected = t == selectedTab,
+                    selected = isSelected,
                     onClick = {
-                        if (t == selectedTab) {
+                        if (isSelected) {
                             return@Tab
                         }
-                        selectedTabRoute = t.route
-                        rootNavController.navigate(t.route) {
-                            launchSingleTop = true
-                            restoreState = true
-                            popUpTo(MainFlowScreen.Artists.route) {
-                                saveState = true
-                            }
-                        }
+                        rootNavController.navigate(t.route)
+                        selectedTabIndex = i
                     },
                     text = {
                         Text(
@@ -84,7 +72,7 @@ fun MainFlowComposable(
         NavHost(
             modifier = Modifier.fillMaxSize(),
             navController = rootNavController,
-            startDestination = selectedTabRoute,
+            startDestination = MainFlowScreen.entries.first().route,
         ) {
             registerRootTabs(
                 navController = navController,
