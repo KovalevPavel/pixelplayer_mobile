@@ -10,6 +10,7 @@ private class IosAppLanguageManager : AppLanguageManager {
     override val supportsOverride: Boolean = false
 
     override fun applySelection(selection: LanguageSelection) = Unit
+    override fun isSelectionApplied(selection: LanguageSelection): Boolean = true
 
     override fun resolveDeviceLanguage(): AppLanguage = AppLanguage.English
 }

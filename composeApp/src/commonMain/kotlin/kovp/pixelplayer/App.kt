@@ -11,8 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,6 @@ import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core.language.AppLanguageManager
 import kovp.pixelplayer.core.language.AppLanguageRepository
 import kovp.pixelplayer.core_storage.di.storageModule
-import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.di.mainModule
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
@@ -62,15 +62,21 @@ fun App(
     ) {
         val languageManager = koinInject<AppLanguageManager>()
         val languageRepository = koinInject<AppLanguageRepository>()
-        var isLanguageReady by remember {
+        var isLanguageReady by rememberSaveable {
             mutableStateOf(!languageManager.supportsOverride)
         }
 
         LaunchedEffect(languageManager, languageRepository) {
-            if (languageManager.supportsOverride) {
-                languageManager.applySelection(languageRepository.getSelection())
+            val selection = languageRepository.getSelection()
+
+            if (!languageManager.supportsOverride || languageManager.isSelectionApplied(selection)) {
+                isLanguageReady = true
+                return@LaunchedEffect
             }
+
+            // Preserve the ready state across the config recreation triggered by locale apply.
             isLanguageReady = true
+            languageManager.applySelection(selection)
         }
 
         if (!isLanguageReady) {
@@ -85,23 +91,12 @@ fun App(
 
         AppTheme {
             val viewModel = koinViewModel<MainViewModel>()
-            var checkResult: MainEvent.CheckResult? by remember(viewModel) {
-                mutableStateOf(null)
-            }
-
-            viewModel.event.CollectWithLifecycle { event ->
-                when (event) {
-                    is MainEvent.LaunchMainHost -> {
-                        checkResult = event.result
-                    }
-                }
-            }
+            val credsState by viewModel.checkCredsStateFlow.collectAsState()
 
             CompositionLocalProvider(
                 LocalRippleConfiguration provides rippleConfiguration,
             ) {
-                HostComposable(result = checkResult, context = ctx) {
-                    checkResult = null
+                HostComposable(credsCheckResult = credsState, context = ctx) {
                     MainAction.CheckCredentials.let(viewModel::handleAction)
                 }
             }
@@ -111,11 +106,11 @@ fun App(
 
 @Composable
 private fun HostComposable(
-    result: MainEvent.CheckResult?,
+    credsCheckResult: MainEvent.CheckResult?,
     context: AppContext,
     refreshCredentials: () -> Unit,
 ) {
-    if (result == null) {
+    if (credsCheckResult == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -125,7 +120,7 @@ private fun HostComposable(
         return
     }
 
-    val startDestination = when (result) {
+    val startDestination = when (credsCheckResult) {
         MainEvent.CheckResult.EmptyEndpoint,
         MainEvent.CheckResult.EmptyCreds,
         -> {
@@ -134,8 +129,8 @@ private fun HostComposable(
 
         is MainEvent.CheckResult.OpenMain -> {
             MainFlow(
-                token = result.token,
-                baseUrl = result.endpoint,
+                token = credsCheckResult.token,
+                baseUrl = credsCheckResult.endpoint,
             )
         }
     }
@@ -152,7 +147,7 @@ private fun HostComposable(
         popExitTransition = { slideOutHorizontally { it } },
     ) {
         registerLoginFlow(
-            endpointIsEmpty = result == MainEvent.CheckResult.EmptyEndpoint,
+            endpointIsEmpty = credsCheckResult == MainEvent.CheckResult.EmptyEndpoint,
             navController = hostNavController,
             onTokenSaved = { token, endpoint ->
                 hostNavController.popBackStack(
