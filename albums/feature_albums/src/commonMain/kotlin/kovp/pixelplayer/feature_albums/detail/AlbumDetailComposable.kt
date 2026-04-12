@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -73,23 +74,26 @@ fun AlbumDetailComposable(
 
     val koin = getKoin()
 
-    val scope = remember {
+    val scope = remember(albumId) {
         koin.loadModules(listOf(detailsModule))
-        koin.getOrCreateScope<AlbumDetailsScope>(AlbumDetailsScope.toString())
+        koin.getOrCreateScope<AlbumDetailsScope>("${AlbumDetailsScope}:$albumId")
     }
 
     scope.linkTo(koin.getOrCreateScope<AlbumsScope>(AlbumsScope.toString()))
 
-    val viewModel: AlbumDetailViewModel = remember {
+    DisposableEffect(scope) {
+        onDispose {
+            runCatching { scope.close() }
+        }
+    }
+
+    val viewModel: AlbumDetailViewModel = remember(albumId, scope) {
         scope.get { parametersOf(albumId) }
     }
 
     AlbumDetailsContent(
         viewState = viewModel.viewState,
-        onBackPress = {
-            onBackPress()
-            scope.close()
-        },
+        onBackPress = onBackPress,
         playerStateFlow = viewModel.playerVs,
         onAction = viewModel::handleAction,
     )

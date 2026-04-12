@@ -37,6 +37,7 @@ import org.koin.core.scope.Scope
 import pixelplayer.core_ui.generated.resources.Res as coreRes
 import pixelplayer.core_ui.generated.resources.change_server
 import pixelplayer.core_ui.generated.resources.login
+import pixelplayer.core_ui.generated.resources.username
 import pixelplayer.feature_login.generated.resources.Res
 import pixelplayer.feature_login.generated.resources.password
 
@@ -105,7 +106,7 @@ private fun CredentialsScreen(
                     singleLine = true,
                     onValueChange = { login = it },
                     label = {
-                        Text(stringResource(coreRes.string.login))
+                        Text(stringResource(coreRes.string.username))
                     },
                 )
 

@@ -1,6 +1,7 @@
 <resources>
     <string name="logout">Abmelden</string>
     <string name="change_server">Server ändern</string>
+    <string name="username">User</string>
     <string name="login">Anmelden</string>
     <string name="endpoint">Server-URL</string>
 

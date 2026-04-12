@@ -16,6 +16,8 @@ enum class MainFlowScreen {
     Settings,
     ;
 
+    val route: String get() = name
+
     companion object {
         @Serializable
         object Host

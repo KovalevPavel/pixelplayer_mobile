@@ -7,10 +7,8 @@ import kovp.pixelplayer.feature_artists.detail.ArtistDetailComposable
 import kovp.pixelplayer.feature_artists.ui.ArtistsScaffoldWrapper
 
 @Composable
-fun ArtistsComposableWrapper(navController: NavController) {
-    ArtistsScaffoldWrapper { artistId ->
-        navController.navigate(ArtistDetails(artistId))
-    }
+fun ArtistsComposableWrapper(onArtistClick: (artistId: String) -> Unit) {
+    ArtistsScaffoldWrapper(onArtistClick = onArtistClick)
 }
 
 @Composable

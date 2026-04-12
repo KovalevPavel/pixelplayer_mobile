@@ -72,20 +72,27 @@ fun ArtistDetailComposable(
     onBackPress: () -> Unit,
     navigateToAlbum: (albumId: String) -> Unit,
 ) {
-    BackHandler { onBackPress() }
-
     val koin = getKoin()
 
-    val scope = remember {
+    val scope = remember(artistId) {
         koin.loadModules(listOf(detailsModule))
-        koin.getOrCreateScope<ArtistDetailsScope>(ArtistDetailsScope.toString())
+        koin.getOrCreateScope<ArtistDetailsScope>("${ArtistDetailsScope}:$artistId")
     }
 
     scope.linkTo(koin.getScope(ArtistsScope.toString()))
 
-    val viewModel: ArtistDetailViewModel = remember {
+    val viewModel: ArtistDetailViewModel = remember(artistId, scope) {
         scope.get { parametersOf(artistId) }
     }
+
+    val handleBackPress = remember(scope, onBackPress) {
+        {
+            runCatching { scope.close() }
+            onBackPress()
+        }
+    }
+
+    BackHandler(onBack = handleBackPress)
 
     viewModel.eventsFlow.CollectWithLifecycle { event ->
         when (event) {
@@ -100,10 +107,7 @@ fun ArtistDetailComposable(
     ArtistDetailContent(
         viewState = viewState,
         onAction = viewModel::handleAction,
-        onBackPress = {
-            onBackPress()
-            scope.close()
-        },
+        onBackPress = handleBackPress,
     )
 }
 

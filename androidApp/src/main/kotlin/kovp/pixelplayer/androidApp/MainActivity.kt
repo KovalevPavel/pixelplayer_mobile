@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.toArgb
 import kovp.pixelplayer.App
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kovp.pixelplayer.core_design.Background
+import kovp.pixelplayer.androidApp.di.androidAppModule
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App(ctx = AndroidAppContext(this@MainActivity.applicationContext))
+            App(
+                ctx = AndroidAppContext(this@MainActivity.applicationContext),
+                platformModules = listOf(androidAppModule),
+            )
         }
     }
 }

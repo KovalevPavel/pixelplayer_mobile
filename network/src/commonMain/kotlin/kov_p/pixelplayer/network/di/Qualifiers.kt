@@ -10,3 +10,7 @@ val unauthorizedClient = object : Qualifier {
 val authorizedClient = object : Qualifier {
     override val value: QualifierValue = "authorizedClient"
 }
+
+val okHttpInterceptor = object : Qualifier {
+    override val value: QualifierValue = "okHttpInterceptor"
+}

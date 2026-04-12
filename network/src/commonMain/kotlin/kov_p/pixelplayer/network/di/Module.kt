@@ -1,6 +1,5 @@
 package kov_p.pixelplayer.network.di
 
-import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -36,7 +35,7 @@ private fun HttpClientConfig<*>.defaultJson() {
 
 fun ScopeDSL.bindUnauthorizedClient() {
     scoped(qualifier = unauthorizedClient) {
-        HttpClient {
+        createPlatformHttpClient(scope = this) {
             defaultLogging()
             defaultJson()
         }
@@ -45,7 +44,7 @@ fun ScopeDSL.bindUnauthorizedClient() {
 
 fun Module.bindAuthorizedClient(baseUrl: String, token: String) {
     single(qualifier = authorizedClient) {
-        HttpClient {
+        createPlatformHttpClient(scope = this) {
             defaultLogging()
             defaultJson()
             defaultRequest {

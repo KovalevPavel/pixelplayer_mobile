@@ -7,10 +7,8 @@ import kovp.pixelplayer.feature_albums.detail.AlbumDetailComposable
 import kovp.pixelplayer.feature_albums.list.ui.AlbumsScaffoldWrapper
 
 @Composable
-fun AlbumsComposableWrapper(navController: NavController) {
-    AlbumsScaffoldWrapper {
-        navController.navigate(AlbumDetails(it))
-    }
+fun AlbumsComposableWrapper(onAlbumClick: (albumId: String) -> Unit) {
+    AlbumsScaffoldWrapper(onAlbumClick = onAlbumClick)
 }
 
 @Composable
