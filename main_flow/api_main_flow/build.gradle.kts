@@ -13,6 +13,7 @@ kotlin {
             implementation(project(":api_albums"))
             implementation(project(":api_tracks"))
             implementation(project(":api_storage"))
+            implementation(project(":api_credentials"))
         }
     }
 }
