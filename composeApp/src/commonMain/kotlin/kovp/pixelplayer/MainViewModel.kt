@@ -34,15 +34,15 @@ class MainViewModel(
                 val token = credentialsRepository.getToken()
 
                 val event = when {
+                    endpoint?.isNotEmpty() != true -> MainEvent.CheckResult.EmptyEndpoint
                     token?.isNotEmpty() == true -> {
                         MainEvent.CheckResult.OpenMain(
                             token = token,
-                            endpoint = endpoint.orEmpty(),
+                            endpoint = endpoint,
                         )
                     }
 
-                    endpoint?.isNotEmpty() == true -> MainEvent.CheckResult.EmptyCreds
-                    else -> MainEvent.CheckResult.EmptyEndpoint
+                    else -> MainEvent.CheckResult.EmptyCreds
                 }
                     .let(MainEvent::LaunchMainHost)
 

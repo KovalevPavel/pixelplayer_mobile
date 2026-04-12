@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,10 +85,7 @@ fun App(
 
         AppTheme {
             val viewModel = koinViewModel<MainViewModel>()
-            var checkResult: MainEvent.CheckResult? by rememberSaveable(
-                viewModel,
-                stateSaver = CheckResultStateSaver(),
-            ) {
+            var checkResult: MainEvent.CheckResult? by remember(viewModel) {
                 mutableStateOf(null)
             }
 
@@ -126,10 +122,10 @@ private fun HostComposable(
         ) {
             CircularProgressIndicator()
         }
+        return
     }
 
     val startDestination = when (result) {
-        null -> return
         MainEvent.CheckResult.EmptyEndpoint,
         MainEvent.CheckResult.EmptyCreds,
         -> {
