@@ -1,5 +1,72 @@
+import com.android.build.api.artifact.ArtifactTransformationRequest
+import com.android.build.api.artifact.SingleArtifact
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.android
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.kotlin.dsl.register
+import java.io.File
+
+val appVersionCode = 1
+val appVersionName = "1.0.0"
+
+fun buildArtifactName(
+    versionName: String,
+    versionCode: Int,
+    buildVariant: String,
+): String {
+    return "Pixelplayer_${versionName}(${versionCode})_${buildVariant}"
+}
+
+abstract class RenameApkArtifactsTask : DefaultTask() {
+    @get:InputFiles
+    abstract val inputApkFolder: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputApkFolder: DirectoryProperty
+
+    @get:Input
+    abstract val artifactName: Property<String>
+
+    @get:Internal
+    abstract val transformationRequest: Property<ArtifactTransformationRequest<RenameApkArtifactsTask>>
+
+    @TaskAction
+    fun renameApks() {
+        transformationRequest.get().submit(this) { builtArtifact ->
+            val inputFile = File(builtArtifact.outputFile)
+            val outputFile = outputApkFolder.file("${artifactName.get()}.apk").get().asFile
+            outputFile.parentFile.mkdirs()
+            inputFile.copyTo(outputFile, overwrite = true)
+            outputFile
+        }
+    }
+}
+
+abstract class RenameBundleTask : DefaultTask() {
+    @get:InputFile
+    abstract val inputBundle: RegularFileProperty
+
+    @get:OutputFile
+    abstract val outputBundle: RegularFileProperty
+
+    @TaskAction
+    fun renameBundle() {
+        val inputFile = inputBundle.get().asFile
+        val outputFile = outputBundle.get().asFile
+        outputFile.parentFile.mkdirs()
+        inputFile.copyTo(outputFile, overwrite = true)
+    }
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -15,8 +82,8 @@ kotlin {
             applicationId = "kovp.pixelplayer"
             minSdk = libs.versions.android.minSdk.get().toInt()
             targetSdk = libs.versions.android.targetSdk.get().toInt()
-            versionCode = 1
-            versionName = "1.0"
+            versionCode = appVersionCode
+            versionName = appVersionName
         }
         packaging {
             resources {
@@ -37,6 +104,47 @@ kotlin {
         buildFeatures {
             buildConfig = true
         }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        val artifactFileName = buildArtifactName(
+            versionName = appVersionName,
+            versionCode = appVersionCode,
+            buildVariant = variant.name,
+        )
+        val variantTaskName = variant.name.replaceFirstChar { char ->
+            if (char.isLowerCase()) char.titlecase() else char.toString()
+        }
+        val renameApkTask = tasks.register<RenameApkArtifactsTask>(
+            "rename${variantTaskName}ApkArtifacts"
+        ) {
+            artifactName.set(artifactFileName)
+        }
+        val apkTransformationRequest = variant.artifacts
+            .use(renameApkTask)
+            .wiredWithDirectories(
+                RenameApkArtifactsTask::inputApkFolder,
+                RenameApkArtifactsTask::outputApkFolder,
+            )
+            .toTransformMany(SingleArtifact.APK)
+
+        renameApkTask.configure {
+            transformationRequest.set(apkTransformationRequest)
+        }
+
+        val renameBundleTask = tasks.register<RenameBundleTask>(
+            "rename${variantTaskName}BundleArtifact"
+        )
+        variant.artifacts
+            .use(renameBundleTask)
+            .wiredWithFiles(
+                RenameBundleTask::inputBundle,
+                RenameBundleTask::outputBundle,
+            )
+            .withName("$artifactFileName.aab")
+            .toTransform(SingleArtifact.BUNDLE)
     }
 }
 
