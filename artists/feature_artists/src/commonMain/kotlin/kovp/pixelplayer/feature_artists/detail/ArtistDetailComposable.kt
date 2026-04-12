@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -73,8 +72,6 @@ fun ArtistDetailComposable(
     onBackPress: () -> Unit,
     navigateToAlbum: (albumId: String) -> Unit,
 ) {
-    BackHandler { onBackPress() }
-
     val koin = getKoin()
 
     val scope = remember(artistId) {
@@ -84,15 +81,18 @@ fun ArtistDetailComposable(
 
     scope.linkTo(koin.getScope(ArtistsScope.toString()))
 
-    DisposableEffect(scope) {
-        onDispose {
-            runCatching { scope.close() }
-        }
-    }
-
     val viewModel: ArtistDetailViewModel = remember(artistId, scope) {
         scope.get { parametersOf(artistId) }
     }
+
+    val handleBackPress = remember(scope, onBackPress) {
+        {
+            runCatching { scope.close() }
+            onBackPress()
+        }
+    }
+
+    BackHandler(onBack = handleBackPress)
 
     viewModel.eventsFlow.CollectWithLifecycle { event ->
         when (event) {
@@ -107,7 +107,7 @@ fun ArtistDetailComposable(
     ArtistDetailContent(
         viewState = viewState,
         onAction = viewModel::handleAction,
-        onBackPress = onBackPress,
+        onBackPress = handleBackPress,
     )
 }
 

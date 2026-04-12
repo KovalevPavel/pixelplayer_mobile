@@ -35,7 +35,7 @@ import org.koin.compose.getKoin
 @Composable
 fun AlbumsScaffoldWrapper(
     modifier: Modifier = Modifier,
-    navigateToDetail: (String) -> Unit,
+    onAlbumClick: (albumId: String) -> Unit,
 ) {
     val koin = getKoin()
     val mainScope = LocalMainScope.current
@@ -50,7 +50,7 @@ fun AlbumsScaffoldWrapper(
 
     viewModel.eventsFlow.CollectWithLifecycle { event ->
         when (event) {
-            is AlbumsEvent.NavigateToAlbum -> navigateToDetail(event.albumId)
+            is AlbumsEvent.NavigateToAlbum -> onAlbumClick(event.albumId)
         }
     }
 
