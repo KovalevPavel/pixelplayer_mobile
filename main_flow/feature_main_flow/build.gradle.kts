@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":api_storage"))
+            implementation(project(":core_main_flow"))
             implementation(project(":network"))
             implementation(project(":api_artists"))
             implementation(project(":api_albums"))

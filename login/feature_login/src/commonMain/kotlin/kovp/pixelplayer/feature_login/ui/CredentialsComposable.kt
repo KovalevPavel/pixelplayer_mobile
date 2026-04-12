@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -34,12 +35,12 @@ import kovp.pixelplayer.feature_login.LoginEvent
 import kovp.pixelplayer.feature_login.LoginViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.scope.Scope
-import pixelplayer.core_ui.generated.resources.Res as coreRes
 import pixelplayer.core_ui.generated.resources.change_server
 import pixelplayer.core_ui.generated.resources.login
 import pixelplayer.core_ui.generated.resources.username
 import pixelplayer.feature_login.generated.resources.Res
 import pixelplayer.feature_login.generated.resources.password
+import pixelplayer.core_ui.generated.resources.Res as coreRes
 
 @Composable
 fun CredentialsComposable(
@@ -89,6 +90,8 @@ private fun CredentialsScreen(
     isLoadingVisible: Boolean,
     handleAction: (LoginAction) -> Unit,
 ) {
+    val controller = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -129,6 +132,7 @@ private fun CredentialsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = login.isNotEmpty() && password.isNotEmpty(),
                     onClick = {
+                        controller?.hide()
                         handleAction(
                             LoginAction.Login(login = login, password = password),
                         )
