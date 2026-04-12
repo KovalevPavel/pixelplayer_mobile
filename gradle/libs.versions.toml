@@ -25,6 +25,7 @@ backhandler = "1.10.3"
 icons = "1.7.3"
 googleMaterial = "1.13.0"
 material = "1.11.0-alpha04"
+chucker = "4.3.1"
 
 benchmarkBaselineProfileGradlePlugin = "1.4.1"
 
@@ -80,6 +81,8 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+chucker-debug  = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
+chucker-release  = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 
 # Player
 media3-player = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }

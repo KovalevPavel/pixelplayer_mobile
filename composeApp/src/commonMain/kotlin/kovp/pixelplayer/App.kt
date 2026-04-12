@@ -37,6 +37,7 @@ import kovp.pixelplayer.di.mainModule
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.module.Module
 import org.koin.dsl.koinConfiguration
 
 private val rippleConfiguration = RippleConfiguration(
@@ -46,6 +47,7 @@ private val rippleConfiguration = RippleConfiguration(
 @Composable
 fun App(
     ctx: AppContext,
+    platformModules: List<Module> = emptyList(),
 ) {
     KoinApplication(
         configuration = koinConfiguration {
@@ -55,6 +57,7 @@ fun App(
                 mainModule,
                 credentialsModule,
                 languageModule,
+                *platformModules.toTypedArray(),
             )
         },
     ) {

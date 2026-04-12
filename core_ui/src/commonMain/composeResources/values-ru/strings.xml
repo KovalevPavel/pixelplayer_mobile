@@ -1,6 +1,7 @@
 <resources>
     <string name="logout">Выйти</string>
     <string name="change_server">Сменить сервер</string>
+    <string name="username">Имя пользователя</string>
     <string name="login">Войти</string>
     <string name="endpoint">Адрес сервера</string>
 

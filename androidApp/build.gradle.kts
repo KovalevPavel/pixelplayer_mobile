@@ -45,9 +45,14 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":core_design"))
     implementation(project(":core_player"))
+    implementation(project(":network"))
+
+    debugImplementation(libs.chucker.debug)
+    releaseImplementation(libs.chucker.release)
 
     implementation(libs.google.material)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.koin.compose)
 }
