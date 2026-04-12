@@ -2,6 +2,7 @@ package kovp.pixelplayer.feature_login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -34,11 +35,12 @@ class LoginViewModel(
     private fun checkEndpoint(endpoint: String) {
         launch(
             body = {
-                if (loginRepo.checkEndpoint(endpoint)) {
-                    credentialsRepo.saveEndpoint(endpoint)
+                val normalizedEndpoint = endpoint.withSchema()
+                if (loginRepo.checkEndpoint(normalizedEndpoint)) {
+                    credentialsRepo.saveEndpoint(normalizedEndpoint)
                     LoginEvent.NavigateNext(
                         token = null,
-                        endpoint = endpoint,
+                        endpoint = normalizedEndpoint,
                     )
                         .let(::emitEvent)
                     return@launch
@@ -99,7 +101,16 @@ class LoginViewModel(
         viewModelScope.launch { _eventsFlow.emit(event) }
     }
 
+    private fun String.withSchema(): String {
+        return if (!this.toUri().scheme.isNullOrEmpty()) {
+            this
+        } else {
+            "$DEFAULT_SCHEMA://$this"
+        }
+    }
+
     companion object {
         private const val WRONG_CREDS_ERROR = "invalid input"
+        private const val DEFAULT_SCHEMA = "https"
     }
 }
