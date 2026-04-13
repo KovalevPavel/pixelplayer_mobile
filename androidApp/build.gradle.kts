@@ -113,9 +113,7 @@ androidComponents {
             versionCode = appVersionCode,
             buildVariant = variant.name,
         )
-        val variantTaskName = variant.name.replaceFirstChar { char ->
-            if (char.isLowerCase()) char.titlecase() else char.toString()
-        }
+        val variantTaskName = variant.name.replaceFirstChar(Char::titlecase)
         val renameApkTask = tasks.register<RenameApkArtifactsTask>(
             "rename${variantTaskName}ApkArtifacts"
         ) {

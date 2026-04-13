@@ -48,6 +48,8 @@ fun PlayerScaffold(
     content: @Composable (Modifier) -> Unit,
 ) {
     var isExpanded: Boolean by remember { mutableStateOf(true) }
+    val isPlayerVisible = viewState is PlayerVs.Data
+    var wasPlayerVisible by remember { mutableStateOf(isPlayerVisible) }
     val bottomPadding by animateDpAsState(if (isExpanded) 32.dp else 0.dp)
     val bottomRadius by animateDpAsState(if (isExpanded) 10.dp else 0.dp)
 
@@ -55,17 +57,29 @@ fun PlayerScaffold(
         targetValue = if (isExpanded) 1f else .4f
     )
 
-    val pointerModifier = Modifier.pointerInput(Unit) {
-        awaitEachGesture {
-            awaitPointerEvent()
-            isExpanded = false
+    LaunchedEffect(isPlayerVisible) {
+        if (isPlayerVisible && !wasPlayerVisible) {
+            isExpanded = true
         }
+
+        wasPlayerVisible = isPlayerVisible
     }
 
     var tapCoords by remember { mutableStateOf<Float?>(null) }
 
-    LaunchedEffect(isExpanded, tapCoords) {
-        if (!isExpanded) {
+    val pointerModifier = if (isPlayerVisible && isExpanded) {
+        Modifier.pointerInput(Unit) {
+            awaitEachGesture {
+                awaitPointerEvent()
+                isExpanded = false
+            }
+        }
+    } else {
+        Modifier
+    }
+
+    LaunchedEffect(isPlayerVisible, isExpanded, tapCoords) {
+        if (!isPlayerVisible || !isExpanded) {
             return@LaunchedEffect
         }
 
