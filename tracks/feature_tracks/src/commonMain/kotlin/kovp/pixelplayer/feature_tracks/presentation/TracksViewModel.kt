@@ -60,6 +60,9 @@ internal class TracksViewModel(
                                 trackTitle = it.title,
                                 album = it.album,
                                 artist = it.artist,
+                                albumId = null,
+                                disk = null,
+                                position = null,
                             ),
                         )
                     }

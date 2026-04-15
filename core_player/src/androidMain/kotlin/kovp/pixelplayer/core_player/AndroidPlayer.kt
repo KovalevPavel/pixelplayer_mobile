@@ -1,5 +1,6 @@
 package kovp.pixelplayer.core_player
 
+import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -257,6 +258,7 @@ internal class AndroidPlayer(
                 metaData = TrackIn.TrackMetaData(
                     trackTitle = metadata.title?.toString(),
                     album = metadata.albumTitle?.toString(),
+                    albumId = metadata.extras?.getString(ALBUM_ID_KEY).orEmpty(),
                     artist = metadata.artist?.toString(),
                     disk = metadata.discNumber,
                     position = metadata.trackNumber,
@@ -288,6 +290,10 @@ internal class AndroidPlayer(
         trackId: String,
         metadata: TrackIn.TrackMetaData?,
     ): MediaItem {
+        val extras = Bundle().apply {
+            putString(ALBUM_ID_KEY, metadata?.albumId.orEmpty())
+        }
+
         return MediaItem.Builder()
             .setMediaId(trackId)
             .setMediaMetadata(
@@ -297,6 +303,7 @@ internal class AndroidPlayer(
                     .setArtist(metadata?.artist)
                     .setDiscNumber(metadata?.disk)
                     .setTrackNumber(metadata?.position)
+                    .setExtras(extras)
                     .build()
             )
             .setUri(mapUrl(trackId))

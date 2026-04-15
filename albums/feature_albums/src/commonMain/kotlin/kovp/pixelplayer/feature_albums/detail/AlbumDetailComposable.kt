@@ -91,8 +91,10 @@ fun AlbumDetailComposable(
         scope.get { parametersOf(albumId) }
     }
 
+    val viewState by viewModel.stateFlow.collectAsState()
+
     AlbumDetailsContent(
-        viewState = viewModel.viewState,
+        viewState = viewState,
         onBackPress = onBackPress,
         playerStateFlow = viewModel.playerVs,
         onAction = viewModel::handleAction,

@@ -165,7 +165,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
     override val values: Sequence<PlayerVs> = sequenceOf(
         PlayerVs.Data(
             trackId = "",
-            metaData = TrackIn.TrackMetaData(
+            metaData = TrackIn.TrackMetaData.stub.copy(
                 trackTitle = "Track title",
                 album = "Album",
             ),
@@ -178,7 +178,7 @@ private class PlayerVsProvider : PreviewParameterProvider<PlayerVs> {
         ),
         PlayerVs.Data(
             trackId = "",
-            metaData = TrackIn.TrackMetaData(
+            metaData = TrackIn.TrackMetaData.stub.copy(
                 trackTitle = "Track title ".repeat(10).trim(),
                 album = "Album ".repeat(10).trim(),
             ),

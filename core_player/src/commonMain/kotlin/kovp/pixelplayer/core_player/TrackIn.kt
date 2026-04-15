@@ -5,10 +5,22 @@ data class TrackIn(
     val metadata: TrackMetaData?,
 ) {
     data class TrackMetaData(
-        val trackTitle: String? = null,
-        val album: String? = null,
-        val artist: String? = null,
-        val disk: Int? = null,
-        val position: Int? = null,
-    )
+        val trackTitle: String?,
+        val album: String?,
+        val albumId: String?,
+        val artist: String?,
+        val disk: Int?,
+        val position: Int?,
+    ) {
+        companion object {
+            val stub = TrackMetaData(
+                trackTitle = null,
+                album = null,
+                albumId = null,
+                artist = null,
+                disk = null,
+                position = null,
+            )
+        }
+    }
 }
