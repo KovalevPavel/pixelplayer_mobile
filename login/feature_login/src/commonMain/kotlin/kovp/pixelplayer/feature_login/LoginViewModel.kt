@@ -3,8 +3,13 @@ package kovp.pixelplayer.feature_login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.toUri
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
 import kovp.pixelplayer.core_ui.UiText
@@ -21,15 +26,44 @@ class LoginViewModel(
     private val loginRepo: LoginRepository,
     private val credentialsRepo: CredentialsRepository,
 ) : ViewModel() {
+    val screenState: StateFlow<LoginState> by lazy { _screenState }
     val eventsFlow: Flow<LoginEvent> by lazy { _eventsFlow }
+
+    private val _screenState = MutableStateFlow<LoginState>(LoginState.Init)
     private val _eventsFlow = MutableSharedFlow<LoginEvent>()
+
+    private var loginSteps: ImmutableList<LoginState.LoginStep> = persistentListOf()
 
     fun handleAction(action: LoginAction) {
         when (action) {
+            LoginAction.CheckCreds -> checkCreds()
             is LoginAction.CheckEndpoint -> checkEndpoint(endpoint = action.endpoint)
             is LoginAction.Login -> login(login = action.login, password = action.password)
             is LoginAction.ChangeEndpoint -> changeDestination()
         }
+    }
+
+    private fun checkCreds() {
+        launch(
+            body = {
+                val endpoint = credentialsRepo.getEndpoint()
+
+                loginSteps = persistentListOf(
+                    LoginState.Endpoint(initEndpoint = endpoint.orEmpty()),
+                    LoginState.Credentials,
+                )
+
+                _screenState.update {
+                    LoginState.Data(
+                        pages = loginSteps,
+                        initPage = when {
+                            endpoint.isNullOrEmpty() -> 0
+                            else -> 1
+                        },
+                    )
+                }
+            },
+        )
     }
 
     private fun checkEndpoint(endpoint: String) {
@@ -38,12 +72,8 @@ class LoginViewModel(
                 val normalizedEndpoint = endpoint.withSchema()
                 if (loginRepo.checkEndpoint(normalizedEndpoint)) {
                     credentialsRepo.saveEndpoint(normalizedEndpoint)
-                    LoginEvent.NavigateNext(
-                        token = null,
-                        endpoint = normalizedEndpoint,
-                    )
-                        .let(::emitEvent)
-                    return@launch
+
+                    navigateToState(LoginState.Credentials)
                 }
             },
             onFailure = {
@@ -64,12 +94,11 @@ class LoginViewModel(
                 if (token.isNotEmpty()) {
                     credentialsRepo.saveUsername(username = login)
                     credentialsRepo.saveToken(token)
-                    LoginEvent.NavigateNext(
+                    LoginEvent.NavigateToMainFlow(
                         token = token,
                         endpoint = credentialsRepo.getEndpoint().orEmpty(),
                     )
                         .let(::emitEvent)
-                    return@launch
                 }
             },
             onFailure = {
@@ -92,9 +121,16 @@ class LoginViewModel(
         launch(
             body = {
                 credentialsRepo.saveEndpoint(null)
-                LoginEvent.NavigatePrevious.let(::emitEvent)
+                navigateToState(LoginState.Endpoint(initEndpoint = ""))
             }
         )
+    }
+
+    private fun navigateToState(screen: LoginState.LoginStep) {
+        loginSteps.indexOf(screen)
+            .coerceAtLeast(0)
+            .let(LoginEvent::NavigateToStep)
+            .let(::emitEvent)
     }
 
     private fun emitEvent(event: LoginEvent) {

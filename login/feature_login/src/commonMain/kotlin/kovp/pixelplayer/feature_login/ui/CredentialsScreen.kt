@@ -15,7 +15,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,15 +25,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
-import kovp.pixelplayer.core_ui.CollectWithLifecycle
-import kovp.pixelplayer.core_ui.components.FullScreenLoader
-import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
-import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.feature_login.LoginAction
-import kovp.pixelplayer.feature_login.LoginEvent
-import kovp.pixelplayer.feature_login.LoginViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.scope.Scope
 import pixelplayer.core_ui.generated.resources.change_server
 import pixelplayer.core_ui.generated.resources.login
 import pixelplayer.core_ui.generated.resources.username
@@ -43,51 +35,7 @@ import pixelplayer.feature_login.generated.resources.password
 import pixelplayer.core_ui.generated.resources.Res as coreRes
 
 @Composable
-fun CredentialsComposable(
-    scope: Scope,
-    onTokenSaved: (token: String, endpoint: String) -> Unit,
-    onChangeEndpoint: () -> Unit,
-) {
-    val viewModel: LoginViewModel = remember { scope.get() }
-    var isLoadingVisible by remember { mutableStateOf(false) }
-    var errorVs: MessageDialogVs? by remember { mutableStateOf(null) }
-
-    viewModel.eventsFlow.CollectWithLifecycle { event ->
-        isLoadingVisible = false
-        when (event) {
-            is LoginEvent.NavigateNext -> {
-                onTokenSaved(event.token.orEmpty(), event.endpoint)
-            }
-
-            is LoginEvent.NavigatePrevious -> {
-                onChangeEndpoint()
-            }
-
-            is LoginEvent.ShowError -> {
-                errorVs = event.viewState
-            }
-        }
-    }
-
-    CredentialsScreen(
-        isLoadingVisible = isLoadingVisible,
-        handleAction = {
-            isLoadingVisible = true
-            viewModel.handleAction(it)
-        },
-    )
-
-    errorVs?.let {
-        MessageDialog(
-            viewState = it,
-            removeFromComposition = { errorVs = null },
-        )
-    }
-}
-
-@Composable
-private fun CredentialsScreen(
-    isLoadingVisible: Boolean,
+fun CredentialsScreen(
     handleAction: (LoginAction) -> Unit,
 ) {
     val controller = LocalSoftwareKeyboardController.current
@@ -151,21 +99,14 @@ private fun CredentialsScreen(
                 }
             }
         }
-
-        if (isLoadingVisible) {
-            FullScreenLoader()
-        }
     }
 }
 
 @AppPreview
 @Composable
 private fun CredentialsPreview() {
-    var isLoadingVisible by remember { mutableStateOf(false) }
-
     AppTheme {
         CredentialsScreen(
-            isLoadingVisible = isLoadingVisible,
             handleAction = {},
         )
     }
