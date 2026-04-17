@@ -1,8 +1,11 @@
 package kovp.pixelplayer.feature_login.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -86,21 +89,27 @@ private fun DataContent(
         }
     }
 
-    HorizontalPager(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        state = pagerState,
-        userScrollEnabled = false,
-    ) { index ->
-        when (val page = state.pages[index]) {
-            is LoginState.Credentials -> {
-                CredentialsScreen(handleAction = handleAction)
-            }
+    ) { paddings ->
+        HorizontalPager(
+            modifier = Modifier
+                .padding(paddings)
+                .imePadding(),
+            state = pagerState,
+            userScrollEnabled = false,
+        ) { index ->
+            when (val page = state.pages[index]) {
+                is LoginState.Credentials -> {
+                    CredentialsScreen(handleAction = handleAction)
+                }
 
-            is LoginState.Endpoint -> {
-                EndpointScreen(
-                    initEndpoint = page.initEndpoint,
-                    handleAction = handleAction,
-                )
+                is LoginState.Endpoint -> {
+                    EndpointScreen(
+                        initEndpoint = page.initEndpoint,
+                        handleAction = handleAction,
+                    )
+                }
             }
         }
     }

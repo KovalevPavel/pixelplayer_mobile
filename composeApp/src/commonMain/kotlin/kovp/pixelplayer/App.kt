@@ -3,6 +3,7 @@ package kovp.pixelplayer
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
@@ -81,7 +82,7 @@ private fun HostComposable(
     val hostNavController = rememberNavController()
 
     NavHost(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         navController = hostNavController,
         startDestination = Initializer,
         enterTransition = { slideInHorizontally { it } },
