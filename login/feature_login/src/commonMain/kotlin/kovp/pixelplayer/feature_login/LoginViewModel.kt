@@ -30,7 +30,7 @@ class LoginViewModel(
     val eventsFlow: Flow<LoginEvent> by lazy { _eventsFlow }
 
     private val _screenState = MutableStateFlow<LoginState>(LoginState.Init)
-    private val _eventsFlow = MutableSharedFlow<LoginEvent>()
+    private val _eventsFlow = MutableSharedFlow<LoginEvent>(extraBufferCapacity = 5)
 
     private var loginSteps: ImmutableList<LoginState.LoginStep> = persistentListOf()
 
@@ -62,6 +62,8 @@ class LoginViewModel(
                         },
                     )
                 }
+
+                LoginEvent.ShowLoader(show = false).let(::emitEvent)
             },
         )
     }
@@ -69,11 +71,22 @@ class LoginViewModel(
     private fun checkEndpoint(endpoint: String) {
         launch(
             body = {
-                val normalizedEndpoint = endpoint.withSchema()
-                if (loginRepo.checkEndpoint(normalizedEndpoint)) {
-                    credentialsRepo.saveEndpoint(normalizedEndpoint)
+                LoginEvent.ShowLoader(show = true).let(::emitEvent)
+                val normalizedEndpoints = endpoint.withSchema()
 
-                    navigateToState(LoginState.Credentials)
+                normalizedEndpoints.forEachIndexed { index, url ->
+                    runCatching {
+                        if (loginRepo.checkEndpoint(url)) {
+                            credentialsRepo.saveEndpoint(url)
+
+                            navigateToState(LoginState.Credentials)
+                        }
+                    }
+                        .onFailure {
+                            if (index == normalizedEndpoints.lastIndex) {
+                                error(it)
+                            }
+                        }
                 }
             },
             onFailure = {
@@ -84,12 +97,16 @@ class LoginViewModel(
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)
             },
+            finally = {
+                LoginEvent.ShowLoader(show = false).let(::emitEvent)
+            },
         )
     }
 
     private fun login(login: String, password: String) {
         launch(
             body = {
+                LoginEvent.ShowLoader(show = true).let(::emitEvent)
                 val token = loginRepo.login(login = login, password = password)
                 if (token.isNotEmpty()) {
                     credentialsRepo.saveUsername(username = login)
@@ -114,6 +131,9 @@ class LoginViewModel(
                     .let(LoginEvent::ShowError)
                     .let(::emitEvent)
             },
+            finally = {
+                LoginEvent.ShowLoader(show = false).let(::emitEvent)
+            }
         )
     }
 
@@ -137,16 +157,19 @@ class LoginViewModel(
         viewModelScope.launch { _eventsFlow.emit(event) }
     }
 
-    private fun String.withSchema(): String {
+    private fun String.withSchema(): List<String> {
         return if (!this.toUri().scheme.isNullOrEmpty()) {
-            this
+            listOf(this)
         } else {
-            "$DEFAULT_SCHEMA://$this"
+            // https is preferred
+            listOf(
+                "https://$this",
+                "http://$this",
+            )
         }
     }
 
     companion object {
         private const val WRONG_CREDS_ERROR = "invalid input"
-        private const val DEFAULT_SCHEMA = "https"
     }
 }

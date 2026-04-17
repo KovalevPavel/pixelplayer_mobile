@@ -1,6 +1,7 @@
 package kov_p.pixelplayer.network.di
 
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -12,6 +13,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.dsl.ScopeDSL
+
+private const val DEFAULT_CONNECTION_TIMEOUT_MS = 2000L
 
 private fun HttpClientConfig<*>.defaultLogging() {
     install(Logging) {
@@ -33,11 +36,18 @@ private fun HttpClientConfig<*>.defaultJson() {
     }
 }
 
+private fun HttpClientConfig<*>.defaultTimeout() {
+    install(HttpTimeout) {
+        connectTimeoutMillis = DEFAULT_CONNECTION_TIMEOUT_MS
+    }
+}
+
 fun ScopeDSL.bindUnauthorizedClient() {
     scoped(qualifier = unauthorizedClient) {
         createPlatformHttpClient(scope = this) {
             defaultLogging()
             defaultJson()
+            defaultTimeout()
         }
     }
 }
@@ -47,6 +57,8 @@ fun Module.bindAuthorizedClient(baseUrl: String, token: String) {
         createPlatformHttpClient(scope = this) {
             defaultLogging()
             defaultJson()
+            defaultTimeout()
+
             defaultRequest {
                 url(baseUrl)
                 headers {
