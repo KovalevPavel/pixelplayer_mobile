@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
@@ -71,12 +72,15 @@ private fun DataContent(
         pageCount = { state.pages.size },
     )
 
-    eventsFlow.CollectWithLifecycle { event ->
-        isLoaderVisible = false
+    val controller = LocalSoftwareKeyboardController.current
 
+    eventsFlow.CollectWithLifecycle { event ->
         when (event) {
             is LoginEvent.ShowError -> {
-                messageDialogVs = event.viewState
+                coroutineScope.launch {
+                    controller?.hide()
+                    messageDialogVs = event.viewState
+                }
             }
 
             is LoginEvent.NavigateToMainFlow -> {
@@ -85,6 +89,10 @@ private fun DataContent(
 
             is LoginEvent.NavigateToStep -> {
                 coroutineScope.launch { pagerState.animateScrollToPage(event.step) }
+            }
+
+            is LoginEvent.ShowLoader -> {
+                isLoaderVisible = event.show
             }
         }
     }

@@ -6,6 +6,9 @@ import kotlin.jvm.JvmInline
 sealed interface LoginEvent {
     data class ShowError(val viewState: MessageDialogVs) : LoginEvent
 
+    @JvmInline
+    value class ShowLoader(val show: Boolean) : LoginEvent
+
     data class NavigateToMainFlow(
         val token: String,
         val endpoint: String,
