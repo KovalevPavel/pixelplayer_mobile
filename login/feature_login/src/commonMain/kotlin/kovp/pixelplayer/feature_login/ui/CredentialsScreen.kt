@@ -57,7 +57,7 @@ fun CredentialsScreen(
                     singleLine = true,
                     onValueChange = { login = it },
                     label = {
-                        Text(stringResource(coreRes.string.username))
+                        Text(text = stringResource(coreRes.string.username))
                     },
                 )
 
@@ -69,7 +69,7 @@ fun CredentialsScreen(
                         keyboardType = KeyboardType.Password,
                     ),
                     label = {
-                        Text(stringResource(Res.string.password))
+                        Text(text = stringResource(Res.string.password))
                     },
                     visualTransformation = PasswordVisualTransformation(),
                 )

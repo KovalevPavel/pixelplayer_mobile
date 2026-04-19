@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -141,7 +142,6 @@ private fun SettingScreenContent(
             }
         }
     }
-
 }
 
 @Composable
@@ -149,13 +149,11 @@ private fun SettingsScreenData(
     viewState: SettingsState.Data,
     onAction: (SettingsAction) -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(top = 64.dp),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize().padding(all = 16.dp),
+    ) { paddingValues ->
         Column(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             TextData(
@@ -197,10 +195,10 @@ private fun SettingsScreenData(
                 }
             }
         }
+    }
 
-        if (viewState.isProcessing) {
-            FullScreenLoader()
-        }
+    if (viewState.isProcessing) {
+        FullScreenLoader()
     }
 }
 
@@ -251,7 +249,10 @@ private fun LanguageData(
                     LanguageSelection.System -> {
                         "${stringResource(coreRes.string.system)} (${deviceLanguage.toStringRes()})"
                     }
-                    is LanguageSelection.Explicit -> languageSelection.language.toStringRes()
+
+                    is LanguageSelection.Explicit -> {
+                        languageSelection.language.toStringRes()
+                    }
                 },
                 style = pixelTypography.bodyMedium,
                 color = pixelColors.onSurfaceVariant,

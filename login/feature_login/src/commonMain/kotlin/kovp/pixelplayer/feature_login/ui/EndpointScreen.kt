@@ -51,8 +51,8 @@ fun EndpointScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
                 ),
-                placeholder = { Text(stringResource(Res.string.endpoint_placeholder)) },
-                label = { Text(stringResource(Res.string.enter_server_endpoint)) },
+                placeholder = { Text(text = stringResource(Res.string.endpoint_placeholder)) },
+                label = { Text(text = stringResource(Res.string.enter_server_endpoint)) },
             )
 
             Button(
@@ -62,7 +62,7 @@ fun EndpointScreen(
                     handleAction(LoginAction.CheckEndpoint(endpoint))
                 },
             ) {
-                Text(stringResource(Res.string.check))
+                Text(text = stringResource(Res.string.check))
             }
         }
     }
