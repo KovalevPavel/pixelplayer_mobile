@@ -12,19 +12,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.core.build_config.BuildConfig
 import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
 import kovp.pixelplayer.domain_login.LoginRepository
 import pixelplayer.core_ui.generated.resources.Res
 import pixelplayer.core_ui.generated.resources.ok
-import pixelplayer.feature_login.generated.resources.Res as loginRes
 import pixelplayer.feature_login.generated.resources.cant_validate_url
 import pixelplayer.feature_login.generated.resources.wrong_credentials
+import pixelplayer.feature_login.generated.resources.Res as loginRes
 
 class LoginViewModel(
     private val loginRepo: LoginRepository,
     private val credentialsRepo: CredentialsRepository,
+    private val buildConfig: BuildConfig,
 ) : ViewModel() {
     val screenState: StateFlow<LoginState> by lazy { _screenState }
     val eventsFlow: Flow<LoginEvent> by lazy { _eventsFlow }
@@ -72,21 +74,13 @@ class LoginViewModel(
         launch(
             body = {
                 LoginEvent.ShowLoader(show = true).let(::emitEvent)
-                val normalizedEndpoints = endpoint.withSchema()
+                val normalizedEndpoint = endpoint.withSchema()
 
-                normalizedEndpoints.forEachIndexed { index, url ->
-                    runCatching {
-                        if (loginRepo.checkEndpoint(url)) {
-                            credentialsRepo.saveEndpoint(url)
-
-                            navigateToState(LoginState.Credentials)
-                        }
-                    }
-                        .onFailure {
-                            if (index == normalizedEndpoints.lastIndex) {
-                                error(it)
-                            }
-                        }
+                if (loginRepo.checkEndpoint(normalizedEndpoint)) {
+                    credentialsRepo.saveEndpoint(normalizedEndpoint)
+                    navigateToState(LoginState.Credentials)
+                } else {
+                    error("Can't parse url")
                 }
             },
             onFailure = {
@@ -157,15 +151,11 @@ class LoginViewModel(
         viewModelScope.launch { _eventsFlow.emit(event) }
     }
 
-    private fun String.withSchema(): List<String> {
-        return if (!this.toUri().scheme.isNullOrEmpty()) {
-            listOf(this)
-        } else {
-            // https is preferred
-            listOf(
-                "https://$this",
-                "http://$this",
-            )
+    private fun String.withSchema(): String {
+        return when {
+            !this.toUri().scheme.isNullOrEmpty() -> this
+            buildConfig.isDebug -> "http://$this"
+            else -> "https://$this"
         }
     }
 

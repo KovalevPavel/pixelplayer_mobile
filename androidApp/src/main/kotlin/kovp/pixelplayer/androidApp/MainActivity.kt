@@ -10,6 +10,7 @@ import kovp.pixelplayer.App
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kovp.pixelplayer.core_design.Background
 import kovp.pixelplayer.androidApp.di.androidAppModule
+import kovp.pixelplayer.androidApp.di.buildConfigModule
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,10 @@ class MainActivity : AppCompatActivity() {
         setContent {
             App(
                 ctx = AndroidAppContext(this@MainActivity.applicationContext),
-                platformModules = listOf(androidAppModule),
+                platformModules = listOf(
+                    androidAppModule,
+                    buildConfigModule,
+                ),
             )
         }
     }

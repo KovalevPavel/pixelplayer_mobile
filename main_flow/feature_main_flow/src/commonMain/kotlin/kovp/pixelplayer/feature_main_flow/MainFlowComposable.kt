@@ -1,5 +1,6 @@
 package kovp.pixelplayer.feature_main_flow
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,23 +28,20 @@ import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistDetails
 import kovp.pixelplayer.api_artists.ArtistsComposableWrapper
 import kovp.pixelplayer.api_settings.SettingsScreenWrapper
-import kovp.pixelplayer.core_main_flow.LocalMainScope
-import kovp.pixelplayer.core_ui.UiText
-import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
-import kovp.pixelplayer.feature_main_flow.presentation.MainFlowAction
-import kovp.pixelplayer.feature_main_flow.presentation.MainFlowViewModel
 import kovp.pixelplayer.api_tracks.TracksComposableWrapper
+import kovp.pixelplayer.core_main_flow.LocalMainScope
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
+import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
+import kovp.pixelplayer.feature_main_flow.presentation.MainFlowAction
 import kovp.pixelplayer.feature_main_flow.presentation.MainFlowEvent
+import kovp.pixelplayer.feature_main_flow.presentation.MainFlowViewModel
 import org.jetbrains.compose.resources.stringResource
-import pixelplayer.core_ui.generated.resources.ok
 import pixelplayer.feature_main_flow.generated.resources.Res
 import pixelplayer.feature_main_flow.generated.resources.tab_albums
 import pixelplayer.feature_main_flow.generated.resources.tab_artists
 import pixelplayer.feature_main_flow.generated.resources.tab_settings
 import pixelplayer.feature_main_flow.generated.resources.tab_tracks
-import pixelplayer.feature_main_flow.generated.resources.test_account_notice_message
-import pixelplayer.core_ui.generated.resources.Res as coreRes
 
 @Composable
 fun MainFlowComposable(
@@ -51,17 +49,16 @@ fun MainFlowComposable(
     onLogout: () -> Unit,
 ) {
     val mainScope = LocalMainScope.current
-    var showTestAccountNotice by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var messageDialog: MessageDialogVs? by rememberSaveable { mutableStateOf(null) }
 
     val viewModel: MainFlowViewModel = remember(mainScope) { mainScope.get() }
 
     viewModel.eventsFlow.CollectWithLifecycle { event ->
         when (event) {
-            MainFlowEvent.ShowTestAccountNotice -> showTestAccountNotice = true
+            is MainFlowEvent.ShowMessageDialog -> messageDialog = event.viewState
         }
     }
+
     val rootNavController = rememberNavController()
 
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -89,6 +86,7 @@ fun MainFlowComposable(
                         },
                         text = {
                             Text(
+                                modifier = Modifier.basicMarquee(),
                                 text = stringResource(t.titleRes),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -110,21 +108,16 @@ fun MainFlowComposable(
             }
         }
 
-        if (showTestAccountNotice) {
+        messageDialog?.let { vs ->
             MessageDialog(
-                viewState = kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs(
-                    message = UiText.Resource(Res.string.test_account_notice_message),
-                    primaryAction = UiText.Resource(coreRes.string.ok),
-                ),
-                removeFromComposition = {
-                    showTestAccountNotice = false
-                },
+                viewState = vs,
+                removeFromComposition = { messageDialog = null },
             )
         }
     }
 
     LaunchedEffect(Unit) {
-        MainFlowAction.CheckTestAccountNotice.let(viewModel::handleAction)
+        MainFlowAction.CheckDemoAppNotice.let(viewModel::handleAction)
     }
 }
 

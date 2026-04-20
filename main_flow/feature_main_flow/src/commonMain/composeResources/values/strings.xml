@@ -3,5 +3,5 @@
     <string name="tab_albums">Albums</string>
     <string name="tab_tracks">Tracks</string>
     <string name="tab_settings">Settings</string>
-    <string name="test_account_notice_message">This is a test account that provides access to royalty-free music.\nIf you are an artist and believe your rights have been violated, contact us by email on the app's Google Play page.</string>
+    <string name="demo_app_notice_message">All sound effects in this demo application were self-recorded by Pavel Kovalev and are dedicated to the public domain under CC0 1.0 Universal.\nSee "Settings" tab for more info</string>
 </resources>

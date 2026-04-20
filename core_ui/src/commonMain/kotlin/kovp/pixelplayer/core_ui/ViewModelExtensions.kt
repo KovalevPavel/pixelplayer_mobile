@@ -3,13 +3,14 @@ package kovp.pixelplayer.core_ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 fun ViewModel.launch(
     context: CoroutineContext = EmptyCoroutineContext,
-    body: suspend () -> Unit,
+    body: suspend CoroutineScope.() -> Unit,
     onFailure: (Throwable) -> Unit = {},
     finally: () -> Unit = {},
 ) {
@@ -21,7 +22,7 @@ fun ViewModel.launch(
     viewModelScope.launch(
         context = exceptionHandler + context,
     ) {
-        body()
+        body(this)
         finally()
     }
 }

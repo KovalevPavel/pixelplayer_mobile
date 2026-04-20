@@ -2,4 +2,6 @@
     <string name="username">Current user</string>
     <string name="logout_message">Are you sure you want to clear your login data?</string>
     <string name="change_endpoint">Are you sure you want to change your server?\nThis will also clear your login data.</string>
+    <string name="license_info">All sound effects in this demo application were self-recorded by Pavel Kovalev and are dedicated to the public domain under CC0 1.0 Universal. To the extent possible under applicable law, no rights reserved.\n\nLicense:</string>
+    <string name="license_url" translatable="false">https://creativecommons.org/publicdomain/zero/1.0/</string>
 </resources>

@@ -17,4 +17,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
-/androidApp/src/main/res/xml/network_security_config.xml
+/androidApp/src/demo

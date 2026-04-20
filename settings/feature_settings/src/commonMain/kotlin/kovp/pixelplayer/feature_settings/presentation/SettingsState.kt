@@ -12,6 +12,7 @@ sealed interface SettingsState {
         val languageSelection: LanguageSelection,
         val deviceLanguage: AppLanguage,
         val isLanguagePickerVisible: Boolean,
+        val isDemo: Boolean,
         val isProcessing: Boolean,
     ) : SettingsState
 }

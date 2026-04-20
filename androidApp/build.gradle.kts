@@ -78,6 +78,8 @@ kotlin {
         namespace = "kovp.pixelplayer"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+        flavorDimensions.add("default")
+
         defaultConfig {
             applicationId = "kovp.pixelplayer"
             minSdk = libs.versions.android.minSdk.get().toInt()
@@ -102,6 +104,16 @@ kotlin {
 
         buildFeatures {
             buildConfig = true
+        }
+
+        productFlavors {
+            register("default") {
+                isDefault = true
+            }
+
+            register("demo") {
+                applicationIdSuffix = ".demo"
+            }
         }
     }
 }

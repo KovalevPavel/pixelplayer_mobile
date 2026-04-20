@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.core.build_config.BuildConfig
 import kovp.pixelplayer.core.language.AppLanguageManager
 import kovp.pixelplayer.core.language.AppLanguageRepository
 import kovp.pixelplayer.core.language.LanguageSelection
@@ -28,6 +29,7 @@ class SettingsViewModel(
     private val credentialsRepository: CredentialsRepository,
     private val appLanguageRepository: AppLanguageRepository,
     private val appLanguageManager: AppLanguageManager,
+    private val buildConfig: BuildConfig,
 ) : ViewModel() {
     val stateFlow: StateFlow<SettingsState> by lazy { _stateFlow }
     val settingsEvents: Flow<SettingsEvent> by lazy { _settingsEvents }
@@ -63,6 +65,7 @@ class SettingsViewModel(
                         languageSelection = languageSelection,
                         deviceLanguage = appLanguageManager.resolveDeviceLanguage(),
                         isLanguagePickerVisible = appLanguageManager.supportsOverride,
+                        isDemo = buildConfig.isDemoApp,
                         isProcessing = false,
                     )
                 }

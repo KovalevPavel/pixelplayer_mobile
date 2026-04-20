@@ -14,3 +14,7 @@ val authorizedClient = object : Qualifier {
 val okHttpInterceptor = object : Qualifier {
     override val value: QualifierValue = "okHttpInterceptor"
 }
+
+val demoServerInterceptor = object : Qualifier {
+    override val value: QualifierValue = "demoAppInterceptor"
+}

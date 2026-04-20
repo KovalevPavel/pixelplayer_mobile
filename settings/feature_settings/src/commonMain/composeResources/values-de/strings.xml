@@ -2,4 +2,5 @@
     <string name="username">Aktueller Benutzer</string>
     <string name="logout_message">Möchten Sie Ihre Anmeldedaten wirklich löschen?</string>
     <string name="change_endpoint">Möchten Sie Ihren Server wirklich ändern?\nDabei werden auch Ihre Anmeldedaten gelöscht.</string>
+    <string name="license_info">Alle Soundeffekte dieser Demo-Anwendung wurden von Pavel Kovalev selbst aufgenommen und stehen unter der CC0 1.0 Universal-Lizenz zur freien Verfügung. Soweit gesetzlich zulässig, werden keine Rechte vorbehalten.\n\nLizenz:</string>
 </resources>

@@ -22,6 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -51,6 +58,8 @@ import pixelplayer.core_ui.generated.resources.language
 import pixelplayer.core_ui.generated.resources.logout
 import pixelplayer.core_ui.generated.resources.system
 import pixelplayer.feature_settings.generated.resources.Res
+import pixelplayer.feature_settings.generated.resources.license_info
+import pixelplayer.feature_settings.generated.resources.license_url
 import pixelplayer.feature_settings.generated.resources.username
 import pixelplayer.core_ui.generated.resources.Res as coreRes
 
@@ -149,6 +158,8 @@ private fun SettingsScreenData(
     viewState: SettingsState.Data,
     onAction: (SettingsAction) -> Unit,
 ) {
+    val uriHandler = LocalUriHandler.current
+
     Scaffold(
         modifier = Modifier.fillMaxSize().padding(all = 16.dp),
     ) { paddingValues ->
@@ -171,6 +182,28 @@ private fun SettingsScreenData(
                     languageSelection = viewState.languageSelection,
                     deviceLanguage = viewState.deviceLanguage,
                     onAction = onAction,
+                )
+            }
+
+            if (viewState.isDemo) {
+                val licenseText = buildAnnotatedString {
+                    stringResource(Res.string.license_info).let(::appendLine)
+                    val link = stringResource(Res.string.license_url)
+                    withLink(
+                        LinkAnnotation.Url(
+                            url = link,
+                            styles = TextLinkStyles(style = SpanStyle(color = Color(0xff3474eb))),
+                            linkInteractionListener = { uriHandler.openUri(link) },
+                        )
+                    ) {
+                        link.let(::appendLine)
+                    }
+                }
+
+                Text(
+                    text = licenseText,
+                    style = pixelTypography.bodyLarge,
+                    color = pixelColors.onBackground,
                 )
             }
 
@@ -290,6 +323,16 @@ private class SettingsStateProvider : PreviewParameterProvider<SettingsState> {
             languageSelection = LanguageSelection.System,
             deviceLanguage = AppLanguage.English,
             isLanguagePickerVisible = true,
+            isDemo = false,
+            isProcessing = false,
+        ),
+        SettingsState.Data(
+            login = "unknown_user",
+            endpoint = "https://www.example.com",
+            languageSelection = LanguageSelection.System,
+            deviceLanguage = AppLanguage.English,
+            isLanguagePickerVisible = true,
+            isDemo = true,
             isProcessing = false,
         ),
         SettingsState.Data(
@@ -298,6 +341,7 @@ private class SettingsStateProvider : PreviewParameterProvider<SettingsState> {
             languageSelection = LanguageSelection.Explicit(AppLanguage.German),
             deviceLanguage = AppLanguage.German,
             isLanguagePickerVisible = true,
+            isDemo = false,
             isProcessing = true,
         ),
     )
