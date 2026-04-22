@@ -35,9 +35,9 @@ jobs:
           FALLBACK_WIKI_TOKEN: ${{ secrets.WIKI_PUSH_TOKEN }}
         run: |
           set -eu
-          REPO_WIKI_URL="https://x-access-token:${DEFAULT_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.wiki.git"
+          REPO_WIKI_URL="https://x-access-token:${DEFAULT_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.git"
           if [ -n "${FALLBACK_WIKI_TOKEN}" ]; then
-            REPO_WIKI_URL="https://x-access-token:${FALLBACK_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.wiki.git"
+            REPO_WIKI_URL="https://x-access-token:${FALLBACK_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.git"
           fi
 
           git clone "${REPO_WIKI_URL}" wiki-repo
