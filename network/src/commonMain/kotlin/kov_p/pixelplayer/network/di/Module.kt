@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.dsl.ScopeDSL
 
-private const val DEFAULT_CONNECTION_TIMEOUT_MS = 2000L
+private const val DEFAULT_CONNECTION_TIMEOUT_MS = 5000L
 
 private fun HttpClientConfig<*>.defaultLogging() {
     install(Logging) {

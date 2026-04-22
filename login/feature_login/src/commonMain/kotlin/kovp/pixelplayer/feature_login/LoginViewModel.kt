@@ -154,7 +154,7 @@ class LoginViewModel(
     private fun String.withSchema(): String {
         return when {
             !this.toUri().scheme.isNullOrEmpty() -> this
-            buildConfig.isDebug -> "http://$this"
+            buildConfig.isDemoApp -> "http://$this"
             else -> "https://$this"
         }
     }
