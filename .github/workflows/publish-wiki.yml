@@ -1,0 +1,64 @@
+name: Publish Wiki
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - README.md
+      - docs/wiki-src/**
+      - scripts/generate_wiki.py
+      - .github/workflows/publish-wiki.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate wiki pages
+        run: python3 scripts/generate_wiki.py
+
+      - name: Publish to GitHub Wiki
+        env:
+          DEFAULT_WIKI_TOKEN: ${{ github.token }}
+          FALLBACK_WIKI_TOKEN: ${{ secrets.WIKI_PUSH_TOKEN }}
+        run: |
+          set -eu
+          REPO_WIKI_URL="https://x-access-token:${DEFAULT_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.wiki.git"
+          if [ -n "${FALLBACK_WIKI_TOKEN}" ]; then
+            REPO_WIKI_URL="https://x-access-token:${FALLBACK_WIKI_TOKEN}@github.com/KovalevPavel/pixelplayer_mobile.wiki.git"
+          fi
+
+          git clone "${REPO_WIKI_URL}" wiki-repo
+          find wiki-repo -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp -R docs/wiki-dist/. wiki-repo/
+
+          cd wiki-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet --exit-code && git diff --cached --quiet --exit-code; then
+            echo "No wiki changes to publish"
+            exit 0
+          fi
+
+          git add .
+
+          if git diff --cached --quiet --exit-code; then
+            echo "No staged wiki changes to publish"
+            exit 0
+          fi
+
+          git commit -m "Publish wiki from repository sources"
+          git push origin master
