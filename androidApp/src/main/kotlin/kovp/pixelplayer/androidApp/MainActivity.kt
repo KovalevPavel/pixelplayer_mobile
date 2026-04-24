@@ -1,13 +1,14 @@
 package kovp.pixelplayer.androidApp
 
 import android.os.Bundle
-import android.os.SystemClock
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import kotlinx.coroutines.delay
 import kovp.pixelplayer.App
 import kovp.pixelplayer.androidApp.di.androidAppModule
 import kovp.pixelplayer.androidApp.di.buildConfigModule
@@ -16,13 +17,13 @@ import kovp.pixelplayer.core_design.Background
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashStartedAt = SystemClock.elapsedRealtime()
         var startupChecksPassed = false
+        var isMinimumDurationPending = true
 
         installSplashScreen().setKeepOnScreenCondition {
-            val isMinimumDurationPending = SystemClock.elapsedRealtime() - splashStartedAt < SPLASH_VISIBLE_DURATION_MS
             isMinimumDurationPending || !startupChecksPassed
         }
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Background.toArgb()),
             navigationBarStyle = SystemBarStyle.dark(Background.toArgb()),
@@ -30,6 +31,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            LaunchedEffect(Unit) {
+                if (!isMinimumDurationPending || startupChecksPassed) {
+                    return@LaunchedEffect
+                }
+
+                delay(SPLASH_VISIBLE_DURATION_MS)
+                isMinimumDurationPending = false
+            }
+
             App(
                 ctx = AndroidAppContext(this@MainActivity.applicationContext),
                 onStartupChecksPassed = { startupChecksPassed = true },
