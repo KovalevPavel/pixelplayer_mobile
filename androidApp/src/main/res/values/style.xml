@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="PixelPlayerSplashTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon_animated</item>
+        <item name="windowSplashScreenAnimationDuration">4000</item>
+        <item name="postSplashScreenTheme">@style/PixelPlayerTheme</item>
+    </style>
+
     <style name="PixelPlayerTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:colorBackground">@color/background</item>
     </style>

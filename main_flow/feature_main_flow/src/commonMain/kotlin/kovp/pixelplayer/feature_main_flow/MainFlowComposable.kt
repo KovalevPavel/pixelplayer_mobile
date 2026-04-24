@@ -1,5 +1,13 @@
 package kovp.pixelplayer.feature_main_flow
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import kovp.pixelplayer.api_albums.AlbumDetails
 import kovp.pixelplayer.api_albums.AlbumsComposableWrapper
 import kovp.pixelplayer.api_artists.ArtistDetails
@@ -59,8 +63,6 @@ fun MainFlowComposable(
         }
     }
 
-    val rootNavController = rememberNavController()
-
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     Box(
@@ -81,7 +83,6 @@ fun MainFlowComposable(
                             if (isSelected) {
                                 return@Tab
                             }
-                            rootNavController.navigate(t.route)
                             selectedTabIndex = i
                         },
                         text = {
@@ -96,12 +97,15 @@ fun MainFlowComposable(
                 }
             }
 
-            NavHost(
+            AnimatedContent(
                 modifier = Modifier.fillMaxSize(),
-                navController = rootNavController,
-                startDestination = MainFlowScreen.entries.first().route,
-            ) {
-                registerRootTabs(
+                targetState = MainFlowScreen.entries[selectedTabIndex],
+                transitionSpec = { pagerTabTransition() },
+                label = "main_flow_tabs",
+            ) { screen ->
+                RootTabContent(
+                    modifier = Modifier.fillMaxSize(),
+                    screen = screen,
                     navController = navController,
                     onLogout = onLogout,
                 )
@@ -129,29 +133,50 @@ private val MainFlowScreen.titleRes
         MainFlowScreen.Settings -> Res.string.tab_settings
     }
 
-private fun NavGraphBuilder.registerRootTabs(
+private fun AnimatedContentTransitionScope<MainFlowScreen>.pagerTabTransition(): ContentTransform {
+    val direction = if (targetState.ordinal > initialState.ordinal) 1 else -1
+
+    return slideInHorizontally(
+        animationSpec = tween(TAB_ANIMATION_DURATION_MS),
+        initialOffsetX = { it * direction },
+    ) togetherWith slideOutHorizontally(
+        animationSpec = tween(TAB_ANIMATION_DURATION_MS),
+        targetOffsetX = { -it * direction },
+    ) using SizeTransform(clip = true)
+}
+
+@Composable
+private fun RootTabContent(
+    modifier: Modifier = Modifier,
+    screen: MainFlowScreen,
     navController: NavController,
     onLogout: () -> Unit,
 ) {
-    composable(route = MainFlowScreen.Artists.route) {
-        ArtistsComposableWrapper { artistId ->
-            ArtistDetails(artistId).let(navController::navigate)
+    Box(modifier = modifier) {
+        when (screen) {
+            MainFlowScreen.Artists -> {
+                ArtistsComposableWrapper { artistId ->
+                    ArtistDetails(artistId).let(navController::navigate)
+                }
+            }
+
+            MainFlowScreen.Albums -> {
+                AlbumsComposableWrapper { albumId ->
+                    AlbumDetails(id = albumId).let(navController::navigate)
+                }
+            }
+
+            MainFlowScreen.Tracks -> {
+                TracksComposableWrapper()
+            }
+
+            MainFlowScreen.Settings -> {
+                SettingsScreenWrapper(
+                    onLogout = onLogout,
+                )
+            }
         }
-    }
-
-    composable(route = MainFlowScreen.Albums.route) {
-        AlbumsComposableWrapper { albumId ->
-            AlbumDetails(id = albumId).let(navController::navigate)
-        }
-    }
-
-    composable(route = MainFlowScreen.Tracks.route) {
-        TracksComposableWrapper()
-    }
-
-    composable(route = MainFlowScreen.Settings.route) {
-        SettingsScreenWrapper(
-            onLogout = onLogout,
-        )
     }
 }
+
+private const val TAB_ANIMATION_DURATION_MS = 300
