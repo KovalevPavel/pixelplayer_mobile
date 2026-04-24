@@ -17,8 +17,11 @@ import kovp.pixelplayer.core_design.Background
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashStartedAt = SystemClock.elapsedRealtime()
+        var startupChecksPassed = false
+
         installSplashScreen().setKeepOnScreenCondition {
-            SystemClock.elapsedRealtime() - splashStartedAt < SPLASH_VISIBLE_DURATION_MS
+            val isMinimumDurationPending = SystemClock.elapsedRealtime() - splashStartedAt < SPLASH_VISIBLE_DURATION_MS
+            isMinimumDurationPending || !startupChecksPassed
         }
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Background.toArgb()),
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             App(
                 ctx = AndroidAppContext(this@MainActivity.applicationContext),
+                onStartupChecksPassed = { startupChecksPassed = true },
                 platformModules = listOf(
                     androidAppModule,
                     buildConfigModule,
@@ -38,6 +42,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private companion object {
-        const val SPLASH_VISIBLE_DURATION_MS = 6_000L
+        const val SPLASH_VISIBLE_DURATION_MS = 3_000L
     }
 }

@@ -8,6 +8,10 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
@@ -23,10 +27,12 @@ import kovp.pixelplayer.core.context.bindContext
 import kovp.pixelplayer.core_credentials.credentialsModule
 import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_storage.di.storageModule
+import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.di.mainModule
-import kovp.pixelplayer.initializer.Initializer
-import kovp.pixelplayer.initializer.registerInitializer
+import kovp.pixelplayer.main.MainEvent
+import kovp.pixelplayer.main.MainViewModel
 import org.koin.compose.KoinApplication
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.Module
 import org.koin.dsl.koinConfiguration
 
@@ -38,6 +44,7 @@ private val rippleConfiguration = RippleConfiguration(
 fun App(
     ctx: AppContext,
     platformModules: List<Module> = emptyList(),
+    onStartupChecksPassed: () -> Unit = {},
 ) {
     KoinApplication(
         configuration = koinConfiguration {
@@ -55,7 +62,10 @@ fun App(
             CompositionLocalProvider(
                 LocalRippleConfiguration provides rippleConfiguration,
             ) {
-                HostComposable(context = ctx)
+                HostComposable(
+                    context = ctx,
+                    onStartupChecksPassed = onStartupChecksPassed,
+                )
             }
         }
     }
@@ -77,37 +87,43 @@ private inline fun <reified T: Any> NavHostController.navigateToMainFlow(token: 
 @Composable
 private fun HostComposable(
     context: AppContext,
+    onStartupChecksPassed: () -> Unit,
 ) {
 
     val hostNavController = rememberNavController()
+    val viewModel = koinViewModel<MainViewModel>()
+    var startDestination by remember { mutableStateOf<Any?>(null) }
+
+    viewModel.eventsFlow.CollectWithLifecycle { event ->
+        when (event) {
+            MainEvent.OpenLoginFlow -> {
+                startDestination = LoginFlow
+            }
+
+            is MainEvent.OpenMainFlow -> {
+                startDestination = MainFlow(
+                    token = event.token,
+                    baseUrl = event.endpoint,
+                )
+            }
+
+            MainEvent.SplashChecksPassed -> {
+                onStartupChecksPassed()
+            }
+        }
+    }
+
+    val startRoute = startDestination ?: return
 
     NavHost(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         navController = hostNavController,
-        startDestination = Initializer,
+        startDestination = startRoute,
         enterTransition = { slideInHorizontally { it } },
         exitTransition = { slideOutHorizontally { -it } },
         popEnterTransition = { slideInHorizontally { -it } },
         popExitTransition = { slideOutHorizontally { it } },
     ) {
-        registerInitializer(
-            navigateToLoginFlow = {
-                hostNavController.popBackStack(
-                    route = Initializer,
-                    inclusive = true,
-                    saveState = false,
-                )
-
-                LoginFlow.let(hostNavController::navigate)
-            },
-            navigateToMainFlow = { token, endpoint ->
-                hostNavController.navigateToMainFlow<Initializer>(
-                    token = token,
-                    endpoint = endpoint,
-                )
-            }
-        )
-
         registerLoginFlow(
             navigateToMainFlow = { token, endpoint ->
                 hostNavController.navigateToMainFlow<LoginFlow>(token = token, endpoint = endpoint)
@@ -122,7 +138,7 @@ private fun HostComposable(
                     saveState = false,
                 )
 
-                Initializer.let(hostNavController::navigate)
+                LoginFlow.let(hostNavController::navigate)
             },
         )
     }
