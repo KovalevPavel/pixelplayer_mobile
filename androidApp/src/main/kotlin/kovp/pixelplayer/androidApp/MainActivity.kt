@@ -52,6 +52,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private companion object {
-        const val SPLASH_VISIBLE_DURATION_MS = 3_000L
+        const val SPLASH_VISIBLE_DURATION_MS = 1_500L
     }
 }
