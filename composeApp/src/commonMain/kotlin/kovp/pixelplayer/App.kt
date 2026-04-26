@@ -8,6 +8,8 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +31,6 @@ import kovp.pixelplayer.core_design.AppTheme
 import kovp.pixelplayer.core_storage.di.storageModule
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.di.mainModule
-import kovp.pixelplayer.main.MainEvent
 import kovp.pixelplayer.main.MainViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,13 +59,22 @@ fun App(
             )
         },
     ) {
+        val viewModel = koinViewModel<MainViewModel>()
+        val startDestination by viewModel.startDestinationFlow.collectAsState()
+
+        LaunchedEffect(startDestination) {
+            if (startDestination != null) {
+                onStartupChecksPassed()
+            }
+        }
+
         AppTheme {
             CompositionLocalProvider(
                 LocalRippleConfiguration provides rippleConfiguration,
             ) {
                 HostComposable(
                     context = ctx,
-                    onStartupChecksPassed = onStartupChecksPassed,
+                    startRoute = startDestination ?: return@CompositionLocalProvider,
                 )
             }
         }
@@ -87,33 +97,9 @@ private inline fun <reified T: Any> NavHostController.navigateToMainFlow(token: 
 @Composable
 private fun HostComposable(
     context: AppContext,
-    onStartupChecksPassed: () -> Unit,
+    startRoute: Any,
 ) {
-
     val hostNavController = rememberNavController()
-    val viewModel = koinViewModel<MainViewModel>()
-    var startDestination by remember { mutableStateOf<Any?>(null) }
-
-    viewModel.eventsFlow.CollectWithLifecycle { event ->
-        when (event) {
-            MainEvent.OpenLoginFlow -> {
-                startDestination = LoginFlow
-            }
-
-            is MainEvent.OpenMainFlow -> {
-                startDestination = MainFlow(
-                    token = event.token,
-                    baseUrl = event.endpoint,
-                )
-            }
-
-            MainEvent.SplashChecksPassed -> {
-                onStartupChecksPassed()
-            }
-        }
-    }
-
-    val startRoute = startDestination ?: return
 
     NavHost(
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),

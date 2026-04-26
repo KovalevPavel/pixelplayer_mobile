@@ -17,14 +17,14 @@ private class AndroidAppLanguageManager : AppLanguageManager {
 
         when (selection) {
             LanguageSelection.System -> {
-                AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                LocaleListCompat.getEmptyLocaleList()
             }
 
             is LanguageSelection.Explicit -> {
                 LocaleListCompat.forLanguageTags(selection.language.code)
-                    .let(AppCompatDelegate::setApplicationLocales)
             }
         }
+            .let(AppCompatDelegate::setApplicationLocales)
     }
 
     override fun isSelectionApplied(selection: LanguageSelection): Boolean {

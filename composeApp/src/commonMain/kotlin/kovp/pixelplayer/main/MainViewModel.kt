@@ -1,10 +1,20 @@
 package kovp.pixelplayer.main
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
+import kovp.pixelplayer.api_login.LoginFlow
+import kovp.pixelplayer.api_main_flow.MainFlow
 import kovp.pixelplayer.core.language.AppLanguageManager
 import kovp.pixelplayer.core.language.AppLanguageRepository
 import kovp.pixelplayer.core_ui.launch
@@ -14,58 +24,88 @@ class MainViewModel(
     private val languageManager: AppLanguageManager,
     private val languageRepository: AppLanguageRepository,
 ) : ViewModel() {
-    val eventsFlow: Flow<MainEvent> by lazy { eventsChannel.receiveAsFlow() }
+    val startDestinationFlow: StateFlow<Any?> by lazy { _startDestinationFlow }
+    private val _startDestinationFlow = MutableStateFlow<Any?>(null)
 
-    private val eventsChannel = Channel<MainEvent>(capacity = Channel.BUFFERED)
     private var isInitialized = false
 
+    private val languageInitializationFlow = MutableStateFlow(false)
+    private val minDelayFlow = MutableStateFlow(false)
+    private val credentialsStartDestinationFlow = MutableStateFlow<Any?>(null)
+
     init {
-        handleAction(MainAction.Initialize)
+        subscribeOnReadinessFlow()
+        initialize()
     }
 
-    fun handleAction(action: MainAction) {
-        when (action) {
-            MainAction.Initialize -> initialize()
+    private fun subscribeOnReadinessFlow() {
+        combine(
+            languageInitializationFlow,
+            minDelayFlow,
+            credentialsStartDestinationFlow,
+        ) { langIsInitialized, minDelayElapsed, startDest ->
+            startDest.takeIf { langIsInitialized && minDelayElapsed }
         }
+            .distinctUntilChanged()
+            .onEach { startDest ->
+                startDest ?: return@onEach
+                _startDestinationFlow.update { startDest }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun initialize() {
         if (isInitialized) return
 
-        isInitialized = true
         launch(
             body = {
-                prepareLanguage()
-                checkCreds()
+                listOf(
+                    launch { launchMinDelay() },
+                    launch { prepareLanguage() },
+                    launch { checkCreds() },
+                )
+                    .joinAll()
+
+                isInitialized = true
             },
         )
+    }
+
+    private suspend fun launchMinDelay() {
+        delay(MIN_DELAY_MS)
+        minDelayFlow.update { true }
     }
 
     private suspend fun prepareLanguage() {
         val selection = languageRepository.getSelection()
 
         if (!languageManager.supportsOverride || languageManager.isSelectionApplied(selection)) {
+            languageInitializationFlow.update { true }
             return
         }
 
         languageManager.applySelection(selection)
+        languageInitializationFlow.update { true }
     }
 
     private suspend fun checkCreds() {
         val endpoint = credentialsRepository.getEndpoint()
         val token = credentialsRepository.getToken()
 
-        val navigationEvent = when {
-            endpoint.isNullOrEmpty() || token.isNullOrEmpty() -> {
-                MainEvent.OpenLoginFlow
-            }
+        credentialsStartDestinationFlow.update {
+            when {
+                endpoint.isNullOrEmpty() || token.isNullOrEmpty() -> {
+                    LoginFlow
+                }
 
-            else -> {
-                MainEvent.OpenMainFlow(token = token, endpoint = endpoint)
+                else -> {
+                    MainFlow(token = token, baseUrl = endpoint)
+                }
             }
         }
+    }
 
-        eventsChannel.send(navigationEvent)
-        eventsChannel.send(MainEvent.SplashChecksPassed)
+    companion object {
+        private const val MIN_DELAY_MS = 1500L
     }
 }
