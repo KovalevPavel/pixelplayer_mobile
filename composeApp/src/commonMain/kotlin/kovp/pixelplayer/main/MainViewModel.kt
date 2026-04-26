@@ -2,6 +2,7 @@ package kovp.pixelplayer.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,7 @@ class MainViewModel(
 
     private var isInitialized = false
 
-    private val languageInitializationFlow = MutableStateFlow(false)
+    private val languageInitializationFlow = MutableStateFlow(true)
     private val minDelayFlow = MutableStateFlow(false)
     private val credentialsStartDestinationFlow = MutableStateFlow<Any?>(null)
 
@@ -61,12 +62,15 @@ class MainViewModel(
             body = {
                 listOf(
                     launch { launchMinDelay() },
-                    launch { prepareLanguage() },
+//                    launch { prepareLanguage() },
                     launch { checkCreds() },
                 )
                     .joinAll()
 
                 isInitialized = true
+            },
+            onFailure = {
+                completeStartupWithFallback()
             },
         )
     }
@@ -77,32 +81,50 @@ class MainViewModel(
     }
 
     private suspend fun prepareLanguage() {
-        val selection = languageRepository.getSelection()
+        try {
+            val selection = languageRepository.getSelection()
 
-        if (!languageManager.supportsOverride || languageManager.isSelectionApplied(selection)) {
+            if (!languageManager.supportsOverride || languageManager.isSelectionApplied(selection)) {
+                languageInitializationFlow.update { true }
+                return
+            }
+
+            languageManager.applySelection(selection)
             languageInitializationFlow.update { true }
-            return
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Throwable) {
+            languageInitializationFlow.update { true }
         }
-
-        languageManager.applySelection(selection)
-        languageInitializationFlow.update { true }
     }
 
     private suspend fun checkCreds() {
-        val endpoint = credentialsRepository.getEndpoint()
-        val token = credentialsRepository.getToken()
+        try {
+            val endpoint = credentialsRepository.getEndpoint()
+            val token = credentialsRepository.getToken()
 
-        credentialsStartDestinationFlow.update {
-            when {
-                endpoint.isNullOrEmpty() || token.isNullOrEmpty() -> {
-                    LoginFlow
-                }
+            credentialsStartDestinationFlow.update {
+                when {
+                    endpoint.isNullOrEmpty() || token.isNullOrEmpty() -> {
+                        LoginFlow
+                    }
 
-                else -> {
-                    MainFlow(token = token, baseUrl = endpoint)
+                    else -> {
+                        MainFlow(token = token, baseUrl = endpoint)
+                    }
                 }
             }
+        } catch (error: CancellationException) {
+            throw error
+        } catch (_: Throwable) {
+            credentialsStartDestinationFlow.update { LoginFlow }
         }
+    }
+
+    private fun completeStartupWithFallback() {
+        languageInitializationFlow.update { true }
+        minDelayFlow.update { true }
+        credentialsStartDestinationFlow.update { LoginFlow }
     }
 
     companion object {

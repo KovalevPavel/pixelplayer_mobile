@@ -15,9 +15,9 @@ import kovp.pixelplayer.androidApp.di.buildConfigModule
 import kovp.pixelplayer.core.context.AndroidAppContext
 import kovp.pixelplayer.core_design.Background
 
-private val isSplashVisible = MutableStateFlow(true)
-
 class MainActivity : AppCompatActivity() {
+    private val isSplashVisible = MutableStateFlow(true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition { isSplashVisible.value }
 
@@ -39,5 +39,10 @@ class MainActivity : AppCompatActivity() {
                 ),
             )
         }
+    }
+
+    override fun onDestroy() {
+        isSplashVisible.update { false }
+        super.onDestroy()
     }
 }

@@ -1,7 +1,8 @@
 package kovp.pixelplayer.api_settings.di
 
-import android.content.res.Resources
+import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import kovp.pixelplayer.core.language.AppLanguage
 import kovp.pixelplayer.core.language.AppLanguageManager
@@ -9,7 +10,9 @@ import kovp.pixelplayer.core.language.LanguageSelection
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-private class AndroidAppLanguageManager : AppLanguageManager {
+private class AndroidAppLanguageManager(
+    private val context: Context,
+) : AppLanguageManager {
     override val supportsOverride: Boolean = true
 
     override fun applySelection(selection: LanguageSelection) {
@@ -44,16 +47,14 @@ private class AndroidAppLanguageManager : AppLanguageManager {
     }
 
     override fun resolveDeviceLanguage(): AppLanguage {
-        return runCatching {
-            val systemLocale = Resources.getSystem().configuration.locales[0]
-
-            AppLanguage.fromCode(systemLocale?.language)
-        }
-            .getOrNull()
+        return LocaleManagerCompat.getSystemLocales(context)
+            .getFirstMatch(AppLanguage.entries.map { it.code }.toTypedArray())
+            ?.language
+            .let(AppLanguage::fromCode)
             ?: AppLanguage.English
     }
 }
 
 actual val appLanguagePlatformModule: Module = module {
-    single<AppLanguageManager> { AndroidAppLanguageManager() }
+    single<AppLanguageManager> { AndroidAppLanguageManager(context = get()) }
 }

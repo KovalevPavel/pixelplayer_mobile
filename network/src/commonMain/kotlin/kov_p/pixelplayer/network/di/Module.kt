@@ -11,12 +11,15 @@ import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import kovp.pixelplayer.core.build_config.BuildConfig
 import org.koin.core.module.Module
 import org.koin.dsl.ScopeDSL
 
 private const val DEFAULT_CONNECTION_TIMEOUT_MS = 5000L
 
-private fun HttpClientConfig<*>.defaultLogging() {
+private fun HttpClientConfig<*>.defaultLogging(enabled: Boolean) {
+    if (!enabled) return
+
     install(Logging) {
         format = LoggingFormat.OkHttp
         logger = Logger.SIMPLE
@@ -44,8 +47,10 @@ private fun HttpClientConfig<*>.defaultTimeout() {
 
 fun ScopeDSL.bindUnauthorizedClient() {
     scoped(qualifier = unauthorizedClient) {
+        val enableHttpLogging = getOrNull<BuildConfig>()?.isDebug == true
+
         createPlatformHttpClient(scope = this) {
-            defaultLogging()
+            defaultLogging(enabled = enableHttpLogging)
             defaultJson()
             defaultTimeout()
         }
@@ -54,8 +59,10 @@ fun ScopeDSL.bindUnauthorizedClient() {
 
 fun Module.bindAuthorizedClient(baseUrl: String, token: String) {
     single(qualifier = authorizedClient) {
+        val enableHttpLogging = getOrNull<BuildConfig>()?.isDebug == true
+
         createPlatformHttpClient(scope = this) {
-            defaultLogging()
+            defaultLogging(enabled = enableHttpLogging)
             defaultJson()
             defaultTimeout()
 
