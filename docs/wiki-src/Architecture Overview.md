@@ -27,5 +27,5 @@ Architectural principles:
 
 Related pages:
 
-- [Module Guide](Module Guide.md)
-- [Features](Features.md)
+- [Module Guide](Module-Guide)
+- [Features](Features)

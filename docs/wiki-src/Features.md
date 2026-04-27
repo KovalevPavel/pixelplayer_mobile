@@ -34,5 +34,5 @@ Settings:
 
 Related pages:
 
-- [Playback](Playback.md)
-- [Localization and Settings](Localization and Settings.md)
+- [Playback](Playback)
+- [Localization and Settings](Localization-and-Settings)

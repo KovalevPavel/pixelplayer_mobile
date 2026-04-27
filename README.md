@@ -2,6 +2,14 @@
 
 Pixelplayer is a Kotlin Multiplatform music player with a shared Compose Multiplatform UI for Android and iOS. The app connects to a remote media server, restores the saved session on startup, loads artists, albums, and tracks, and provides built-in playback controls from the shared UI layer.
 
+## Try the Demo
+
+Want to evaluate the app quickly? Download the demo build from [GitHub Releases](https://github.com/KovalevPavel/pixelplayer_mobile/releases) and connect it to the public demo server:
+
+- Server URL: `89.124.108.196`
+- Login: `test`
+- Password: `test`
+
 Detailed project documentation is published in the GitHub Wiki.
 
 ## Key Features
@@ -48,4 +56,4 @@ Detailed project documentation is published in the GitHub Wiki.
 - [Getting Started](https://github.com/KovalevPavel/pixelplayer_mobile/wiki/Getting-Started)
 - [Architecture Overview](https://github.com/KovalevPavel/pixelplayer_mobile/wiki/Architecture-Overview)
 
-The wiki source files live in [docs/wiki-src](/Users/pavelkovalev/AndroidStudioProjects/Personal/Pixelplayer/docs/wiki-src), and the generated publish-ready pages live in [docs/wiki-dist](/Users/pavelkovalev/AndroidStudioProjects/Personal/Pixelplayer/docs/wiki-dist).
+The wiki source files live in [docs/wiki-src](/docs/wiki-src), and the generated publish-ready pages live in [docs/wiki-dist](docs/wiki-dist).

@@ -27,5 +27,5 @@ iOS startup:
 
 Next steps:
 
-- read [Architecture Overview](Architecture Overview.md)
-- review [Module Guide](Module Guide.md)
+- read [Architecture Overview](Architecture-Overview)
+- review [Module Guide](Module-Guide)
