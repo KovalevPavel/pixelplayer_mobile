@@ -4,9 +4,13 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kovp.pixelplayer.api_storage.Preferences
+import kovp.pixelplayer.api_storage.SecurePreferences
+import kovp.pixelplayer.core_storage.AndroidSecurePreferences
 import kovp.pixelplayer.core_storage.PreferencesImpl
 import kovp.pixelplayer.core_storage.PrefsType
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 actual val storageModule: Module = module {
@@ -25,4 +29,6 @@ actual val storageModule: Module = module {
             scope = scope,
         )
     }
+
+    singleOf(::AndroidSecurePreferences).bind<SecurePreferences>()
 }
