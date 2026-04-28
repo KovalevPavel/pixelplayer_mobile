@@ -28,7 +28,6 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -41,6 +40,7 @@ import kovp.pixelplayer.core_design.pixelColors
 import kovp.pixelplayer.core_design.pixelTypography
 import kovp.pixelplayer.core_ui.CollectWithLifecycle
 import kovp.pixelplayer.core_ui.components.FullScreenLoader
+import kovp.pixelplayer.core_ui.components.PrivacyPolicyLink
 import kovp.pixelplayer.core_ui.components.content_dialog.ContentDialog
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialog
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
@@ -59,6 +59,7 @@ import pixelplayer.core_ui.generated.resources.logout
 import pixelplayer.core_ui.generated.resources.system
 import pixelplayer.feature_settings.generated.resources.Res
 import pixelplayer.feature_settings.generated.resources.license_info
+import pixelplayer.feature_settings.generated.resources.license_name
 import pixelplayer.feature_settings.generated.resources.license_url
 import pixelplayer.feature_settings.generated.resources.username
 import pixelplayer.core_ui.generated.resources.Res as coreRes
@@ -161,10 +162,13 @@ private fun SettingsScreenData(
     val uriHandler = LocalUriHandler.current
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().padding(all = 16.dp),
+        modifier = Modifier.fillMaxSize(),
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(all = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             TextData(
@@ -187,17 +191,25 @@ private fun SettingsScreenData(
 
             if (viewState.isDemo) {
                 val licenseText = buildAnnotatedString {
-                    stringResource(Res.string.license_info).let(::appendLine)
-                    val link = stringResource(Res.string.license_url)
-                    withLink(
-                        LinkAnnotation.Url(
-                            url = link,
-                            styles = TextLinkStyles(style = SpanStyle(color = Color(0xff3474eb))),
-                            linkInteractionListener = { uriHandler.openUri(link) },
-                        )
-                    ) {
-                        link.let(::appendLine)
-                    }
+                    val licenseName = stringResource(Res.string.license_name)
+                    val text = stringResource(Res.string.license_info, licenseName)
+                        .also(::append)
+
+                    val url = stringResource(Res.string.license_url)
+
+                    val link = LinkAnnotation.Url(
+                        url = url,
+                        styles = TextLinkStyles(style = SpanStyle(color = Color(0xff3474eb))),
+                        linkInteractionListener = { uriHandler.openUri(url) },
+                    )
+
+                    val startIndex = text.indexOf(licenseName)
+
+                    addLink(
+                        url = link,
+                        start = startIndex,
+                        end = startIndex + licenseName.length,
+                    )
                 }
 
                 Text(
@@ -206,6 +218,8 @@ private fun SettingsScreenData(
                     color = pixelColors.onBackground,
                 )
             }
+
+            PrivacyPolicyLink()
 
             Column(
                 modifier = Modifier.fillMaxWidth().padding(top = 64.dp),

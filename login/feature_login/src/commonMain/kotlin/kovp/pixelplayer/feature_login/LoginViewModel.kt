@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kovp.pixelplayer.api_credentials.CredentialsRepository
-import kovp.pixelplayer.core.build_config.BuildConfig
 import kovp.pixelplayer.core_ui.UiText
 import kovp.pixelplayer.core_ui.components.message_dialog.MessageDialogVs
 import kovp.pixelplayer.core_ui.launch
@@ -26,7 +25,6 @@ import pixelplayer.feature_login.generated.resources.Res as loginRes
 class LoginViewModel(
     private val loginRepo: LoginRepository,
     private val credentialsRepo: CredentialsRepository,
-    private val buildConfig: BuildConfig,
 ) : ViewModel() {
     val screenState: StateFlow<LoginState> by lazy { _screenState }
     val eventsFlow: Flow<LoginEvent> by lazy { _eventsFlow }
@@ -154,7 +152,6 @@ class LoginViewModel(
     private fun String.withSchema(): String {
         return when {
             !this.toUri().scheme.isNullOrEmpty() -> this
-            buildConfig.isDemoApp -> "http://$this"
             else -> "https://$this"
         }
     }

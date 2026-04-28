@@ -1,10 +1,10 @@
 package kovp.pixelplayer.core_credentials
 
 import kovp.pixelplayer.api_credentials.CredentialsRepository
-import kovp.pixelplayer.api_storage.Preferences
+import kovp.pixelplayer.api_storage.SecurePreferences
 
 class CredentialsRepositoryImpl(
-    private val prefs: Preferences,
+    private val prefs: SecurePreferences,
 ) : CredentialsRepository {
     override suspend fun getToken(): String? {
         return prefs.getString(TOKEN_KEY)
