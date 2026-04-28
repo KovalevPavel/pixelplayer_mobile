@@ -4,6 +4,8 @@
     <string name="username">User</string>
     <string name="login">Login</string>
     <string name="endpoint">Server url</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_url" translatable="false">https://kovalevpavel.github.io/pixelplayer_mobile/privacy-policy/</string>
 
     <string name="albums">Albums: %1$d</string>
     <string name="tracks">Tracks: %1$d</string>

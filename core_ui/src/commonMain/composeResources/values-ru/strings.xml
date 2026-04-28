@@ -4,6 +4,7 @@
     <string name="username">Имя пользователя</string>
     <string name="login">Войти</string>
     <string name="endpoint">Адрес сервера</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
 
     <string name="albums">Альбомы: %1$d</string>
     <string name="tracks">Треки: %1$d</string>

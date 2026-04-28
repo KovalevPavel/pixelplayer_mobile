@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kovp.pixelplayer.core_design.AppPreview
 import kovp.pixelplayer.core_design.AppTheme
+import kovp.pixelplayer.core_ui.components.PrivacyPolicyLink
 import kovp.pixelplayer.feature_login.LoginAction
 import org.jetbrains.compose.resources.stringResource
 import pixelplayer.feature_login.generated.resources.Res
@@ -64,6 +65,8 @@ fun EndpointScreen(
             ) {
                 Text(text = stringResource(Res.string.check))
             }
+
+            PrivacyPolicyLink(modifier = Modifier.fillMaxWidth())
         }
     }
 }

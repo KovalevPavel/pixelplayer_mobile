@@ -4,6 +4,7 @@
     <string name="username">User</string>
     <string name="login">Anmelden</string>
     <string name="endpoint">Server-URL</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
 
     <string name="albums">Alben: %1$d</string>
     <string name="tracks">Titel: %1$d</string>
