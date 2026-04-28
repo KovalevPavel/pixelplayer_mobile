@@ -16,8 +16,8 @@ import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
-val appVersionCode = 1
-val appVersionName = "1.0.0"
+val appVersionCode = 2
+val appVersionName = "1.0.1"
 
 fun buildArtifactName(
     versionName: String,
@@ -75,7 +75,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "kovp.pixelplayer"
+        namespace = "kov_p.pixelplayer"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         flavorDimensions.add("default")
