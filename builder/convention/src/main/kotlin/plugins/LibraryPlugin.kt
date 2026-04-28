@@ -23,7 +23,7 @@ class LibraryPlugin : Plugin<Project> {
 
         project.extensions.configure<KotlinMultiplatformAndroidComponentsExtension> {
             finalizeDsl { androidDsl ->
-                androidDsl.namespace = "kovp.pixelplayer.${project.name}"
+                androidDsl.namespace = "kov_p.pixelplayer.${project.name}"
                 androidDsl.compileSdk = project.libs.versions.android.compileSdk.get().toInt()
                 androidDsl.minSdk = project.libs.versions.android.minSdk.get().toInt()
             }

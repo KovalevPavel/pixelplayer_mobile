@@ -1,0 +1,7 @@
+package kov_p.pixelplayer.feature_albums.list
+
+internal sealed interface AlbumsAction {
+    data class OnAlbumClick(val albumId: String) : AlbumsAction
+    data object OnErrorActionClick : AlbumsAction
+    data object FetchAlbums : AlbumsAction
+}

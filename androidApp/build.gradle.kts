@@ -81,7 +81,7 @@ kotlin {
         flavorDimensions.add("default")
 
         defaultConfig {
-            applicationId = "kovp.pixelplayer"
+            applicationId = "kov_p.pixelplayer"
             minSdk = libs.versions.android.minSdk.get().toInt()
             targetSdk = libs.versions.android.targetSdk.get().toInt()
             versionCode = appVersionCode
