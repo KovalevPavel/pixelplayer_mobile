@@ -1,0 +1,39 @@
+package kov_p.pixelplayer.feature_tracks.data
+
+import io.ktor.client.HttpClient
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kov_p.pixelplayer.network.get
+import kov_p.pixelplayer.domain_tracks.TrackVo
+import kov_p.pixelplayer.domain_tracks.TracksRepository
+
+class TracksRepositoryImpl(
+    private val client: HttpClient,
+): TracksRepository {
+    override suspend fun getAllTracks(): List<TrackVo> {
+        return client.get<List<TrackDto>>(path = "tracks/all")
+            .mapNotNull { dto ->
+                TrackVo(
+                    id = dto.id ?: return@mapNotNull null,
+                    title = dto.title.orEmpty(),
+                    album = dto.album.orEmpty(),
+                    artist = dto.artist.orEmpty(),
+                    cover = dto.cover.orEmpty(),
+                )
+            }
+    }
+}
+
+@Serializable
+private class TrackDto(
+    @SerialName("id")
+    val id: String? = null,
+    @SerialName("title")
+    val title: String? = null,
+    @SerialName("album")
+    val album: String? = null,
+    @SerialName("artist")
+    val artist: String? = null,
+    @SerialName("cover")
+    val cover: String? = null,
+)

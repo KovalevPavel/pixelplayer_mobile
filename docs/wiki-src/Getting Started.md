@@ -23,7 +23,7 @@ Android startup:
 iOS startup:
 
 - open the `iosApp` host project in Xcode
-- use the shared entry point from `composeApp/src/iosMain/kotlin/kovp/pixelplayer/MainViewController.kt`
+- use the shared entry point from `composeApp/src/iosMain/kotlin/kov_p/pixelplayer/MainViewController.kt`
 
 Next steps:
 

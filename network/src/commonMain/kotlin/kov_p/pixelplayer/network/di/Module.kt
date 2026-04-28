@@ -11,7 +11,7 @@ import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import kovp.pixelplayer.core.build_config.BuildConfig
+import kov_p.pixelplayer.core.build_config.BuildConfig
 import org.koin.core.module.Module
 import org.koin.dsl.ScopeDSL
 

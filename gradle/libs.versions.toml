@@ -95,10 +95,10 @@ androidx-benchmark-baseline-profile-gradle-plugin = { group = "androidx.benchmar
 
 [plugins]
 # convention
-pixelplayer-kotlin = { id = "kovp.pixelplayer.kotlin" }
-pixelplayer-library = { id = "kovp.pixelplayer.library" }
-pixelplayer-compose = { id = "kovp.pixelplayer.compose" }
-pixelplayer-api = { id = "kovp.pixelplayer.api" }
+pixelplayer-kotlin = { id = "kov_p.pixelplayer.kotlin" }
+pixelplayer-library = { id = "kov_p.pixelplayer.library" }
+pixelplayer-compose = { id = "kov_p.pixelplayer.compose" }
+pixelplayer-api = { id = "kov_p.pixelplayer.api" }
 
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }

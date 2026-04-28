@@ -1,0 +1,71 @@
+package kov_p.pixelplayer.feature_albums.list.ui
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.toImmutableList
+import kov_p.pixelplayer.core_design.AppPreview
+import kov_p.pixelplayer.core_design.AppTheme
+import kov_p.pixelplayer.core_ui.UiText
+import kov_p.pixelplayer.core_ui.components.vertical_card.VerticalCard
+import kov_p.pixelplayer.core_ui.components.vertical_card.VerticalCardVs
+import kov_p.pixelplayer.feature_albums.list.AlbumsAction
+import kov_p.pixelplayer.feature_albums.list.AlbumsState
+
+@Composable
+internal fun AlbumsList(
+    state: AlbumsState.List,
+    handleAction: (AlbumsAction) -> Unit,
+) {
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 32.dp),
+    ) {
+        items(items = state.albums, key = VerticalCardVs::id) { item ->
+            VerticalCard(
+                viewState = item,
+                onClick = {
+                    handleAction(AlbumsAction.OnAlbumClick(item.id))
+                },
+            )
+        }
+    }
+}
+
+@AppPreview
+@Composable
+private fun AlbumsListPreview(
+    @PreviewParameter(ArtistsListProvider::class) state: AlbumsState.List,
+) {
+    AppTheme {
+        AlbumsList(state = state, handleAction = {})
+    }
+}
+
+private class ArtistsListProvider : PreviewParameterProvider<AlbumsState.List> {
+    override val values: Sequence<AlbumsState.List> = List(2) { i ->
+        AlbumsState.List(
+            albums = List((i + 1) * 3) {
+                VerticalCardVs(
+                    id = it.toString(),
+                    title = UiText.Dynamic("Album $it ".repeat(it + 1)),
+                    imageUrl = "",
+                    description = UiText.Dynamic("2007"),
+                )
+            }
+                .toImmutableList()
+        )
+    }
+        .asSequence()
+}

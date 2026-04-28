@@ -9,8 +9,8 @@ Implementation patterns used in the repository:
 
 Good entry points when exploring the codebase:
 
-- `composeApp/src/commonMain/kotlin/kovp/pixelplayer/App.kt`
-- `composeApp/src/commonMain/kotlin/kovp/pixelplayer/initializer`
+- `composeApp/src/commonMain/kotlin/kov_p/pixelplayer/App.kt`
+- `composeApp/src/commonMain/kotlin/kov_p/pixelplayer/initializer`
 - `settings.gradle.kts`
 
 Useful verification commands:
